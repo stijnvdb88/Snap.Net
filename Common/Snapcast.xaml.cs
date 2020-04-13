@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using Gma.System.MouseKeyHook;
 
 namespace SnapDotNet
 {
@@ -47,6 +48,8 @@ namespace SnapDotNet
 
         public static string ProductName { get; private set; }
 
+        public static IKeyboardMouseEvents HookEvents = null;
+
         [DllImport("Kernel32.dll")]
         private static extern bool AttachConsole(int processId);
 
@@ -56,6 +59,8 @@ namespace SnapDotNet
             _ConfigureLogger();
             AttachConsole(-1); // attach to console if we were launched via command line
             Console.WriteLine(); // send a newline
+
+            HookEvents = Hook.GlobalEvents();
 
             ThemeManager.ChangeAppStyle(this, ThemeManager.GetAccent(SnapSettings.Accent), ThemeManager.GetAppTheme(SnapSettings.Theme));
 
@@ -207,6 +212,12 @@ namespace SnapDotNet
 
             // Apply config           
             NLog.LogManager.Configuration = config;
+        }
+
+        public void Quit()
+        {
+            HookEvents.Dispose();
+            Shutdown();
         }
 
         /// <summary>

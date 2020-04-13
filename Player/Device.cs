@@ -54,6 +54,19 @@ namespace SnapDotNet.Player
             return devices.ToArray();
         }
 
+        public static  Device FindDevice(string uniqueId)
+        {
+            Device[] devices = Device.GetDevices();
+            foreach (Device d in devices)
+            {
+                if (d.UniqueId == uniqueId)
+                {
+                    return d;
+                }
+            }
+            return null;
+        }
+
         public static Device[] GetDevices(bool includeDefault = false)
         {
             string path = System.IO.Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");

@@ -25,13 +25,11 @@ namespace SnapDotNet.Controls
     {
         public Action OnClosed;
         private Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
-        private IKeyboardMouseEvents m_GlobalHook;
 
         public Notification(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, string title, string message)
         {
             InitializeComponent();
-            m_GlobalHook = Hook.GlobalEvents();
-            m_GlobalHook.MouseDownExt += global_MouseClick;
+            Snapcast.HookEvents.MouseDownExt += global_MouseClick;
             m_Origin = origin;
             tbTitle.Text = title;
             tbMessage.Text = message;
@@ -55,7 +53,7 @@ namespace SnapDotNet.Controls
             if (this.IsMouseOver == true)
             {
                 Snapcast.TaskbarIcon.CloseBalloon(); // should check whether current balloon == this somehow
-                m_GlobalHook.MouseDownExt -= global_MouseClick;
+                Snapcast.HookEvents.MouseDownExt -= global_MouseClick;
             }
         }
     }

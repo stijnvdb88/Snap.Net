@@ -25,7 +25,6 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class SnapControl : UserControl
     {
-        private IKeyboardMouseEvents m_GlobalHook;
         public Action OnClosed;
         private Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
 
@@ -35,8 +34,7 @@ namespace SnapDotNet.SnapControl
         {
             InitializeComponent();
 
-            m_GlobalHook = Hook.GlobalEvents();
-            m_GlobalHook.MouseDownExt += global_MouseClick;
+            Snapcast.HookEvents.MouseDownExt += global_MouseClick;
 
             m_Origin = origin;
             m_SnapcastClient = client;
@@ -98,8 +96,7 @@ namespace SnapDotNet.SnapControl
         {
             if (this.IsMouseOver == false || force == true)
             {
-                m_GlobalHook.MouseDownExt -= global_MouseClick;
-                m_GlobalHook.Dispose();
+                Snapcast.HookEvents.MouseDownExt -= global_MouseClick;
                 SnapSettings.OnThemeChanged -= SnapSettings_OnThemeChanged;
                 Snapcast.TaskbarIcon.CloseBalloon(); // should check whether current balloon == this somehow                
             }

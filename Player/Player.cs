@@ -147,24 +147,11 @@ namespace SnapDotNet.Player
         private string _SnapClient()
         {
             return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
-        }
-
-        private Device _GetDevice(string uniqueId)
-        {
-            Device[] devices = Device.GetDevices();
-            foreach (Device d in devices)
-            {
-                if (d.UniqueId == uniqueId)
-                {
-                    return d;
-                }
-            }
-            return null;
-        }
+        }        
 
         private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource)
         {
-            Device device = _GetDevice(deviceUniqueId);
+            Device device = Device.FindDevice(deviceUniqueId);
             if (device == null)
             {
                 await Task.FromException(new NullReferenceException("Couldn't get device with uniqueId " + deviceUniqueId)).ConfigureAwait(false);

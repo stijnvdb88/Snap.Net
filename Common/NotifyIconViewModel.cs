@@ -104,7 +104,7 @@ namespace SnapDotNet
                     CommandAction = () =>
                     {
                         Snapcast.TaskbarIcon.CloseBalloon();
-                        Application.Current.Shutdown();
+                        Snapcast.Instance.Quit();
                     }
                 };
             }
