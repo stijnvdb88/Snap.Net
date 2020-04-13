@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="SnapDotNet.Controls.Notification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tb="http://www.hardcodet.net/taskbar"
+             xmlns:snap="clr-namespace:SnapDotNet.Controls"
+             x:Name="SnapControlPane"
+             Height="Auto"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             Width="Auto">
+    <Grid x:Name="grid">
+        <Border HorizontalAlignment="Stretch"
+                Margin="0,0,0,0"
+                BorderThickness="1,1,1,1"
+                BorderBrush="{DynamicResource WindowTitleColorBrush}"
+                Background="{DynamicResource WindowBackgroundBrush}">
+        </Border>
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="(right-click to dismiss)" FontSize="11" HorizontalAlignment="Right" Margin="2" Foreground="{DynamicResource TextBrush}" />
+            <StackPanel Orientation="Horizontal">
+                <Image Width="40" VerticalAlignment="Top"  HorizontalAlignment="Left" Source="/Snap.Net;component/Assets/snapcast.ico" Margin="20 0 0 0" />
+                <StackPanel Orientation="Vertical">
+                    <TextBlock TextWrapping="WrapWithOverflow" Foreground="{DynamicResource TextBrush}" x:Name="tbTitle" Width="Auto" Height="30" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Padding="10,0,20,15" FontSize="20" MaxWidth="700">
+                Title
+                    </TextBlock>
+                    <TextBlock TextWrapping="WrapWithOverflow" Foreground="{DynamicResource TextBrush}" x:Name="tbMessage" Width="Auto" Height="Auto" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0" Padding="10,0,20,10" FontSize="12" MaxWidth="700">
+                Message
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+            
+        </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="SnapDotNet.SnapControl.Group"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SnapDotNet.SnapControl"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" Width="Auto" Height="Auto">
+    <Grid Height="Auto">
+        <local:VolumeControl x:Name="vcGroup" HorizontalAlignment="Left" Margin="10,73,0,10" Width="47" />
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Center" 
+                    Margin="50,5,0,0" 
+                    Height="30"                    
+                    VerticalAlignment="Top">
+            <Button x:Name="btGroup"                                                 
+                    BorderThickness="0.9"
+                    Style="{DynamicResource AccentedSquareButtonStyle}"
+                    BorderBrush="{DynamicResource AccentColorBrush}"        
+                    VerticalContentAlignment="Center"
+                    FontWeight="Thin"                     
+                    HorizontalContentAlignment="Center" Click="btGroup_Click">
+                <Label x:Name="lbGroupName" Content="Label" FontWeight="Bold" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
+            </Button>
+            <Button x:Name="btStream"                                                 
+                    BorderThickness="0.9"
+                    Style="{DynamicResource AccentedSquareButtonStyle}"
+                    BorderBrush="{DynamicResource AccentColorBrush}"        
+                    VerticalContentAlignment="Center"
+                    FontWeight="Thin"                     
+                    HorizontalContentAlignment="Center" Click="btStream_Click">
+                <Label x:Name="lbStreamName" Content="Label" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
+            </Button>
+        </StackPanel>
+
+        <Border Margin="55, 45, 10, 10"
+            BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1,1,1,1" CornerRadius="1">
+            <StackPanel HorizontalAlignment="Center" Height="Auto" Margin="0,0,0,10" VerticalAlignment="Top" Width="Auto" Orientation="Horizontal" x:Name="spClients">
+            </StackPanel>
+        </Border>
+        
+    </Grid>
+</UserControl>

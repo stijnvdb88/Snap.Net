@@ -1,0 +1,34 @@
+﻿<Control:MetroWindow x:Class="SnapDotNet.SnapControl.EditGroup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SnapDotNet.SnapControl"
+        xmlns:Control="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="EditGroup" Height="Auto" Width="297.912" SizeToContent="WidthAndHeight" Icon="/Snap.Net;component/Assets/snapcast.ico" 
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen" 
+        WindowTransitionsEnabled="False"
+        Topmost="True" >
+    <Grid>
+        <StackPanel HorizontalAlignment="Stretch" Margin="5,10,5,0" Orientation="Vertical" Height="Auto">
+            <DockPanel Margin="0,0,0,5">
+                <Label Content="Name" Width="90" FontWeight="Bold"></Label>
+                <TextBox x:Name="tbName" HorizontalAlignment="Left" Width="100" Margin="0"></TextBox>
+            </DockPanel>
+            <DockPanel Margin="0,0,0,5">
+                <Label Content="Stream" Width="90" FontWeight="Bold"></Label>
+                <ComboBox x:Name="cbStream" Width="100" HorizontalAlignment="Left">
+                </ComboBox>
+            </DockPanel>
+            <GroupBox Header="Clients"
+                      Background="{DynamicResource ControlBackgroundBrush}">
+                <StackPanel Orientation="Vertical" x:Name="spClients" HorizontalAlignment="Stretch" Width="Auto">
+                </StackPanel>                            
+            </GroupBox>
+            <Button x:Name="button" Content="Save" HorizontalAlignment="Center" Margin="0,0,0,5" Width="75" IsDefault="True" Click="button_Click"/>
+        </StackPanel>
+    </Grid>
+</Control:MetroWindow>

@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="SnapDotNet.SnapControl.Client"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SnapDotNet.SnapControl"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Control="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" Width="75" Height="225">
+    <Grid>
+        <Button x:Name="lbClient" 
+                HorizontalAlignment="Stretch" 
+                Margin="0,0,0,0" 
+                VerticalAlignment="Top" 
+                BorderThickness="0,0,0,0" 
+                FontWeight="Thin" 
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Center" Click="lbClient_Click">
+            <StackPanel Orientation="Horizontal" x:Name="spTitle">
+                <TextBlock x:Name="tbClient" FontSize="11" VerticalAlignment="Center">
+                    Bedroom
+                </TextBlock>
+                
+            </StackPanel>
+        </Button>
+        <local:VolumeControl x:Name="vcClient" Margin="0,27,0,0" />
+
+    </Grid>
+</UserControl>
