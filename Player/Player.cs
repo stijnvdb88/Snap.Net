@@ -149,7 +149,7 @@ namespace SnapDotNet.Player
             return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
         }        
 
-        private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource)
+        private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource, int attempts = 0)
         {
             Device device = Device.FindDevice(deviceUniqueId);
             if (device == null)
@@ -159,7 +159,7 @@ namespace SnapDotNet.Player
             else
             {
                 int deviceInstanceId = SnapSettings.DetermineInstanceId(deviceUniqueId, device.Index);
-
+                DeviceSettings deviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
                 if (deviceInstanceId != -1)
                 {
                     StringBuilder stdError = new StringBuilder();
@@ -168,7 +168,12 @@ namespace SnapDotNet.Player
                     {
                         lastLine = line; // we only are about the last line from the output - in case there's an error (snapclient should probably ben sending these to stderr though)
                     };
-                    string command = string.Format("-h {0} -p {1} -s {2} -i {3}", SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId);
+                    string resampleArg = "";
+                    if(string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
+                    {
+                        resampleArg = string.Format("--sampleformat {0}:0", deviceSettings.ResampleFormat);
+                    }
+                    string command = string.Format("-h {0} -p {1} -s {2} -i {3} --sharingmode={4} {5}", SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId, deviceSettings.ShareMode.ToString().ToLower(), resampleArg);
                     Logger.Debug("Snapclient command: {0}", command);
                     CommandTask<CommandResult> task = Cli.Wrap(_SnapClient())
                                                         .WithArguments(command)
@@ -191,6 +196,13 @@ namespace SnapDotNet.Player
                         Logger.Error(e.Message);
                         DevicePlayStateChanged?.Invoke(deviceUniqueId, EState.Stopped);
                         m_ActivePlayers.Remove(deviceUniqueId);
+
+                        // settings might have changed while we were playing - refetch them
+                        DeviceSettings nDeviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
+                        if(nDeviceSettings.AutoRestartOnFailure == true && nDeviceSettings.RestartAttempts <= attempts)
+                        {
+                            await _PlayAsync(deviceUniqueId, cancellationTokenSource, attempts + 1).ConfigureAwait(false);
+                        }
                     }
                 }
             }

@@ -18,14 +18,20 @@
                 ToolTip="Auto-play on start?" Checked="cbAutoPlay_Toggled" Unchecked="cbAutoPlay_Toggled" />
             <Label x:Name="lbId" Content="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Label x:Name="lbName" Content="Name" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-            <ToggleButton x:Name="btPlay" 
-                          HorizontalAlignment="Right"
-                          Width="28" Height="28" 
-                          Click="btPlay_Click" 
-                          Style="{DynamicResource MahApps.Metro.Styles.MetroCircleToggleButtonStyle}"
-                          BorderThickness="1" >
-                <iconPacks:PackIconZondicons Kind="Play" x:Name="imgIcon" />
-            </ToggleButton>
+            <StackPanel HorizontalAlignment="Right" Width="Auto" DockPanel.Dock="Right" Orientation="Horizontal">
+                <ToggleButton x:Name="btPlay" 
+                              Width="30" Height="30" 
+                              Click="btPlay_Click" 
+                              Style="{DynamicResource MahApps.Metro.Styles.MetroCircleToggleButtonStyle}"
+                              BorderThickness="1" >
+                    <iconPacks:PackIconZondicons Kind="Play" x:Name="imgIcon" />
+                </ToggleButton>
+                <Button x:Name="btSettings" Margin="5 0 0 0"
+                              Width="30" Height="30"                               
+                              Click="btSettings_Click">
+                    <iconPacks:PackIconBoxIcons Kind="SolidWrench" x:Name="imgSettings" />
+                </Button>
+            </StackPanel>
         </DockPanel>
     </Grid>
 </UserControl>

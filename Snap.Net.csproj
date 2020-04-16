@@ -232,6 +232,7 @@
     <Compile Include="Common\EntryPoint.cs" />
     <Compile Include="Common\GlobalSuppressions.cs" />
     <Compile Include="Common\SingleInstanceManager.cs" />
+    <Compile Include="Player\DeviceSettings.cs" />
     <Compile Include="Views\SnapControl\Client.xaml.cs">
       <DependentUpon>Client.xaml</DependentUpon>
     </Compile>
@@ -300,6 +301,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Windows\DeviceSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Windows\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,6 +316,9 @@
     <Compile Include="Common\Snapcast.xaml.cs">
       <DependentUpon>Snapcast.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\Windows\DeviceSettings.xaml.cs">
+      <DependentUpon>DeviceSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>

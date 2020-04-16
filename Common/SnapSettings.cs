@@ -19,9 +19,10 @@ namespace SnapDotNet
 {
     /// <summary>
     /// This class is responsible for all persistent data
+    /// (might move away from Properties.Settings at some point)
     /// </summary>
     public static class SnapSettings
-    {
+    {       
         private const string AUTOLAUNCH_REGISTRY_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
         public static event Action OnThemeChanged;
         /// <summary>
@@ -124,6 +125,31 @@ namespace SnapDotNet
             Properties.Settings.Default.Save();
         }
 
+        public static void SaveSetting<T>(string setting, T value)
+        {
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+            Properties.Settings.Default[setting] = json;
+            _Save();
+        }
+
+        public static T LoadSetting<T>(string setting) where T : new()
+        {
+            string json = Properties.Settings.Default[setting].ToString();
+            if(json != "")
+            {
+                try
+                {
+                    T value = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+                    return value;
+                }
+                catch
+                {
+                    return new T();
+                }
+            }
+            return new T();
+        }
+
         /// <summary>
         /// figure out instance id - we want this id to never change per sound device once we've set it (otherwise snapcast can't know which sound card should have which volume)
         /// prefer the device's index if that instance id is still available, otherwise get the next available one
@@ -136,17 +162,7 @@ namespace SnapDotNet
         {
             int instanceId = -1;
 
-            Dictionary<int, string> deviceInstanceIds = null;
-            string deviceInstanceIdsJson = Properties.Settings.Default.DeviceInstanceIds;
-            if (string.IsNullOrEmpty(deviceInstanceIdsJson) == false)
-            {
-                deviceInstanceIds = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, string>>(deviceInstanceIdsJson);
-            }
-            else
-            {
-                deviceInstanceIds = new Dictionary<int, string>();
-            }
-
+            Dictionary<int, string> deviceInstanceIds = LoadSetting<Dictionary<int, string>>("DeviceInstanceIds");
             foreach (KeyValuePair<int, string> kvp in deviceInstanceIds)
             {
                 if (kvp.Value == deviceUniqueId)
@@ -169,11 +185,13 @@ namespace SnapDotNet
 
             // add and save!
             deviceInstanceIds.Add(instanceId, deviceUniqueId);
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(deviceInstanceIds);
-            Properties.Settings.Default.DeviceInstanceIds = json;
-            _Save();
-
+            SaveSetting<Dictionary<int, string>>("DeviceInstanceIds", deviceInstanceIds);
             return instanceId;
+        }
+
+        public static Dictionary<string, Tuple<bool, string>> GetDeviceAutoPlayFlags()
+        {
+            return LoadSetting<Dictionary<string, Tuple<bool, string>>>("DeviceAutoPlayFlags");
         }
 
         public static void SetAudioDeviceAutoPlay(string deviceUniqueId, bool autoPlay, string friendlyName)
@@ -189,26 +207,32 @@ namespace SnapDotNet
                 deviceAutoPlayFlags[deviceUniqueId] = new Tuple<bool, string>(autoPlay, friendlyName);
             }
 
-            Properties.Settings.Default.DeviceAutoPlayFlags = Newtonsoft.Json.JsonConvert.SerializeObject(deviceAutoPlayFlags);
-            _Save();
+            SaveSetting<Dictionary<string, Tuple<bool, string>>>("DeviceAutoPlayFlags", deviceAutoPlayFlags);
         }
 
-        public static Dictionary<string, Tuple<bool, string>> GetDeviceAutoPlayFlags()
+        public static Player.DeviceSettings GetDeviceSettings(string deviceUniqueId)
         {
-            Dictionary<string, Tuple<bool, string>> deviceAutoPlayFlags = new Dictionary<string, Tuple<bool, string>>();
-            string deviceAutoPlayFlagsJson = Properties.Settings.Default.DeviceAutoPlayFlags;
-            if (string.IsNullOrEmpty(deviceAutoPlayFlagsJson) == false)
+            Dictionary<string, Player.DeviceSettings> allSettings = LoadSetting<Dictionary<string, Player.DeviceSettings>>("DeviceSettings");
+            if(allSettings.ContainsKey(deviceUniqueId))
             {
-                try
-                {
-                    deviceAutoPlayFlags = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Tuple<bool, string>>>(deviceAutoPlayFlagsJson);
-                }
-                catch
-                {
-                    return deviceAutoPlayFlags;
-                }
+                return allSettings[deviceUniqueId];
             }
-            return deviceAutoPlayFlags;
+
+            return new Player.DeviceSettings();
+        }
+
+        public static void SaveDeviceSettings(string deviceId, Player.DeviceSettings settings)
+        {
+            Dictionary<string, Player.DeviceSettings> allSettings = LoadSetting<Dictionary<string, Player.DeviceSettings>>("DeviceSettings");
+            if (allSettings.ContainsKey(deviceId))
+            {
+                allSettings[deviceId] = settings;
+            }
+            else
+            {
+                allSettings.Add(deviceId, settings);
+            }
+            SaveSetting<Dictionary<string, Player.DeviceSettings>>("DeviceSettings", allSettings);
         }
 
         /// <summary>

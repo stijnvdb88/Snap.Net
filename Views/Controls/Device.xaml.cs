@@ -25,8 +25,9 @@ namespace SnapDotNet.Controls
     {
         private Player.EState m_State = Player.EState.Stopped;
 
-        public event Action OnClicked;
+        public event Action OnPlayClicked;
         public event Action<bool> OnAutoPlayToggled;
+        public event Action OnSettingsClicked;
 
         public Player.EState State
         {
@@ -58,12 +59,17 @@ namespace SnapDotNet.Controls
 
         private void btPlay_Click(object sender, RoutedEventArgs e)
         {
-            OnClicked?.Invoke();
+            OnPlayClicked?.Invoke();
         }
 
         private void cbAutoPlay_Toggled(object sender, RoutedEventArgs e)
         {
             OnAutoPlayToggled?.Invoke((bool)cbAutoPlay.IsChecked);
+        }
+
+        private void btSettings_Click(object sender, RoutedEventArgs e)
+        {
+            OnSettingsClicked?.Invoke();
         }
     }
 }

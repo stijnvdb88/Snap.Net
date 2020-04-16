@@ -87,7 +87,7 @@ namespace SnapDotNet.Windows
                 Controls.Device d = new Controls.Device(device);
                 SnapDotNet.Player.Device dev = device;
                 d.State = m_Player.GetState(dev.UniqueId);
-                d.OnClicked += () =>
+                d.OnPlayClicked += () =>
                 {
                     if (d.State == SnapDotNet.Player.EState.Stopped)
                     {
@@ -98,6 +98,12 @@ namespace SnapDotNet.Windows
                     {
                         m_Player.Stop(dev.UniqueId);
                     }
+                };
+
+                d.OnSettingsClicked += () =>
+                {
+                    DeviceSettings settings = new DeviceSettings(device);
+                    settings.ShowDialog();
                 };
 
                 d.OnAutoPlayToggled += (bool autoPlay) =>

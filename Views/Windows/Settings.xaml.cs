@@ -85,7 +85,7 @@ namespace SnapDotNet.Windows
 
         private void tbPort_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = Utils.IsNumbersOnly(e.Text) == false || e.Text.Length >= 4;
+            e.Handled = Utils.IsNumbersOnly(e.Text) == false;
         }
 
         private void cbAutoLaunch_Toggled(object sender, RoutedEventArgs e)
