@@ -199,7 +199,7 @@ namespace SnapDotNet.Player
 
                         // settings might have changed while we were playing - refetch them
                         DeviceSettings nDeviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
-                        if(nDeviceSettings.AutoRestartOnFailure == true && nDeviceSettings.RestartAttempts <= attempts)
+                        if (nDeviceSettings.AutoRestartOnFailure == true && (attempts <= nDeviceSettings.RestartAttempts || nDeviceSettings.RestartAttempts == 0))
                         {
                             await _PlayAsync(deviceUniqueId, cancellationTokenSource, attempts + 1).ConfigureAwait(false);
                         }
