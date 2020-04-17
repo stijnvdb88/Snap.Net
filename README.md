@@ -1,3 +1,4 @@
+[![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
 <br />
 <p align="center">
   <a href="https://github.com/stijnvdb88/Snap.Net">
@@ -30,9 +31,8 @@ If you don't like the colors, change them!
 ![Settings](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Settings.png)
 
 ### Todo ###
-* Player settings (sampleformat, shared/exclusive mode)
-* Media shortcuts
 * Interface for Arduino (?)
+* ~~Player settings (sampleformat, shared/exclusive mode)~~
 
 ## Acknowledgements
 * [StreamJsonRpc](https://github.com/microsoft/vs-streamjsonrpc)
