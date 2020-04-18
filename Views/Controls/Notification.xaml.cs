@@ -29,19 +29,11 @@ namespace SnapDotNet.Controls
         public Notification(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, string title, string message)
         {
             InitializeComponent();
-            Snapcast.HookEvents.MouseDownExt += global_MouseClick;
             m_Origin = origin;
             tbTitle.Text = title;
             tbMessage.Text = message;
         }
 
-        void global_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button == System.Windows.Forms.MouseButtons.Right && IsMouseOver)
-            {
-                _Close();
-            }
-        }
 
         private bool _IsWithinBounds(int x, int y)
         {
@@ -53,8 +45,12 @@ namespace SnapDotNet.Controls
             if (this.IsMouseOver == true)
             {
                 Snapcast.TaskbarIcon.CloseBalloon(); // should check whether current balloon == this somehow
-                Snapcast.HookEvents.MouseDownExt -= global_MouseClick;
             }
+        }
+
+        private void grid_PreviewMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _Close();
         }
     }
 }
