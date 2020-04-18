@@ -50,10 +50,10 @@ namespace SnapDotNet
         /// </summary>
         public void Dispose()
         {
-            if(m_App != null)
+            if (m_App != null)
             {
                 m_App.Dispose();
-            }            
+            }
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }

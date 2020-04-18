@@ -22,7 +22,7 @@ namespace SnapDotNet
     /// (might move away from Properties.Settings at some point)
     /// </summary>
     public static class SnapSettings
-    {       
+    {
         private const string AUTOLAUNCH_REGISTRY_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
         public static event Action OnThemeChanged;
         /// <summary>
@@ -135,7 +135,7 @@ namespace SnapDotNet
         public static T LoadSetting<T>(string setting) where T : new()
         {
             string json = Properties.Settings.Default[setting].ToString();
-            if(json != "")
+            if (json != "")
             {
                 try
                 {
@@ -213,7 +213,7 @@ namespace SnapDotNet
         public static Player.DeviceSettings GetDeviceSettings(string deviceUniqueId)
         {
             Dictionary<string, Player.DeviceSettings> allSettings = LoadSetting<Dictionary<string, Player.DeviceSettings>>("DeviceSettings");
-            if(allSettings.ContainsKey(deviceUniqueId))
+            if (allSettings.ContainsKey(deviceUniqueId))
             {
                 return allSettings[deviceUniqueId];
             }

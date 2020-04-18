@@ -12,6 +12,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+using Gma.System.MouseKeyHook;
 using Hardcodet.Wpf.TaskbarNotification;
 using MahApps.Metro;
 using NLog;
@@ -24,7 +25,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using Gma.System.MouseKeyHook;
 
 namespace SnapDotNet
 {

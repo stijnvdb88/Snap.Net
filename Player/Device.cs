@@ -54,7 +54,7 @@ namespace SnapDotNet.Player
             return devices.ToArray();
         }
 
-        public static  Device FindDevice(string uniqueId)
+        public static Device FindDevice(string uniqueId)
         {
             Device[] devices = Device.GetDevices();
             foreach (Device d in devices)

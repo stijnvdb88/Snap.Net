@@ -666,15 +666,15 @@ namespace SnapDotNet.Client
         /// </summary>
         public void Dispose()
         {
-            m_ConnectionCheckCancellationTokenSource.Cancel();            
+            m_ConnectionCheckCancellationTokenSource.Cancel();
             if (m_ConnectionCheckTask != null)
             {
-                if(m_ConnectionCheckTask.Status == TaskStatus.RanToCompletion 
-                    || m_ConnectionCheckTask.Status == TaskStatus.Faulted 
+                if (m_ConnectionCheckTask.Status == TaskStatus.RanToCompletion
+                    || m_ConnectionCheckTask.Status == TaskStatus.Faulted
                     || m_ConnectionCheckTask.Status == TaskStatus.Canceled)
                     m_ConnectionCheckTask.Dispose();
             }
-            
+
             m_JsonRpc.Dispose();
             m_Stream.Dispose();
             m_TcpClient.Dispose();

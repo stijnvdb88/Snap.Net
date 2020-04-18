@@ -13,20 +13,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SnapDotNet.Windows
 {
@@ -50,7 +40,7 @@ namespace SnapDotNet.Windows
             m_Settings = SnapSettings.GetDeviceSettings(device.UniqueId);
 
             string[] sharemodes = Enum.GetNames(typeof(SnapDotNet.Player.EShareMode));
-            foreach(string mode in sharemodes)
+            foreach (string mode in sharemodes)
             {
                 cbSharemode.Items.Add(mode);
             }
@@ -60,13 +50,13 @@ namespace SnapDotNet.Windows
             cbSampleFormat.Items.Add("(no resample)");
             cbSampleFormat.SelectedIndex = 0;
             int idx = 1;
-            foreach(int sr in kSampleRates)
+            foreach (int sr in kSampleRates)
             {
-                foreach(int bp in kBitDepths)
+                foreach (int bp in kBitDepths)
                 {
                     string sampleFormat = string.Format("{0}:{1}", sr, bp);
                     cbSampleFormat.Items.Add(sampleFormat);
-                    if(m_Settings.ResampleFormat == sampleFormat)
+                    if (m_Settings.ResampleFormat == sampleFormat)
                     {
                         cbSampleFormat.SelectedIndex = idx;
                     }
@@ -82,8 +72,8 @@ namespace SnapDotNet.Windows
         {
             m_Settings.ResampleFormat = cbSampleFormat.SelectedIndex == 0 ? "" : cbSampleFormat.SelectedItem.ToString();
             m_Settings.ShareMode = (SnapDotNet.Player.EShareMode)cbSharemode.SelectedIndex;
-            m_Settings.AutoRestartOnFailure = (bool) cbAutoRestart.IsChecked;
-            if(m_Settings.AutoRestartOnFailure)
+            m_Settings.AutoRestartOnFailure = (bool)cbAutoRestart.IsChecked;
+            if (m_Settings.AutoRestartOnFailure)
             {
                 m_Settings.RestartAttempts = int.Parse(tbRestartTries.Text, System.Globalization.CultureInfo.CurrentCulture);
             }

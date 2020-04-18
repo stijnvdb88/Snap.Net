@@ -147,7 +147,7 @@ namespace SnapDotNet.Player
         private string _SnapClient()
         {
             return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
-        }        
+        }
 
         private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource, int attempts = 0)
         {
@@ -169,7 +169,7 @@ namespace SnapDotNet.Player
                         lastLine = line; // we only are about the last line from the output - in case there's an error (snapclient should probably ben sending these to stderr though)
                     };
                     string resampleArg = "";
-                    if(string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
+                    if (string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
                     {
                         resampleArg = string.Format("--sampleformat {0}:0", deviceSettings.ResampleFormat);
                     }
