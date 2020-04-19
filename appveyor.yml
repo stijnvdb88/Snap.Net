@@ -1,0 +1,8 @@
+version: 1.0.{build}
+environment:
+  SNAP_VERSION: 0.19.0.2
+build_script:
+- cmd: >-
+    msbuild /t:restore
+
+    msbuild /p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
