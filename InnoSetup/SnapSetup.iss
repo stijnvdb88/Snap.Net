@@ -1,5 +1,5 @@
 #define MyAppName "Snap.Net"
-#define MyAppVersion "0.19.0.2"
+#define MyAppVersion GetEnv("SNAP_VERSION")
 #define MyAppURL "https://github.com/stijnvdb88/Snap.Net"
 
 ; https://github.com/domgho/innodependencyinstaller
@@ -34,7 +34,7 @@ Source: ..\bin\Release\System.*.dll; DestDir: {app}; Flags: overwritereadonly ig
 [Setup]
 AppId={#MyAppName}
 AppName={#MyAppName}
-AppMutex=0E913C6D-46ED-4DC1-8AEC-09E9AFE0EC4A
+AppMutex=978C614F-708E-4E1A-B201-565925725DBA
 AppPublisher={#MyAppName}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -51,7 +51,7 @@ DisableReadyMemo=no
 LicenseFile=..\LICENSE
 LanguageDetectionMethod=uilanguage
 MinVersion=0,6.1.7600
-OutputBaseFilename={#MyAppName}-Setup
+OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Setup
 OutputDir=..\bin
 SetupIconFile=..\Assets\snapcast.ico
 UninstallDisplayIcon={app}\{#MyAppName}.exe
