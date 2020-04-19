@@ -1,4 +1,4 @@
-[![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
+[![Build status](https://ci.appveyor.com/api/projects/status/dpv9jhmife5m628r?svg=true)](https://ci.appveyor.com/project/stijnvdb88/snap-net) [![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
 <br />
 <p align="center">
   <a href="https://github.com/stijnvdb88/Snap.Net">
