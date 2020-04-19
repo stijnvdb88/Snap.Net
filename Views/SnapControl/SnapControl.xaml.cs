@@ -25,9 +25,9 @@ namespace SnapDotNet.SnapControl
     public partial class SnapControl : UserControl
     {
         public Action OnClosed;
-        private Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
+        private readonly Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
 
-        private SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
+        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
 
         public SnapControl(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, SnapDotNet.Client.SnapcastClient client)
         {

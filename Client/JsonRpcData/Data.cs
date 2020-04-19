@@ -15,15 +15,13 @@
 using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// These data classes are a representation of snapserver's Server.GetStatus result
-/// The data throws events when it gets modified by either the server or client
-/// Modifications by the server are handled by the UI (if any exists)
-/// </summary>
 namespace SnapDotNet.Client.JsonRpcData
 {
-    // RPC data classes
-
+    /// <summary>
+    /// These data classes are a representation of snapserver's Server.GetStatus result
+    /// The data throws events when it gets modified by either the server or client
+    /// Modifications by the server are handled by the UI (if any exists)
+    /// </summary>
     public class Data
     {
         public ServerData server { get; set; }
@@ -104,7 +102,7 @@ namespace SnapDotNet.Client.JsonRpcData
         public event Action<string[]> CLIENT_OnClientListModified;
 
         private string m_StreamId;
-        private List<int> m_ClientVolumes = new List<int>();
+        private readonly List<int> m_ClientVolumes = new List<int>();
         private int m_GroupVolume = 0;
 
         private bool m_Muted = false;

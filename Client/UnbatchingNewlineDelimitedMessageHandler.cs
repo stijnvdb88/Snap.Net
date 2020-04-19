@@ -38,7 +38,7 @@ namespace SnapDotNet.Client
     {
         private static readonly Encoding Encoding = Encoding.UTF8;
         private static readonly byte JsonArrayFirstByte = Encoding.GetBytes("[").Single();
-        private readonly Queue<JsonRpcMessage> pendingMessages = new Queue<JsonRpcMessage>();
+        private readonly Queue<JsonRpcMessage> m_PendingMessages = new Queue<JsonRpcMessage>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnbatchingNewLineDelimitedMessageHandler"/> class
@@ -54,9 +54,9 @@ namespace SnapDotNet.Client
         protected override async ValueTask<JsonRpcMessage?> ReadCoreAsync(CancellationToken cancellationToken)
         {
             Assumes.NotNull(this.Reader);
-            if (this.pendingMessages.Count > 0)
+            if (this.m_PendingMessages.Count > 0)
             {
-                return this.pendingMessages.Dequeue();
+                return this.m_PendingMessages.Dequeue();
             }
             while (true)
             {
@@ -109,11 +109,11 @@ namespace SnapDotNet.Client
                                 foreach (JToken messageJson in array.Children())
                                 {
                                     byte[] encodedMessage = Encoding.GetBytes(messageJson.ToString());
-                                    this.pendingMessages.Enqueue(this.Formatter.Deserialize(new ReadOnlySequence<byte>(encodedMessage)));
+                                    this.m_PendingMessages.Enqueue(this.Formatter.Deserialize(new ReadOnlySequence<byte>(encodedMessage)));
                                 }
                             }
 
-                            return this.pendingMessages.Dequeue();
+                            return this.m_PendingMessages.Dequeue();
                         }
                         return this.Formatter.Deserialize(line);
                     }

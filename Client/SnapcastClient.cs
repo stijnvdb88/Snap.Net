@@ -47,7 +47,7 @@ namespace SnapDotNet.Client
 
         private bool m_RetryingConnection = false;
 
-        private Queue<Action> m_QueuedMessages = new Queue<Action>();
+        private readonly Queue<Action> m_QueuedMessages = new Queue<Action>();
 
         /// <summary>
         /// Connects to the snapserver and sets up local RPC methods

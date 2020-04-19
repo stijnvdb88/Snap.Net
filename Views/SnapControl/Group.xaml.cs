@@ -24,10 +24,10 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class Group : UserControl
     {
-        private SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
-        List<Client> m_ClientControls = new List<Client>();
-        SnapDotNet.Client.JsonRpcData.Group m_Group;
-        SnapDotNet.Client.JsonRpcData.Stream m_Stream;
+        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
+        private List<Client> m_ClientControls = new List<Client>();
+        private readonly SnapDotNet.Client.JsonRpcData.Group m_Group;
+        private SnapDotNet.Client.JsonRpcData.Stream m_Stream;
 
         public Group(SnapDotNet.Client.SnapcastClient snapcastClient, SnapDotNet.Client.JsonRpcData.Group group)
         {

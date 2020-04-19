@@ -27,8 +27,8 @@ namespace SnapDotNet.SnapControl
     {
         private SnapDotNet.Client.JsonRpcData.Client[] m_Clients;
 
-        private SnapDotNet.Client.JsonRpcData.Group m_Group;
-        private SnapDotNet.Client.SnapcastClient m_SnapcastClient;
+        private readonly SnapDotNet.Client.JsonRpcData.Group m_Group;
+        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient;
 
         private CheckBox[] m_ClientCheckBoxes;
 

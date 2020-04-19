@@ -27,9 +27,9 @@ namespace SnapDotNet.Windows
     /// </summary>
     public partial class Player : MetroWindow
     {
-        SnapDotNet.Player.Player m_Player;
+        private readonly SnapDotNet.Player.Player m_Player;
 
-        private Dictionary<string, SnapDotNet.Controls.Device> m_DeviceControls = new Dictionary<string, Controls.Device>();
+        private readonly Dictionary<string, SnapDotNet.Controls.Device> m_DeviceControls = new Dictionary<string, Controls.Device>();
         private Dictionary<string, Tuple<bool, string>> m_DeviceAutoPlayFlags = new Dictionary<string, Tuple<bool, string>>();
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 

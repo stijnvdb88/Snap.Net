@@ -25,10 +25,10 @@ namespace SnapDotNet.Windows
     /// </summary>
     public partial class DeviceSettings : MetroWindow
     {
-        private int[] kSampleRates = new int[] { 44100, 48000, 96000, 192000 };
-        private int[] kBitDepths = new int[] { 16, 24 };
+        private readonly int[] kSampleRates = new int[] { 44100, 48000, 96000, 192000 };
+        private readonly int[] kBitDepths = new int[] { 16, 24 };
 
-        private SnapDotNet.Player.Device m_Device;
+        private readonly SnapDotNet.Player.Device m_Device;
 
         private SnapDotNet.Player.DeviceSettings m_Settings;
 

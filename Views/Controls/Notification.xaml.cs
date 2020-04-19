@@ -23,7 +23,7 @@ namespace SnapDotNet.Controls
     public partial class Notification : UserControl
     {
         public Action OnClosed;
-        private Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
+        private readonly Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
 
         public Notification(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, string title, string message)
         {

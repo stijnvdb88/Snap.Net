@@ -38,13 +38,13 @@ namespace SnapDotNet.Player
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private Dictionary<string, CancellationTokenSource> m_ActivePlayers = new Dictionary<string, CancellationTokenSource>();
+        private readonly Dictionary<string, CancellationTokenSource> m_ActivePlayers = new Dictionary<string, CancellationTokenSource>();
 
         public event Action<string, EState> DevicePlayStateChanged = null;
 
         public event Action OnSnapClientErrored;
 
-        private static Dictionary<string, Tuple<string, string>> s_WASAPIErrorCodes = new Dictionary<string, Tuple<string, string>>()
+        private readonly static Dictionary<string, Tuple<string, string>> s_WASAPIErrorCodes = new Dictionary<string, Tuple<string, string>>()
         {
             {"88890004", new Tuple<string, string>("AUDCLNT_E_DEVICE_INVALIDATED", "The audio endpoint device has been unplugged, or the audio hardware or associated hardware resources have been reconfigured, disabled, removed, or otherwise made unavailable for use.") },
             {"88890008", new Tuple<string, string>("AUDCLNT_E_UNSUPPORTED_FORMAT", "The audio engine (shared mode) or audio endpoint device (exclusive mode) does not support the specified format.") },
