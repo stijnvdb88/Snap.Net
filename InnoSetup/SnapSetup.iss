@@ -65,9 +65,17 @@ WizardSmallImageFile=assets/icon.bmp
 
 #include "scripts\lang\english.iss"
 
+[Registry]
+; delete auto-start registry entry
+Root: HKCU; Subkey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: none; ValueName: {#MyAppName}; Flags: deletevalue noerror uninsdeletevalue;
+; re-add it if user asks for it
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: "{app}\{#MyAppName}.exe"; Tasks:autostart;
+
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+Name: "autostart"; Description: "Start {#MyAppName} with Windows"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppName}.exe"
