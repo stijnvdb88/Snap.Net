@@ -25,6 +25,19 @@ namespace SnapDotNet
     {
         private const string AUTOLAUNCH_REGISTRY_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
         public static event Action OnThemeChanged;
+
+        public static void Init()
+        {
+            //https://stackoverflow.com/questions/534261/how-do-you-keep-user-config-settings-across-different-assembly-versions-in-net/534335#534335
+            if (Properties.Settings.Default.UpgradeRequired)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.UpgradeRequired = false;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+
         /// <summary>
         /// Server ip or hostname
         /// </summary>
