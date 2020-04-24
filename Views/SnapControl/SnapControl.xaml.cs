@@ -27,9 +27,9 @@ namespace SnapDotNet.SnapControl
         public Action OnClosed;
         private readonly Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
 
-        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
+        private readonly SnapDotNet.ControlClient.SnapcastClient m_SnapcastClient = null;
 
-        public SnapControl(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, SnapDotNet.Client.SnapcastClient client)
+        public SnapControl(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, SnapDotNet.ControlClient.SnapcastClient client)
         {
             InitializeComponent();
 
@@ -58,7 +58,7 @@ namespace SnapDotNet.SnapControl
         private void _OnServerUpdated()
         {
             spGroups.Children.Clear();
-            foreach (SnapDotNet.Client.JsonRpcData.Group group in m_SnapcastClient.ServerData.groups)
+            foreach (SnapDotNet.ControlClient.JsonRpcData.Group group in m_SnapcastClient.ServerData.groups)
             {
                 spGroups.Children.Add(new Group(m_SnapcastClient, group));
             }

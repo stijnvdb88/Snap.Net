@@ -25,10 +25,10 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class EditClient : MetroWindow
     {
-        private readonly SnapDotNet.Client.JsonRpcData.Client m_Client;
-        private readonly SnapDotNet.Client.JsonRpcData.Snapserver m_SnapServer;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Client m_Client;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Snapserver m_SnapServer;
 
-        public EditClient(SnapDotNet.Client.JsonRpcData.Client client, SnapDotNet.Client.JsonRpcData.Snapserver server)
+        public EditClient(SnapDotNet.ControlClient.JsonRpcData.Client client, SnapDotNet.ControlClient.JsonRpcData.Snapserver server)
         {
             InitializeComponent();
             m_Client = client;

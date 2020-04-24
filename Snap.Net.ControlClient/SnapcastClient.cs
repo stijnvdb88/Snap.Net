@@ -13,7 +13,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using SnapDotNet.Client.JsonRpcData;
+using SnapDotNet.ControlClient.JsonRpcData;
 using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SnapDotNet.Client
+namespace SnapDotNet.ControlClient
 {
     /// <summary>
     /// This class is responsible for all back and forth with snapserver
@@ -36,8 +36,6 @@ namespace SnapDotNet.Client
         private Task m_ConnectionCheckTask;
         private CancellationTokenSource m_ConnectionCheckCancellationTokenSource;
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
         public ServerData ServerData { get; private set; }
 
         public event Action OnServerUpdated;
@@ -46,6 +44,8 @@ namespace SnapDotNet.Client
         private int m_Port;
 
         private bool m_RetryingConnection = false;
+
+        public static bool AutoReconnect { get; set; }
 
         private readonly Queue<Action> m_QueuedMessages = new Queue<Action>();
 
@@ -72,7 +72,7 @@ namespace SnapDotNet.Client
             {
                 // connection failed - bail
                 // logging this to debug because we don't want to spam the log file (connection gets retried indefinitely if it had previously succeeded)
-                Logger.Debug(e, "Failed to connect to {0}:{1}", ip, port);
+
                 if (m_RetryingConnection == false)
                 {
                     _StartReconnectLoop();
@@ -91,25 +91,25 @@ namespace SnapDotNet.Client
             // register methods (must be done before listening starts)
             m_JsonRpc.AddLocalRpcMethod("Server.OnUpdate", new Action<JsonRpcData.ServerData>((server) =>
             {
-                Logger.Debug("Received Server.OnUpdate - {0}", server);
+                Debug("Received Server.OnUpdate - {0}", server);
                 _ServerUpdated(server);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Client.OnVolumeChanged", new Action<string, JsonRpcData.Volume>((id, volume) =>
             {
-                Logger.Debug("Received Client.OnVolumeChanged - id {0}, volume {1}", id, volume);
+                Debug("Received Client.OnVolumeChanged - id {0}, volume {1}", id, volume);
                 _ClientVolumeChanged(id, volume);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Client.OnNameChanged", new Action<string, string>((id, name) =>
             {
-                Logger.Debug("Received Client.OnNameChanged - id {0}, name {1}", id, name);
+                Debug("Received Client.OnNameChanged - id {0}, name {1}", id, name);
                 _ClientNameChanged(id, name);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Client.OnLatencyChanged", new Action<string, int>((id, latency) =>
             {
-                Logger.Debug("Received Client.OnLatencyChanged - id {0}, latency {1}", id, latency);
+                Debug("Received Client.OnLatencyChanged - id {0}, latency {1}", id, latency);
                 _ClientLatencyChanged(id, latency);
             }));
 
@@ -119,7 +119,7 @@ namespace SnapDotNet.Client
                 // when reconnection succeeds, we might see other clients' OnConnect calls come in
                 // before our own Server.GetStatus has completed. In that case, we queue these
                 // and execute them as soon as we've received the server data
-                Logger.Debug("Received Client.OnConnect - id {0}, client {1}", id, client);
+                Debug("Received Client.OnConnect - id {0}, client {1}", id, client);
                 if (ServerData != null)
                 {
                     _ClientConnectedOrDisconnected(id, client);
@@ -135,31 +135,31 @@ namespace SnapDotNet.Client
 
             m_JsonRpc.AddLocalRpcMethod("Client.OnDisconnect", new Action<string, JsonRpcData.Client>((id, client) =>
             {
-                Logger.Debug("Received Client.OnDisconnect - id {0}, client {1}", id, client);
+                Debug("Received Client.OnDisconnect - id {0}, client {1}", id, client);
                 _ClientConnectedOrDisconnected(id, client);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Group.OnMute", new Action<string, bool>((id, mute) =>
             {
-                Logger.Debug("Received Group.OnMute - id {0}, mute {1}", id, mute);
+                Debug("Received Group.OnMute - id {0}, mute {1}", id, mute);
                 _GroupMuteChanged(id, mute);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Group.OnNameChanged", new Action<string, string>((id, name) =>
             {
-                Logger.Debug("Received Group.OnNameChanged - id {0}, name {1}", id, name);
+                Debug("Received Group.OnNameChanged - id {0}, name {1}", id, name);
                 _GroupNameChanged(id, name);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Group.OnStreamChanged", new Action<string, string>((id, stream_id) =>
             {
-                Logger.Debug("Received Group.OnStreamChanged - id {0}, stream_id {1}", id, stream_id);
+                Debug("Received Group.OnStreamChanged - id {0}, stream_id {1}", id, stream_id);
                 _GroupStreamChanged(id, stream_id);
             }));
 
             m_JsonRpc.AddLocalRpcMethod("Stream.OnUpdate", new Action<string, Stream>((id, stream) =>
             {
-                Logger.Debug("Received Stream.OnUpdate - id {0}, stream {1}", id, stream);
+                Debug("Received Stream.OnUpdate - id {0}, stream {1}", id, stream);
                 _StreamUpdated(id, stream);
             }));
 
@@ -175,7 +175,7 @@ namespace SnapDotNet.Client
 
         private void _StartReconnectLoop()
         {
-            if (SnapSettings.AutoReconnect == true)
+            if (AutoReconnect == true)
             {
                 m_RetryingConnection = true;
                 m_ConnectionCheckCancellationTokenSource = new CancellationTokenSource();
@@ -190,7 +190,7 @@ namespace SnapDotNet.Client
                 await Task.Delay(100);
             }
 
-            Logger.Info("connection lost!");
+            Info("connection lost!");
             if (ServerData != null)
             {
                 ServerData.SERVER_Invalidate(); // make sure everyone know the server is no longer with us
@@ -204,7 +204,7 @@ namespace SnapDotNet.Client
 
             while (m_TcpClient.Connected == false) // checking for this setting again in case user disables it while we're already in the retry loop
             {
-                if (SnapSettings.AutoReconnect == true)
+                if (AutoReconnect == true)
                 {
                     await ConnectAsync(m_Ip, m_Port); // keep knocking on the door
                     await Task.Delay(100);
@@ -216,7 +216,7 @@ namespace SnapDotNet.Client
 
             }
 
-            Logger.Info("connection restored!");
+            Info("connection restored!");
             await _CheckConnectionAsync().ConfigureAwait(false); // restart this check
         }
 
@@ -564,7 +564,7 @@ namespace SnapDotNet.Client
         /// <param name="volume">new volume object</param>
         private async Task _SetClientVolumeAsync(string id, Volume volume)
         {
-            Logger.Debug("Sending Client.SetVolume - id {0}, volume {1}", id, volume);
+            Debug("Sending Client.SetVolume - id {0}, volume {1}", id, volume);
             ClientVolumeCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<ClientVolumeCommandResult>("Client.SetVolume",
                 new ClientVolumeCommand() { id = id, volume = volume }); // update the server
             _ClientVolumeChanged(id, result.volume); // update our local data to reflect the new value
@@ -577,7 +577,7 @@ namespace SnapDotNet.Client
         /// <param name="name">new name</param>
         private async Task _SetClientNameAsync(string id, string name)
         {
-            Logger.Debug("Sending Client.SetName - id {0}, name {1}", id, name);
+            Debug("Sending Client.SetName - id {0}, name {1}", id, name);
             SetNameCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetNameCommandResult>("Client.SetName",
                 new NameCommand() { id = id, name = name }); // update the server
             _ClientNameChanged(id, result.name); // update our local data to reflect the new value
@@ -590,7 +590,7 @@ namespace SnapDotNet.Client
         /// <param name="latency">new latency</param>
         private async Task _SetClientLatencyAsync(string id, int latency)
         {
-            Logger.Debug("Sending Client.SetLatency - id {0}, latency {1}", id, latency);
+            Debug("Sending Client.SetLatency - id {0}, latency {1}", id, latency);
             ClientVolumeCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<ClientVolumeCommandResult>("Client.SetLatency",
                 new ClientLatencyCommand() { id = id, latency = latency }); // update the server
             _ClientLatencyChanged(id, latency); // update our local data to reflect the new value
@@ -603,7 +603,7 @@ namespace SnapDotNet.Client
         /// <param name="latency">new latency</param>
         private async Task _RemoveClientAsync(string id)
         {
-            Logger.Debug("Sending Server.DeleteClient - id {0}", id);
+            Debug("Sending Server.DeleteClient - id {0}", id);
             ServerUpdateCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<ServerUpdateCommandResult>("Server.DeleteClient",
                 new RemoveClientCommand() { id = id }); // update the server
             _ServerUpdated(result.server);
@@ -616,7 +616,7 @@ namespace SnapDotNet.Client
         /// <param name="muted">new muted state</param>
         private async Task _SetGroupMutedAsync(string id, bool mute)
         {
-            Logger.Debug("Sending Group.SetMute - id {0}, mute {1}", id, mute);
+            Debug("Sending Group.SetMute - id {0}, mute {1}", id, mute);
             SetMutedCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetMutedCommandResult>("Group.SetMute",
                 new GroupSetMutedCommand() { id = id, mute = mute }); // update the server
             _GroupMuteChanged(id, result.mute);
@@ -629,7 +629,7 @@ namespace SnapDotNet.Client
         /// <param name="name">new name</param>
         private async Task _SetGroupNameAsync(string id, string name)
         {
-            Logger.Debug("Sending Group.SetName - id {0}, name {1}", id, name);
+            Debug("Sending Group.SetName - id {0}, name {1}", id, name);
             SetNameCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetNameCommandResult>("Group.SetName",
                 new NameCommand() { id = id, name = name }); // update the server
             _GroupNameChanged(id, result.name); // update our local data to reflect the new value
@@ -642,7 +642,7 @@ namespace SnapDotNet.Client
         /// <param name="stream_id">new stream_id</param>
         private async Task _SetGroupStreamAsync(string id, string stream_id)
         {
-            Logger.Debug("Sending Group.SetStream - id {0}, stream_id {1}", id, stream_id);
+            Debug("Sending Group.SetStream - id {0}, stream_id {1}", id, stream_id);
             SetStreamCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetStreamCommandResult>("Group.SetStream",
                 new StreamCommand() { id = id, stream_id = stream_id }); // update the server
             _GroupNameChanged(id, result.stream_id); // update our local data to reflect the new value
@@ -655,10 +655,21 @@ namespace SnapDotNet.Client
         /// <param name="clientIds">client ids</param>
         private async Task _SetGroupClientsAsync(string id, string[] clientIds)
         {
-            Logger.Debug("Sending Group.SetClients - id {0}, clients {1}", id, string.Join(",", clientIds));
+            Debug("Sending Group.SetClients - id {0}, clients {1}", id, string.Join(",", clientIds));
             ServerUpdateCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<ServerUpdateCommandResult>("Group.SetClients",
                 new GroupSetClientsCommand() { id = id, clients = clientIds }); // update the server)
             _ServerUpdated(result.server); // update our local data
+        }
+
+
+        private static void Debug(string message, params object[] args)
+        {
+            // Logger.Debug(message, args);
+        }
+
+        private static void Info(string message, params object[] args)
+        {
+            // Logger.Info(message, args);
         }
 
         /// <summary>

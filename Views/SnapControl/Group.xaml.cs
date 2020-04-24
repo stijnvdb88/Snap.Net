@@ -24,18 +24,18 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class Group : UserControl
     {
-        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient = null;
+        private readonly SnapDotNet.ControlClient.SnapcastClient m_SnapcastClient = null;
         private List<Client> m_ClientControls = new List<Client>();
-        private readonly SnapDotNet.Client.JsonRpcData.Group m_Group;
-        private SnapDotNet.Client.JsonRpcData.Stream m_Stream;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Group m_Group;
+        private SnapDotNet.ControlClient.JsonRpcData.Stream m_Stream;
 
-        public Group(SnapDotNet.Client.SnapcastClient snapcastClient, SnapDotNet.Client.JsonRpcData.Group group)
+        public Group(SnapDotNet.ControlClient.SnapcastClient snapcastClient, SnapDotNet.ControlClient.JsonRpcData.Group group)
         {
             InitializeComponent();
             m_Group = group;
             m_SnapcastClient = snapcastClient;
 
-            foreach (SnapDotNet.Client.JsonRpcData.Client client in m_Group.clients)
+            foreach (SnapDotNet.ControlClient.JsonRpcData.Client client in m_Group.clients)
             {
                 Client c = new Client(client, m_SnapcastClient.ServerData.server.snapserver);
                 c.HorizontalAlignment = HorizontalAlignment.Stretch;

@@ -25,14 +25,14 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class EditGroup : MetroWindow
     {
-        private SnapDotNet.Client.JsonRpcData.Client[] m_Clients;
+        private SnapDotNet.ControlClient.JsonRpcData.Client[] m_Clients;
 
-        private readonly SnapDotNet.Client.JsonRpcData.Group m_Group;
-        private readonly SnapDotNet.Client.SnapcastClient m_SnapcastClient;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Group m_Group;
+        private readonly SnapDotNet.ControlClient.SnapcastClient m_SnapcastClient;
 
         private CheckBox[] m_ClientCheckBoxes;
 
-        public EditGroup(SnapDotNet.Client.SnapcastClient snapcastClient, SnapDotNet.Client.JsonRpcData.Group group)
+        public EditGroup(SnapDotNet.ControlClient.SnapcastClient snapcastClient, SnapDotNet.ControlClient.JsonRpcData.Group group)
         {
             InitializeComponent();
             m_Group = group;
@@ -67,7 +67,7 @@ namespace SnapDotNet.SnapControl
             tbName.Text = m_Group.name;
 
             cbStream.Items.Clear();
-            foreach (SnapDotNet.Client.JsonRpcData.Stream stream in m_SnapcastClient.ServerData.streams)
+            foreach (SnapDotNet.ControlClient.JsonRpcData.Stream stream in m_SnapcastClient.ServerData.streams)
             {
                 cbStream.Items.Add(stream.id);
             }

@@ -12,8 +12,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#nullable enable
-namespace SnapDotNet.Client
+namespace SnapDotNet.ControlClient
 {
     using Microsoft;
     using Nerdbank.Streams;
@@ -51,7 +50,7 @@ namespace SnapDotNet.Client
         }
 
 
-        protected override async ValueTask<JsonRpcMessage?> ReadCoreAsync(CancellationToken cancellationToken)
+        protected override async ValueTask<JsonRpcMessage> ReadCoreAsync(CancellationToken cancellationToken)
         {
             Assumes.NotNull(this.Reader);
             if (this.m_PendingMessages.Count > 0)

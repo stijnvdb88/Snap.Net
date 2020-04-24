@@ -16,7 +16,7 @@ using Gma.System.MouseKeyHook;
 using Hardcodet.Wpf.TaskbarNotification;
 using MahApps.Metro;
 using NLog;
-using SnapDotNet.Client;
+using SnapDotNet.ControlClient;
 using SnapDotNet.Controls;
 using System;
 using System.IO;

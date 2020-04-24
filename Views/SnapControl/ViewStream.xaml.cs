@@ -24,9 +24,9 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class ViewStream : MetroWindow
     {
-        private readonly SnapDotNet.Client.JsonRpcData.Stream m_Stream;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Stream m_Stream;
 
-        public ViewStream(SnapDotNet.Client.JsonRpcData.Stream stream)
+        public ViewStream(SnapDotNet.ControlClient.JsonRpcData.Stream stream)
         {
             InitializeComponent();
             m_Stream = stream;

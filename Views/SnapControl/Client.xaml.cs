@@ -26,10 +26,10 @@ namespace SnapDotNet.SnapControl
     /// </summary>
     public partial class Client : UserControl
     {
-        private readonly SnapDotNet.Client.JsonRpcData.Client m_Client = null;
-        private readonly SnapDotNet.Client.JsonRpcData.Snapserver m_SnapServer = null;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Client m_Client = null;
+        private readonly SnapDotNet.ControlClient.JsonRpcData.Snapserver m_SnapServer = null;
 
-        public Client(SnapDotNet.Client.JsonRpcData.Client client, SnapDotNet.Client.JsonRpcData.Snapserver server)
+        public Client(SnapDotNet.ControlClient.JsonRpcData.Client client, SnapDotNet.ControlClient.JsonRpcData.Snapserver server)
         {
             InitializeComponent();
             m_Client = client;

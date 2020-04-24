@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SnapDotNet.Client.JsonRpcData
+namespace SnapDotNet.ControlClient.JsonRpcData
 {
     /// <summary>
     /// These data classes are a representation of snapserver's Server.GetStatus result
