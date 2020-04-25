@@ -29,6 +29,8 @@ namespace SnapDotNet.Windows
         private AppTheme[] m_AvailableThemes;
         private Accent[] m_AvailableAccents;
 
+        private string[] m_DismissMethods = {"Click outside", "Right-click"};
+
         public Settings()
         {
             InitializeComponent();
@@ -65,6 +67,13 @@ namespace SnapDotNet.Windows
                     cbAccent.SelectedIndex = i;
                 }
             }
+
+            foreach (string s in m_DismissMethods)
+            {
+                cbDismiss.Items.Add(s);
+            }
+
+            cbDismiss.SelectedIndex = (int)SnapSettings.SnapControlDismissMethod;
         }
 
         private void btClose_Click(object sender, RoutedEventArgs e)
@@ -108,6 +117,11 @@ namespace SnapDotNet.Windows
         private void cbAutoReconnect_Toggled(object sender, RoutedEventArgs e)
         {
             SnapSettings.AutoReconnect = (bool)cbAutoReconnect.IsChecked;
+        }
+
+        private void cbDismiss_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            SnapSettings.SnapControlDismiss = cbDismiss.SelectedIndex;
         }
     }
 }

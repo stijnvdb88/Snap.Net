@@ -154,5 +154,17 @@ namespace SnapDotNet.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SnapControlDismiss {
+            get {
+                return ((int)(this["SnapControlDismiss"]));
+            }
+            set {
+                this["SnapControlDismiss"] = value;
+            }
+        }
     }
 }

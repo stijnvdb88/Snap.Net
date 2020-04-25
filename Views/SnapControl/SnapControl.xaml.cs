@@ -33,7 +33,8 @@ namespace SnapDotNet.SnapControl
         {
             InitializeComponent();
 
-            Snapcast.HookEvents.MouseDownExt += global_MouseClick;
+            if(SnapSettings.SnapControlDismissMethod == SnapSettings.ESnapControlDismissMethod.ClickOutside)
+                Snapcast.HookEvents.MouseDownExt += global_MouseClick;
 
             m_Origin = origin;
             m_SnapcastClient = client;
@@ -95,16 +96,18 @@ namespace SnapDotNet.SnapControl
         {
             if (this.IsMouseOver == false || force == true)
             {
-                Snapcast.HookEvents.MouseDownExt -= global_MouseClick;
+                if (SnapSettings.SnapControlDismissMethod == SnapSettings.ESnapControlDismissMethod.ClickOutside)
+                    Snapcast.HookEvents.MouseDownExt -= global_MouseClick;
+
                 SnapSettings.OnThemeChanged -= SnapSettings_OnThemeChanged;
                 Snapcast.TaskbarIcon.CloseBalloon(); // should check whether current balloon == this somehow                
             }
         }
 
-        private void Grid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void grid_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _Close();
+            if (SnapSettings.SnapControlDismissMethod == SnapSettings.ESnapControlDismissMethod.RightClick)
+                _Close(true);
         }
-
     }
 }

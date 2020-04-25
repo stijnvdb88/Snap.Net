@@ -133,6 +133,29 @@ namespace SnapDotNet
             }
         }
 
+        public enum ESnapControlDismissMethod
+        {
+            ClickOutside,
+            RightClick
+        }
+
+        public static int SnapControlDismiss
+        {
+            get
+            {
+                return Properties.Settings.Default.SnapControlDismiss;
+            }
+            set
+            {
+                Properties.Settings.Default.SnapControlDismiss = value;
+            }
+        }
+
+        public static ESnapControlDismissMethod SnapControlDismissMethod
+        {
+            get { return (ESnapControlDismissMethod) SnapControlDismiss; }
+        }
+
         private static void _Save()
         {
             Properties.Settings.Default.Save();

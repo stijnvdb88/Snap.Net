@@ -33,12 +33,6 @@ namespace SnapDotNet.Controls
             tbMessage.Text = message;
         }
 
-
-        private bool _IsWithinBounds(int x, int y)
-        {
-            return x > m_Origin.X - this.ActualWidth && x <= m_Origin.X && y > m_Origin.Y - this.ActualHeight && y <= m_Origin.Y;
-        }
-
         private void _Close()
         {
             if (this.IsMouseOver == true)

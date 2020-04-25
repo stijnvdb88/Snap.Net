@@ -8,7 +8,7 @@
         WindowTransitionsEnabled="False"
         mc:Ignorable="d"
         GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="Settings" Height="487.458" Width="284.154" 
+        Title="Settings" Height="574.458" Width="284.154" 
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Loaded="Window_Loaded">
     <Grid Margin="0,0,0,-3">
@@ -16,13 +16,13 @@
         <GroupBox x:Name="gbServer" Header="Server" HorizontalAlignment="Left" Height="192" Margin="11,105,0,0" VerticalAlignment="Top" Width="257"
                   Background="{DynamicResource ControlBackgroundBrush}">
             <Grid>
-                <Label x:Name="lbHost" Content="Host" HorizontalAlignment="Left" Margin="10,16,0,0" VerticalAlignment="Top" Width="77"/>
+                <Label x:Name="lbHost" Content="Host" HorizontalAlignment="Left" Margin="0,16,0,0" VerticalAlignment="Top" Width="77"/>
                 <TextBox x:Name="tbHost" HorizontalAlignment="Left" Height="23" Margin="115,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <Label x:Name="lbPort" Content="Control port" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Width="86" RenderTransformOrigin="0.442,0.962"/>
+                <Label x:Name="lbPort" Content="Control port" HorizontalAlignment="Left" Margin="0,52,0,0" VerticalAlignment="Top" Width="86" RenderTransformOrigin="0.442,0.962"/>
                 <TextBox x:Name="tbControlPort" HorizontalAlignment="Left" Height="21" Margin="115,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="tbPort_PreviewTextInput" />
-                <Label x:Name="lbPort_Copy" Content="Player port" HorizontalAlignment="Left" Margin="10,89,0,0" VerticalAlignment="Top" Width="77"/>
+                <Label x:Name="lbPort_Copy" Content="Player port" HorizontalAlignment="Left" Margin="0,89,0,0" VerticalAlignment="Top" Width="77"/>
                 <TextBox x:Name="tbPlayerPort" HorizontalAlignment="Left" Height="21" Margin="115,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="tbPort_PreviewTextInput" />
-                <CheckBox x:Name="cbAutoReconnect" HorizontalAlignment="Left" Height="21" Margin="10,126,0,0" VerticalAlignment="Top" Width="225" Content="Auto-retry if connection is lost?" Checked="cbAutoReconnect_Toggled" Unchecked="cbAutoReconnect_Toggled" />
+                <CheckBox x:Name="cbAutoReconnect" HorizontalAlignment="Left" Height="21" Margin="5,126,0,0" VerticalAlignment="Top" Width="225" Content="Auto-retry if connection is lost?" Checked="cbAutoReconnect_Toggled" Unchecked="cbAutoReconnect_Toggled" />
             </Grid>
         </GroupBox>
         <Button x:Name="btClose" Content="Close" HorizontalAlignment="Left" Margin="193,0,0,10" VerticalAlignment="Bottom" Width="75" Click="btClose_Click"/>
@@ -51,6 +51,13 @@
                     <ComboBox x:Name="cbAccent" SelectionChanged="Theme_SelectionChanged"></ComboBox>
                 </DockPanel>
             </UniformGrid>
+        </GroupBox>
+        <GroupBox x:Name="gbSnapControl" Header="Misc" 
+                  Background="{DynamicResource ControlBackgroundBrush}" Margin="11,424,10,42">
+            <StackPanel Orientation="Horizontal">
+                <Label x:Name="lbDismiss" Content="Panel dismiss method" HorizontalAlignment="Left" Height="30" Margin="0,5,0,0" Width="127"/>
+                <ComboBox x:Name="cbDismiss" Width="105" HorizontalAlignment="Stretch" Height="20" Margin="7,7" SelectionChanged="cbDismiss_SelectionChanged"></ComboBox>
+            </StackPanel>
         </GroupBox>
     </Grid>
 </Controls:MetroWindow>
