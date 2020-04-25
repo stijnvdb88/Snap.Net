@@ -72,7 +72,7 @@ namespace SnapDotNet.ControlClient
             {
                 // connection failed - bail
                 // logging this to debug because we don't want to spam the log file (connection gets retried indefinitely if it had previously succeeded)
-
+                Debug("Socket exception: ", e.Message);
                 if (m_RetryingConnection == false)
                 {
                     _StartReconnectLoop();

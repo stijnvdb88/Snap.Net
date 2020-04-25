@@ -16,6 +16,7 @@
 [Files]
 Source: ..\bin\Release\Snap.Net.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\bin\Release\Snap.Net.exe.config; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\bin\Release\Snap.Net.ControlClient.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\bin\Release\SnapClient\*; DestDir: "{app}/SnapClient"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ..\bin\Release\CliWrap.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\bin\Release\ControlzEx.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
