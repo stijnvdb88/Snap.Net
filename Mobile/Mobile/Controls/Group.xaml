@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:control="clr-namespace:Mobile.Controls"
+             x:Class="Mobile.Controls.Group">
+  <ContentView.Content>
+      <Frame Padding="2" Margin="2">
+        <StackLayout Padding="15,0,0,15" Spacing="3">
+          <Label x:Name="lbGroup" Text="" FontAttributes="Bold" />
+            <control:VolumeControl x:Name="vcGroup"></control:VolumeControl>
+             <BoxView 
+                  HeightRequest="1" 
+                  BackgroundColor="Silver" 
+                  HorizontalOptions="FillAndExpand" />
+                <StackLayout x:Name="slClients" Orientation="Vertical"></StackLayout>
+        </StackLayout>
+      </Frame>
+    </ContentView.Content>
+</ContentView>

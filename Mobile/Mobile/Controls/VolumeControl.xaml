@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Mobile.Controls.VolumeControl">
+  <ContentView.Content>
+      <StackLayout Orientation="Horizontal">
+          <Image x:Name="imgMute" Source="ic_speaker_icon.png" HeightRequest="25" WidthRequest="25">
+              <Image.GestureRecognizers>
+                  <TapGestureRecognizer
+                      Tapped="TapGestureRecognizer_OnTapped"
+                      NumberOfTapsRequired="1" />
+              </Image.GestureRecognizers>
+            </Image>
+          <Slider x:Name="slVolume" 
+                  Minimum="0" Maximum="100"
+                  MinimumTrackColor="DeepPink" 
+                  MaximumTrackColor="Gray"
+                  HorizontalOptions="FillAndExpand"
+                  ValueChanged="SlVolume_OnValueChanged" DragStarted="SlVolume_OnDragStarted" DragCompleted="SlVolume_OnDragCompleted"/>
+      </StackLayout>
+  </ContentView.Content>
+</ContentView>
