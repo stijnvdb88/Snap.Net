@@ -280,12 +280,16 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         {
             for (int i = 0; i < clients.Length; i++)
             {
-                int idx = i;
-                clients[i].config.volume.CLIENT_OnModified += () =>
-                {
-                    CLIENT_OnVolumeUpdated?.Invoke();
-                };
+                SubscribeToClientEvent(clients[i]);
             }
+        }
+
+        public void SubscribeToClientEvent(Client client)
+        {
+            client.config.volume.CLIENT_OnModified += () =>
+            {
+                CLIENT_OnVolumeUpdated?.Invoke();
+            };
         }
 
         public bool HasClientWithId(string id)

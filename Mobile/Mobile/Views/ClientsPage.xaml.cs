@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Android.App;
+using Android.Content.PM;
+using Android.OS;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-using Mobile.Models;
-using Mobile.Views;
-using Mobile.ViewModels;
+using SnapDotNet.Mobile.Models;
+using SnapDotNet.Mobile.Views;
+using SnapDotNet.Mobile.ViewModels;
 using SnapDotNet.ControlClient;
 using SnapDotNet.ControlClient.JsonRpcData;
 using Xamarin.Essentials;
+using Java.Lang;
+using Application = Android.App.Application;
+using Debug = System.Diagnostics.Debug;
+using Process = Java.Lang.Process;
 
-namespace Mobile.Views
+namespace SnapDotNet.Mobile.Views
 {
     // Learn more about making custom code visible in the Xamarin.Forms previewer
     // by visiting https://aka.ms/xamarinforms-previewer
@@ -80,6 +88,48 @@ namespace Mobile.Views
         {
             base.OnAppearing();
             _Update();
+        }
+
+        private async void MenuItem_OnClicked(object sender, EventArgs e)
+        {
+            var (excitCode, result) = await RunCommand(Path.Combine(Android.App.Application.Context.ApplicationInfo.NativeLibraryDir, "libsnapclient.so"), 
+                "-h", "192.168.1.72", "--player", "oboe");
+        }
+
+        async Task<(int exitCode, string result)> RunCommand(params string[] command)
+        {
+            string result = null;
+            var exitCode = -1;
+
+            try 
+            {
+                Android.OS.Process.SetThreadPriority(ThreadPriority.Audio);
+                var builder = new ProcessBuilder(command);
+                var process = builder.Start();
+                exitCode = await process.WaitForAsync();
+
+                if (exitCode == 0)
+                {
+                    using (var inputStreamReader = new StreamReader(process.InputStream))
+                    {
+                        result = await inputStreamReader.ReadToEndAsync();
+                    }
+                }
+                else if (process.ErrorStream != null)
+                {
+                    using (var errorStreamReader = new StreamReader(process.ErrorStream))
+                    {
+                        var error = await errorStreamReader.ReadToEndAsync();
+                        result = $"Error {error}";
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                result = $"Exception {ex.Message}";
+            }
+
+            return (exitCode, result);
         }
     }
 }

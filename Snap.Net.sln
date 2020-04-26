@@ -7,11 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Net", "Snap.Net.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snap.Net.ControlClient", "Snap.Net.ControlClient\Snap.Net.ControlClient.csproj", "{1463B5B3-4301-4CB6-8C2A-902E27540E85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mobile.Android", "Mobile\Mobile.Android\Mobile.Android.csproj", "{8CAA6EA2-A71E-4A46-BE0F-18B69DACAD56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Net.Mobile.Android", "Mobile\Mobile.Android\Snap.Net.Mobile.Android.csproj", "{8CAA6EA2-A71E-4A46-BE0F-18B69DACAD56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mobile.iOS", "Mobile\Mobile.iOS\Mobile.iOS.csproj", "{C7983E6E-9458-45DF-9009-6E7C6C475CBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Net.Mobile.iOS", "Mobile\Mobile.iOS\Snap.Net.Mobile.iOS.csproj", "{C7983E6E-9458-45DF-9009-6E7C6C475CBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mobile", "Mobile\Mobile\Mobile.csproj", "{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snat.Net.Mobile", "Mobile\Mobile\Snat.Net.Mobile.csproj", "{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

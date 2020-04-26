@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mobile.Models
+namespace SnapDotNet.Mobile.Models
 {
     public class Item
     {

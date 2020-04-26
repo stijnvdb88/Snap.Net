@@ -4,8 +4,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:control="clr-namespace:Mobile.Controls"
-             x:Class="Mobile.Controls.Client">
+             xmlns:control="clr-namespace:SnapDotNet.Mobile.Controls"
+             x:Class="SnapDotNet.Mobile.Controls.Client">
   <ContentView.Content>
       <StackLayout Spacing="3">
           <Label x:Name="lbClient" Text="Client name" />

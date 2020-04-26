@@ -5,10 +5,10 @@ using System.Runtime.CompilerServices;
 
 using Xamarin.Forms;
 
-using Mobile.Models;
-using Mobile.Services;
+using SnapDotNet.Mobile.Models;
+using SnapDotNet.Mobile.Services;
 
-namespace Mobile.ViewModels
+namespace SnapDotNet.Mobile.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {

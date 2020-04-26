@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mobile.ViewModels;
+using SnapDotNet.Mobile.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SnapDotNet.ControlClient.JsonRpcData;
 using SnapDotNet.ControlClient;
 using Xamarin.Essentials;
 
-namespace Mobile.Controls
+namespace SnapDotNet.Mobile.Controls
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Group : ContentView

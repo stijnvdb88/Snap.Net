@@ -4,12 +4,12 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="Mobile.Views.ClientsPage"
+             x:Class="SnapDotNet.Mobile.Views.ClientsPage"
              Title="{Binding Title}"
              x:Name="BrowseItemsPage">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" />
+        <ToolbarItem Text="Play" Clicked="MenuItem_OnClicked" />
     </ContentPage.ToolbarItems>
 
     <RefreshView x:Name="GroupsRefreshView" IsRefreshing="True">

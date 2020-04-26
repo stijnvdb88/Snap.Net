@@ -7,8 +7,8 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{9AA2D3C6-3393-45F1-8E7C-5A9901728795}</TemplateGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Mobile.Droid</RootNamespace>
-    <AssemblyName>Mobile.Android</AssemblyName>
+    <RootNamespace>SnapDotNet.Mobile.Droid</RootNamespace>
+    <AssemblyName>SnapDotNet.Mobile.Android</AssemblyName>
     <Deterministic>True</Deterministic>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
@@ -68,6 +68,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidNativeLibrary Include="libs\arm64-v8a\libsnapclient.so" />
+    <AndroidNativeLibrary Include="libs\armeabi-v7a\libsnapclient.so" />
+    <AndroidNativeLibrary Include="libs\x86\libsnapclient.so" />
+    <AndroidNativeLibrary Include="libs\x86_64\libsnapclient.so" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
@@ -92,9 +96,9 @@
     <AndroidResource Include="Resources\drawable\xamarin_logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mobile\Mobile.csproj">
-      <Project>{ED62E386-15AB-4F78-A048-4A93DDD69D85}</Project>
-      <Name>Mobile</Name>
+    <ProjectReference Include="..\Mobile\Snat.Net.Mobile.csproj">
+      <Project>{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}</Project>
+      <Name>Snat.Net.Mobile</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -107,5 +111,6 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </AndroidResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

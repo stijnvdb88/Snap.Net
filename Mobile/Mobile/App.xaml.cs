@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using Mobile.Services;
-using Mobile.Views;
+using SnapDotNet.Mobile.Services;
+using SnapDotNet.Mobile.Views;
 using SnapDotNet.ControlClient;
 using System.Threading.Tasks;
 
-namespace Mobile
+namespace SnapDotNet.Mobile
 {
     public partial class App : Application
     {

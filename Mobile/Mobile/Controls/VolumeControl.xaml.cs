@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace Mobile.Controls
+namespace SnapDotNet.Mobile.Controls
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class VolumeControl : ContentView

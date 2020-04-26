@@ -4,7 +4,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="Mobile.Controls.VolumeControl">
+             x:Class="SnapDotNet.Mobile.Controls.VolumeControl">
   <ContentView.Content>
       <StackLayout Orientation="Horizontal">
           <Image x:Name="imgMute" Source="ic_speaker_icon.png" HeightRequest="25" WidthRequest="25">

@@ -1,8 +1,8 @@
 ﻿using System;
 
-using Mobile.Models;
+using SnapDotNet.Mobile.Models;
 
-namespace Mobile.ViewModels
+namespace SnapDotNet.Mobile.ViewModels
 {
     public class ClientDetailViewModel : BaseViewModel
     {

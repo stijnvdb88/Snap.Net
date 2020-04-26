@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mobile.Models
+namespace SnapDotNet.Mobile.Models
 {
     public enum MenuItemType
     {

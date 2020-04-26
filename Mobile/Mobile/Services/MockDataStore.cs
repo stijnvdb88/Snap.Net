@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mobile.Models;
+using SnapDotNet.Mobile.Models;
 
-namespace Mobile.Services
+namespace SnapDotNet.Mobile.Services
 {
     public class MockDataStore : IDataStore<Item>
     {

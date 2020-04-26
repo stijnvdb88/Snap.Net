@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Mobile.Services
+namespace SnapDotNet.Mobile.Services
 {
     public interface IDataStore<T>
     {

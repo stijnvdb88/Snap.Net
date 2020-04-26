@@ -4,8 +4,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="Mobile.Views.SettingsPage"
-             xmlns:vm="clr-namespace:Mobile.ViewModels"
+             x:Class="SnapDotNet.Mobile.Views.SettingsPage"
+             xmlns:vm="clr-namespace:SnapDotNet.Mobile.ViewModels"
              Title="{Binding Title}">
     
     <ContentPage.BindingContext>

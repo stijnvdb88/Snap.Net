@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace Mobile.ViewModels
+namespace SnapDotNet.Mobile.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {

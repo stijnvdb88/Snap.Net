@@ -4,8 +4,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:control="clr-namespace:Mobile.Controls"
-             x:Class="Mobile.Controls.Group">
+             xmlns:control="clr-namespace:SnapDotNet.Mobile.Controls"
+             x:Class="SnapDotNet.Mobile.Controls.Group">
   <ContentView.Content>
       <Frame Padding="2" Margin="2">
         <StackLayout Padding="15,0,0,15" Spacing="3">
