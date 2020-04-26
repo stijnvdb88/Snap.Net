@@ -244,6 +244,31 @@ namespace SnapDotNet.ControlClient
         }
 
         /// <summary>
+        /// Gets a client by id, also indicates its group in out parameter
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private JsonRpcData.Client _GetClient(string id, out Group group)
+        {
+            group = null;
+            if (ServerData != null)
+            {
+                foreach (Group g in ServerData.groups)
+                {
+                    foreach (JsonRpcData.Client c in g.clients)
+                    {
+                        if (c.id == id)
+                        {
+                            group = g;
+                            return c;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Gets a group by id
         /// </summary>
         /// <param name="id"></param>
@@ -351,10 +376,18 @@ namespace SnapDotNet.ControlClient
         /// <param name="volume">new volume object</param>
         private void _ClientVolumeChanged(string id, Volume volume)
         {
-            JsonRpcData.Client client = _GetClient(id);
+            JsonRpcData.Group group = null;
+            JsonRpcData.Client client = _GetClient(id, out group);
             if (client != null)
             {
                 client.config.SERVER_SetVolume(volume);
+                // groups are listening to the clients' volume object for change events,
+                // in order to update the group volume slider. when receiving a volume
+                // update from the client, the group needs to re-subscribe to this event
+                group.SubscribeToClientEvent(client); 
+
+                // also resubscribe local event for volume changes, so the server gets
+                // updated when the user modifies the volume
                 client.config.volume.CLIENT_OnModified += () =>
                 {
                     _OnLocalVolumeDataModified(client);
