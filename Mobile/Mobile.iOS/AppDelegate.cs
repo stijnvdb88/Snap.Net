@@ -4,8 +4,9 @@ using System.Linq;
 
 using Foundation;
 using UIKit;
+using SnapDotNet.Mobile;
 
-namespace Mobile.iOS
+namespace SnapDotnet.Mobile.iOS
 {
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
     // User Interface of the application, as well as listening (and optionally responding) to 

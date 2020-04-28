@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace Mobile.iOS
+namespace SnapDotNet.Mobile.iOS
 {
     public class Application
     {
