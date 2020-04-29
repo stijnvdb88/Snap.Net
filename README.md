@@ -31,7 +31,7 @@ If you don't like the colors, change them!
 ![Settings](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Settings.png)
 
 ### Todo ###
-* Interface for Arduino (?)
+* Cross-platform support: Android, iOS (control only), OSX, Linux
 * ~~Player settings (sampleformat, shared/exclusive mode)~~
 
 ## Acknowledgements
