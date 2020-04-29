@@ -18,10 +18,12 @@ using SnapDotNet.Mobile.ViewModels;
 using SnapDotNet.ControlClient;
 using SnapDotNet.ControlClient.JsonRpcData;
 using Xamarin.Essentials;
-//using Java.Lang;
-//using Application = Android.App.Application;
 using Debug = System.Diagnostics.Debug;
-//using Process = Java.Lang.Process;
+#if __ANDROID__
+using Java.Lang;
+using Application = Android.App.Application;
+using Process = Java.Lang.Process;
+#endif
 
 namespace SnapDotNet.Mobile.Views
 {
@@ -92,44 +94,48 @@ namespace SnapDotNet.Mobile.Views
 
         private async void MenuItem_OnClicked(object sender, EventArgs e)
         {
-            //var (excitCode, result) = await RunCommand(Path.Combine(Android.App.Application.Context.ApplicationInfo.NativeLibraryDir, "libsnapclient.so"), 
-            //    "-h", "192.168.1.72", "--player", "oboe");
+#if __ANDROID__
+            var (excitCode, result) = await RunCommand(Path.Combine(Android.App.Application.Context.ApplicationInfo.NativeLibraryDir, "libsnapclient.so"), 
+                "-h", "192.168.1.72", "--player", "oboe");
+#endif
         }
 
-        //async Task<(int exitCode, string result)> RunCommand(params string[] command)
-        //{
-        //    string result = null;
-        //    var exitCode = -1;
+#if __ANDROID__
+        async Task<(int exitCode, string result)> RunCommand(params string[] command)
+        {
+            string result = null;
+            var exitCode = -1;
 
-        //    try 
-        //    {
-        //        Android.OS.Process.SetThreadPriority(ThreadPriority.Audio);
-        //        var builder = new ProcessBuilder(command);
-        //        var process = builder.Start();
-        //        exitCode = await process.WaitForAsync();
+            try 
+            {
+                Android.OS.Process.SetThreadPriority(ThreadPriority.Audio);
+                var builder = new ProcessBuilder(command);
+                var process = builder.Start();
+                exitCode = await process.WaitForAsync();
 
-        //        if (exitCode == 0)
-        //        {
-        //            using (var inputStreamReader = new StreamReader(process.InputStream))
-        //            {
-        //                result = await inputStreamReader.ReadToEndAsync();
-        //            }
-        //        }
-        //        else if (process.ErrorStream != null)
-        //        {
-        //            using (var errorStreamReader = new StreamReader(process.ErrorStream))
-        //            {
-        //                var error = await errorStreamReader.ReadToEndAsync();
-        //                result = $"Error {error}";
-        //            }
-        //        }
-        //    }
-        //    catch (IOException ex)
-        //    {
-        //        result = $"Exception {ex.Message}";
-        //    }
+                if (exitCode == 0)
+                {
+                    using (var inputStreamReader = new StreamReader(process.InputStream))
+                    {
+                        result = await inputStreamReader.ReadToEndAsync();
+                    }
+                }
+                else if (process.ErrorStream != null)
+                {
+                    using (var errorStreamReader = new StreamReader(process.ErrorStream))
+                    {
+                        var error = await errorStreamReader.ReadToEndAsync();
+                        result = $"Error {error}";
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                result = $"Exception {ex.Message}";
+            }
 
-        //    return (exitCode, result);
-        //}
+            return (exitCode, result);
+        }
+#endif
     }
 }
