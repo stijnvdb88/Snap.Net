@@ -6,9 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content.PM;
-using Android.OS;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -23,6 +20,9 @@ using Debug = System.Diagnostics.Debug;
 using Java.Lang;
 using Application = Android.App.Application;
 using Process = Java.Lang.Process;
+using Android.App;
+using Android.Content.PM;
+using Android.OS;
 #endif
 
 namespace SnapDotNet.Mobile.Views
