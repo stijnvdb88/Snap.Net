@@ -37,7 +37,7 @@ namespace SnapDotNet.Mobile
         {
             try
             {
-                m_ConnectTask = m_SnapcastClient.ConnectAsync("192.168.1.72", 1705);
+                m_ConnectTask = m_SnapcastClient.ConnectAsync("192.168.1.112", 1705);
                 await m_ConnectTask;
             }
             catch (Exception e)

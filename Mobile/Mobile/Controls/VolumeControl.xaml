@@ -10,7 +10,7 @@
           <Image x:Name="imgMute" Source="ic_speaker_icon.png" HeightRequest="25" WidthRequest="25">
               <Image.GestureRecognizers>
                   <TapGestureRecognizer
-                      Tapped="TapGestureRecognizer_OnTapped"
+                      Tapped="Mute_OnTapped"
                       NumberOfTapsRequired="1" />
               </Image.GestureRecognizers>
             </Image>
@@ -20,6 +20,13 @@
                   MaximumTrackColor="Gray"
                   HorizontalOptions="FillAndExpand"
                   ValueChanged="SlVolume_OnValueChanged" DragStarted="SlVolume_OnDragStarted" DragCompleted="SlVolume_OnDragCompleted"/>
-      </StackLayout>
+          <Image x:Name="imgSettings" Source="ic_settings.png" HeightRequest="20" WidthRequest="20" Margin="0,0,10,5">
+              <Image.GestureRecognizers>
+                  <TapGestureRecognizer
+                      Tapped="TapGestureRecognizer_OnTapped"
+                      NumberOfTapsRequired="1" />
+              </Image.GestureRecognizers>
+          </Image>
+        </StackLayout>
   </ContentView.Content>
 </ContentView>

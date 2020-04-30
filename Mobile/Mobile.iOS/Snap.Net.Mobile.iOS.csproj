@@ -67,6 +67,7 @@
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
+    <Compile Include="Player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -160,4 +161,5 @@
   <ItemGroup>
     <BundleResource Include="Resources\ic_mute_icon.png" />
   </ItemGroup>
+  <ItemGroup />
 </Project>

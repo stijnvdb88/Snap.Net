@@ -129,9 +129,14 @@ namespace SnapDotNet.Mobile.Controls
             OnVolumeChangeEnd?.Invoke();
         }
 
-        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        private void Mute_OnTapped(object sender, EventArgs e)
         {
             OnMuteToggled?.Invoke();
+        }
+
+        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        {
+            
         }
     }
 }

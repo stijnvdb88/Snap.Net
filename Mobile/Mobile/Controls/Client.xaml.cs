@@ -86,5 +86,10 @@ namespace SnapDotNet.Mobile.Controls
             //    lbClient.TextDecorations = TextDecorations.None;
             //}
         }
+
+        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
