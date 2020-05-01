@@ -55,18 +55,36 @@ namespace SnapDotNet.ControlClient
         /// <param name="ip">IP address to connect to</param>
         /// <param name="port">port to connect on</param>
         /// <returns></returns>
-        public async Task ConnectAsync(string ip, int port)
+        public async Task ConnectAsync(string ip, int port, int timeout = 3000)
         {
             // connect
             ServerData = null;
             m_Ip = ip;
             m_Port = port;
 
+            if (m_TcpClient != null)
+            {
+                m_JsonRpc.Dispose();
+                m_Stream.Close();
+                m_Stream.Dispose();
+                m_TcpClient.Close(); // make sure we close our previous attempt if it's still running
+                m_TcpClient.Dispose();
+            }
+
             m_TcpClient = new TcpClient();
             try
             {
-                await m_TcpClient.ConnectAsync(ip, port);
-
+                //if (m_TcpClient.ConnectAsync(ip, port).Wait(timeout) == false)
+                var connectAsync = m_TcpClient.ConnectAsync(ip, port);
+                //await (m_TcpClient.ConnectAsync(ip, port)).
+                if(await Task.WhenAny(connectAsync, Task.Delay(timeout)) != connectAsync)
+                {
+                    if (m_RetryingConnection == false)
+                    {
+                        _StartReconnectLoop();
+                    }
+                    return;
+                }
             }
             catch (SocketException e)
             {
@@ -169,6 +187,11 @@ namespace SnapDotNet.ControlClient
 
             // make sure we find out if connection drops
             _StartReconnectLoop();
+        }
+
+        public bool IsConnected()
+        {
+            return m_TcpClient != null && m_TcpClient.Connected;
         }
 
         public async Task<Data> GetServerStatusAsync()

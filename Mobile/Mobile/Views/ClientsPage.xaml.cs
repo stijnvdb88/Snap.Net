@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
 using SnapDotNet.Mobile.Models;
 using SnapDotNet.Mobile.Views;
 using SnapDotNet.Mobile.ViewModels;
 using SnapDotNet.ControlClient;
 using SnapDotNet.ControlClient.JsonRpcData;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Essentials;
 namespace SnapDotNet.Mobile.Views
@@ -27,17 +27,33 @@ namespace SnapDotNet.Mobile.Views
 
         private IPlayer m_Player = null;
 
+        private bool m_ConnectionFailed = false;
+
         public ClientsPage(SnapcastClient client)
         {
             InitializeComponent();
             m_Client = client;
             m_Client.OnServerUpdated += Client_OnServerUpdated;
             m_Player = DependencyService.Get<IPlayer>();
-            GroupsRefreshView.Command = new Command(async () =>
-                {
-                    await m_Client.GetServerStatusAsync();
-                }
-            );
+            GroupsRefreshView.Command = new AsyncCommand(_Reload);
+        }
+
+        private async Task _Reload()
+        {
+            m_ConnectionFailed = false;
+            if (m_Client.IsConnected() == false)
+            {
+                await m_Client.ConnectAsync("192.168.1.112", 1705);
+            }
+            else
+            {
+                await m_Client.GetServerStatusAsync();
+            }
+            if(m_Client.IsConnected() == false)
+            {
+                m_ConnectionFailed = true;
+                _Update();
+            }
         }
 
         private void Client_OnServerUpdated()
@@ -67,7 +83,7 @@ namespace SnapDotNet.Mobile.Views
                     Groups.Children.Add(cGroup);
                 }
             }
-            GroupsRefreshView.IsRefreshing = m_Client == null || m_Client.ServerData == null;
+            GroupsRefreshView.IsRefreshing = (m_Client?.ServerData == null) && m_ConnectionFailed == false;
         }
 
         //async void OnItemSelected(object sender, EventArgs args)

@@ -14,6 +14,8 @@
 */
 using System;
 using System.Collections.Generic;
+using SnapDotNet.ControlClient;
+using SnapDotNet.ControlClient.JsonRpcData;
 
 namespace SnapDotNet
 {
@@ -129,6 +131,7 @@ namespace SnapDotNet
             set
             {
                 Properties.Settings.Default.AutoReconnect = value;
+                SnapcastClient.AutoReconnect = value;
                 _Save();
             }
         }

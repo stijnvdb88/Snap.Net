@@ -66,7 +66,7 @@ namespace SnapDotNet.Mobile.Controls
 
         private void _OnGroupUpdated()
         {
-            lbGroup.Text = m_Group.name;
+            lbGroup.Text = m_Group.Name;
             vcGroup.Active = true;
             vcGroup.Muted = m_Group.muted;
             vcGroup.OnVolumeChanged -= VcGroup_OnVolumeChanged;

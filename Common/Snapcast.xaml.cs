@@ -60,6 +60,7 @@ namespace SnapDotNet
             AttachConsole(-1); // attach to console if we were launched via command line
             Console.WriteLine(); // send a newline
             SnapSettings.Init();
+            SnapcastClient.AutoReconnect = SnapSettings.AutoReconnect;
             HookEvents = Hook.GlobalEvents();
 
             ThemeManager.ChangeAppStyle(this, ThemeManager.GetAccent(SnapSettings.Accent), ThemeManager.GetAppTheme(SnapSettings.Theme));

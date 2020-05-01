@@ -19,6 +19,7 @@ namespace SnapDotNet.Mobile
             InitializeComponent();
             Instance = this;
             m_SnapcastClient = new SnapcastClient();
+            SnapcastClient.AutoReconnect = false;
             MainPage = new MainPage(m_SnapcastClient);
         }
 
@@ -57,6 +58,10 @@ namespace SnapDotNet.Mobile
 
         protected override void OnResume()
         {
+            if (m_SnapcastClient.IsConnected() == false)
+            {
+                Task.Run(_ConnectClientAsync).ConfigureAwait(false);
+            }
         }
     }
 }
