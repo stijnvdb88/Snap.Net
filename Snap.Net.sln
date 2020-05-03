@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Net.Mobile.Android", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap.Net.Mobile.iOS", "Mobile\Mobile.iOS\Snap.Net.Mobile.iOS.csproj", "{C7983E6E-9458-45DF-9009-6E7C6C475CBF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snat.Net.Mobile", "Mobile\Mobile\Snat.Net.Mobile.csproj", "{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snap.Net.Mobile", "Mobile\Mobile\Snap.Net.Mobile.csproj", "{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,6 +16,7 @@ namespace SnapDotNet.Mobile.Controls
         public event Action OnMuteToggled;
         public event Action OnVolumeChangeStart;
         public event Action OnVolumeChangeEnd;
+        public event Action OnSettingsTapped;
 
         private bool m_Muted;
         private bool m_Active;
@@ -136,7 +137,7 @@ namespace SnapDotNet.Mobile.Controls
 
         private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
         {
-            
+            OnSettingsTapped?.Invoke();
         }
     }
 }

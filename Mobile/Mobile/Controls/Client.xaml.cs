@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SnapDotNet.Mobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -33,8 +34,14 @@ namespace SnapDotNet.Mobile.Controls
 
             vcClient.OnMuteToggled += VcClient_OnMuteToggled;
             vcClient.OnVolumeChanged += VcClient_OnVolumeChanged;
+            vcClient.OnSettingsTapped += VcClient_OnSettingsTapped;
 
             _OnClientUpdated();
+        }
+
+        private async void VcClient_OnSettingsTapped()
+        {
+            await Navigation.PushAsync(new ClientEditPage(m_Client, m_SnapServer)).ConfigureAwait(false);
         }
 
         private void VcClient_OnVolumeChanged(int newValue)
@@ -49,47 +56,13 @@ namespace SnapDotNet.Mobile.Controls
 
         private void _OnClientUpdated()
         {
-
-            //if (spTitle.Children.Count > 1) // there's a warning icon - remove it
-            //{
-            //    spTitle.Children.RemoveAt(1);
-            //}
-            //if (m_SnapServer.version != m_Client.snapclient.version)
-            //{
-            //    PackIconBoxIcons icon = new PackIconBoxIcons();
-            //    icon.Width = 15;
-            //    icon.Height = 15;
-            //    // leaving the background brush to null causes mouse over to only trigger when it's over non-transparent portions of the image,
-            //    // which is less than ideal when you're trying to show a tooltip...
-            //    icon.Background = Brushes.Transparent;
-            //    icon.Kind = PackIconBoxIconsKind.RegularError;
-            //    icon.Foreground = Brushes.Orange;
-            //    icon.VerticalAlignment = VerticalAlignment.Center;
-            //    icon.Margin = new Thickness(5, 0, 0, 0);
-            //    icon.ToolTip = string.Format("Warning: snapclient version ({0}) does not match server version ({1})", m_Client.snapclient.version, m_SnapServer.version);
-            //    spTitle.Children.Add(icon);
-            //}
             lbClient.Text = m_Client.Name;
-
             vcClient.Muted = m_Client.config.volume.muted;
             vcClient.Active = m_Client.connected;
             vcClient.OnVolumeChanged -= VcClient_OnVolumeChanged; // temporarily unsubscribe from the event so we don't send get a feedback loop here
             vcClient.Percent = m_Client.config.volume.percent;
             vcClient.OnVolumeChanged += VcClient_OnVolumeChanged;
-
-            //if (m_Client.connected == false)
-            //{
-            //    lbClient.TextDecorations = TextDecorations.Strikethrough;
-            //}
-            //else
-            //{
-            //    lbClient.TextDecorations = TextDecorations.None;
-            //}
         }
 
-        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="SnapDotNet.Mobile.Views.ClientEditPage" Disappearing="ClientEditPage_OnDisappearing">
+    <ContentPage.Content>
+        <StackLayout Margin="10, 0, 0, 0">
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Name" HorizontalOptions="Start" WidthRequest="80" Margin="0, 15, 0, 0" FontAttributes="Bold"></Label>
+                <Entry x:Name="eName" HorizontalOptions="End" WidthRequest="150" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Latency" HorizontalOptions="Start" WidthRequest="80" Margin="0, 15, 0, 0" FontAttributes="Bold"></Label>
+                <Entry x:Name="eLatency" HorizontalOptions="End" WidthRequest="150" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="MAC" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbMac" Text="55:44:33:22:11:00" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="ID" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbId" Text="55:44:33:22:11:00#2" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="IP" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbIP" Text="192.168.1.52" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="Host" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbHost" Text="PC-Speakers" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="OS" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbOS" Text="Windows 10" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="Architecture" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbArchitecture" Text="armv7" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="Version" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbVersion" Text="0.19.0" WidthRequest="150" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0, 10, 0, 0">
+                <Label Text="Last seen" HorizontalOptions="Start" WidthRequest="80"></Label>
+                <Label x:Name="lbLastSeen" Text="" WidthRequest="150" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

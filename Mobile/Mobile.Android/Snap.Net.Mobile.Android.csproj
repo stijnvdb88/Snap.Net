@@ -100,9 +100,9 @@
     <AndroidResource Include="Resources\drawable\xamarin_logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mobile\Snat.Net.Mobile.csproj">
+    <ProjectReference Include="..\Mobile\Snap.Net.Mobile.csproj">
       <Project>{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}</Project>
-      <Name>Snat.Net.Mobile</Name>
+      <Name>Snap.Net.Mobile</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

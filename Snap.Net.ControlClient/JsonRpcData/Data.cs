@@ -91,6 +91,11 @@ namespace SnapDotNet.ControlClient.JsonRpcData
     {
         public int sec { get; set; }
         public int usec { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", sec, usec);
+        }
     }
 
     public class Snapclient
