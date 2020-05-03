@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SnapDotNet.ControlClient.JsonRpcData;
 using SnapDotNet.ControlClient;
+using SnapDotNet.Mobile.Views;
 using Xamarin.Essentials;
 
 namespace SnapDotNet.Mobile.Controls
@@ -17,6 +18,7 @@ namespace SnapDotNet.Mobile.Controls
     {
         private SnapDotNet.ControlClient.JsonRpcData.Group m_Group;
         private SnapcastClient m_SnapcastClient;
+        private SnapDotNet.ControlClient.JsonRpcData.Stream m_Stream;
 
         public Group(SnapcastClient snapcastClient, SnapDotNet.ControlClient.JsonRpcData.Group group)
         {
@@ -45,6 +47,7 @@ namespace SnapDotNet.Mobile.Controls
             vcGroup.OnMuteToggled += VcGroup_OnMuteToggled;
             vcGroup.OnVolumeChanged += VcGroup_OnVolumeChanged;
             vcGroup.OnVolumeChangeStart += VcGroup_OnVolumeChangeStart;
+            vcGroup.OnSettingsTapped += VcGroup_OnSettingsTapped;
             _OnGroupUpdated();
         }
 
@@ -63,22 +66,34 @@ namespace SnapDotNet.Mobile.Controls
             m_Group.CLIENT_ToggleMuted();
         }
 
+        private void VcGroup_OnSettingsTapped()
+        {
+            Navigation.PushAsync(new GroupEditPage(m_SnapcastClient, m_Group)).ConfigureAwait(false);
+        }
 
         private void _OnGroupUpdated()
         {
-            lbGroup.Text = m_Group.Name;
             vcGroup.Active = true;
             vcGroup.Muted = m_Group.muted;
             vcGroup.OnVolumeChanged -= VcGroup_OnVolumeChanged;
             vcGroup.Percent = m_Group.VolumePercent;
             vcGroup.OnVolumeChanged += VcGroup_OnVolumeChanged;
-            //if (m_Stream != null)
-            //{
-            //    m_Stream.SERVER_OnStreamUpdated -= _OnStreamUpdated; // unhook event from old m_Stream object
-            //}
-            //m_Stream = m_SnapcastClient.GetStream(m_Group.stream_id);
-            //m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
-            //_OnStreamUpdated();
+            if (m_Stream != null)
+            {
+                m_Stream.SERVER_OnStreamUpdated -= _OnStreamUpdated; // unhook event from old m_Stream object
+            }
+            m_Stream = m_SnapcastClient.GetStream(m_Group.stream_id);
+            m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
+
+            lbGroup.Text = string.Format("{0} - {1} ({2})", m_Group.Name, m_Stream.id, m_Stream.status);
+        }
+
+        private void _OnStreamUpdated()
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                _OnGroupUpdated();
+            });
         }
     }
 }
