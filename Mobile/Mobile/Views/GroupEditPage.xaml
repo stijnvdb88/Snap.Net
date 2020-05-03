@@ -4,10 +4,21 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="SnapDotNet.Mobile.Views.GroupEditPage">
+             x:Class="SnapDotNet.Mobile.Views.GroupEditPage" Disappearing="GroupEditPage_OnDisappearing">
     <ContentPage.Content>
-        <StackLayout>
-            
+        <StackLayout Margin="10, 10, 0, 0">
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Name" HorizontalOptions="Start" WidthRequest="80" Margin="0, 15, 0, 0" FontAttributes="Bold"></Label>
+                <Entry x:Name="eName" HorizontalOptions="End" WidthRequest="150" />
+            </StackLayout>
+
+            <Label Text="Stream" TextColor="DeepPink" />
+            <Picker x:Name="pStream"></Picker>
+            <Label Text="Clients" TextColor="DeepPink" />
+            <ScrollView x:Name="ScrollView" Margin="0, 0, 20, 0">
+                <StackLayout Orientation="Vertical" x:Name="slClients">
+                </StackLayout>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
