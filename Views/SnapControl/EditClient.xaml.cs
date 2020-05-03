@@ -61,7 +61,7 @@ namespace SnapDotNet.SnapControl
             tbOS.Text = m_Client.host.os;
             tbArchitecture.Text = m_Client.host.arch;
             tbVersion.Text = m_Client.snapclient.version;
-            tbLastSeen.Text = m_Client.lastSeen.ToString();
+            tbLastSeen.Text = m_Client.connected == true ? "Online" : m_Client.lastSeen.GetDateTime().ToString();
             btRemove.IsEnabled = m_Client.connected == false;
 
             spWarning.Visibility = m_SnapServer.version == m_Client.snapclient.version ? Visibility.Hidden : Visibility.Visible;

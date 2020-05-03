@@ -92,9 +92,10 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         public int sec { get; set; }
         public int usec { get; set; }
 
-        public override string ToString()
+        public DateTime GetDateTime()
         {
-            return string.Format("{0} - {1}", sec, usec);
+            System.DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            return dateTime.AddSeconds(sec).ToLocalTime();
         }
     }
 

@@ -52,7 +52,7 @@ namespace SnapDotNet.Mobile.Views
             lbOS.Text = m_Client.host.os;
             lbArchitecture.Text = m_Client.host.arch;
             lbVersion.Text = m_Client.snapclient.version;
-            lbLastSeen.Text = m_Client.lastSeen.ToString();
+            lbLastSeen.Text = m_Client.connected == true ? "Online" : m_Client.lastSeen.GetDateTime().ToString();
             //btRemove.IsEnabled = m_Client.connected == false;
 
             //spWarning.Visibility = m_SnapServer.version == m_Client.snapclient.version ? Visibility.Hidden : Visibility.Visible;
