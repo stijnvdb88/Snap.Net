@@ -20,6 +20,12 @@ namespace SnapDotNet.Mobile.Droid
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
+            // sborght: workaround for "Unable to activate instance of type LabelRenderer from native handle" exceptions in GroupEditPage
+            // see https://github.com/xamarin/Xamarin.Forms/issues/2444
+            global::Xamarin.Forms.Forms.SetFlags("UseLegacyRenderers"); 
+
+
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
