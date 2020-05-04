@@ -48,6 +48,8 @@ namespace SnapDotNet.ControlClient
         public static bool AutoReconnect { get; set; }
 
         private readonly Queue<Action> m_QueuedMessages = new Queue<Action>();
+        
+        public bool ConnectionFailed { get; private set; }
 
         /// <summary>
         /// Connects to the snapserver and sets up local RPC methods
@@ -61,14 +63,16 @@ namespace SnapDotNet.ControlClient
             ServerData = null;
             m_Ip = ip;
             m_Port = port;
+            ConnectionFailed = false;
 
             if (m_TcpClient != null)
             {
-                m_JsonRpc.Dispose();
-                m_Stream.Close();
-                m_Stream.Dispose();
+                if (m_Stream != null)
+                {
+                    m_Stream.Close();
+                }
+
                 m_TcpClient.Close(); // make sure we close our previous attempt if it's still running
-                m_TcpClient.Dispose();
             }
 
             m_TcpClient = new TcpClient();
@@ -77,25 +81,17 @@ namespace SnapDotNet.ControlClient
                 //if (m_TcpClient.ConnectAsync(ip, port).Wait(timeout) == false)
                 var connectAsync = m_TcpClient.ConnectAsync(ip, port);
                 //await (m_TcpClient.ConnectAsync(ip, port)).
-                if(await Task.WhenAny(connectAsync, Task.Delay(timeout)) != connectAsync)
+                if((await Task.WhenAny(connectAsync, Task.Delay(timeout)) != connectAsync) || string.IsNullOrEmpty(ip))
                 {
-                    if (m_RetryingConnection == false)
-                    {
-                        _StartReconnectLoop();
-                    }
+                    _HandleConnectionFailure();
                     return;
                 }
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
-                // connection failed - bail
                 // logging this to debug because we don't want to spam the log file (connection gets retried indefinitely if it had previously succeeded)
-                Debug("Socket exception: ", e.Message);
-                if (m_RetryingConnection == false)
-                {
-                    _StartReconnectLoop();
-                }
-
+                Debug("Connect exception: ", e.Message);
+                _HandleConnectionFailure();
                 return;
             }
 
@@ -192,6 +188,18 @@ namespace SnapDotNet.ControlClient
         public bool IsConnected()
         {
             return m_TcpClient != null && m_TcpClient.Connected;
+        }
+
+        private void _HandleConnectionFailure()
+        {
+            ConnectionFailed = true;
+            if (m_RetryingConnection == false)
+            {
+                _StartReconnectLoop();
+            }
+            OnServerUpdated?.Invoke(); // force refresh of all listeners - I hope they're checking for null! :-)
+
+            return;
         }
 
         public async Task<Data> GetServerStatusAsync()

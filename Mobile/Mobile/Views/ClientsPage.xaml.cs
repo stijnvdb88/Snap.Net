@@ -10,7 +10,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SnapDotNet.Mobile.Models;
 using SnapDotNet.Mobile.Views;
-using SnapDotNet.Mobile.ViewModels;
 using SnapDotNet.ControlClient;
 using SnapDotNet.ControlClient.JsonRpcData;
 using SnapDotNet.Mobile.Common;
@@ -27,8 +26,6 @@ namespace SnapDotNet.Mobile.Views
 
         private IPlayer m_Player = null;
 
-        private bool m_ConnectionFailed = false;
-
         public ClientsPage(SnapcastClient client)
         {
             InitializeComponent();
@@ -40,20 +37,15 @@ namespace SnapDotNet.Mobile.Views
 
         private async Task _Reload()
         {
-            m_ConnectionFailed = false;
             if (m_Client.IsConnected() == false)
             {
-                await m_Client.ConnectAsync("192.168.1.112", 1705);
+                await m_Client.ConnectAsync(SnapSettings.Server, SnapSettings.ControlPort);
             }
             else
             {
                 await m_Client.GetServerStatusAsync();
             }
-            if(m_Client.IsConnected() == false)
-            {
-                m_ConnectionFailed = true;
-                _Update();
-            }
+            _Update();
         }
 
         private void Client_OnServerUpdated()
@@ -83,7 +75,7 @@ namespace SnapDotNet.Mobile.Views
                     Groups.Children.Add(cGroup);
                 }
             }
-            GroupsRefreshView.IsRefreshing = (m_Client?.ServerData == null) && m_ConnectionFailed == false;
+            GroupsRefreshView.IsRefreshing = (m_Client?.ServerData == null) && m_Client.ConnectionFailed == false;
         }
 
         //async void OnItemSelected(object sender, EventArgs args)

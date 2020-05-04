@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using SnapDotNet.Mobile.Common;
+using SnapDotNet.Mobile.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,6 +15,17 @@ namespace SnapDotNet.Mobile.Views
         public SettingsPage()
         {
             InitializeComponent();
+
+            eServer.Text = SnapSettings.Server;
+            ePort.Text = SnapSettings.ControlPort.ToString();
+        }
+
+        private void Button_OnClicked(object sender, EventArgs e)
+        {
+            SnapSettings.Server = eServer.Text;
+            SnapSettings.ControlPort = int.Parse(ePort.Text);
+
+            App.Instance.Reconnect();
         }
     }
 }

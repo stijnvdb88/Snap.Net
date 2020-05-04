@@ -5,6 +5,8 @@ using Xamarin.Forms.Xaml;
 using SnapDotNet.Mobile.Views;
 using SnapDotNet.ControlClient;
 using System.Threading.Tasks;
+using SnapDotNet.Mobile.Common;
+using SnapDotNet.Mobile.Models;
 
 namespace SnapDotNet.Mobile
 {
@@ -23,6 +25,11 @@ namespace SnapDotNet.Mobile
             MainPage = new MainPage(m_SnapcastClient);
         }
 
+        public void Reconnect()
+        {
+            (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
+            this.Connect();
+        }
 
         public void Connect()
         {
@@ -38,7 +45,7 @@ namespace SnapDotNet.Mobile
         {
             try
             {
-                m_ConnectTask = m_SnapcastClient.ConnectAsync("192.168.1.112", 1705);
+                m_ConnectTask = m_SnapcastClient.ConnectAsync(SnapSettings.Server, SnapSettings.ControlPort);
                 await m_ConnectTask;
             }
             catch (Exception e)
