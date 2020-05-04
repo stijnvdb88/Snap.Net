@@ -25,10 +25,10 @@ namespace SnapDotNet.Mobile
             MainPage = new MainPage(m_SnapcastClient);
         }
 
-        public void Reconnect()
+        public async Task Reconnect()
         {
-            (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
-            this.Connect();
+            await (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
+            await _ConnectClientAsync().ConfigureAwait(false);
         }
 
         public void Connect()

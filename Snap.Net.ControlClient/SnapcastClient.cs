@@ -60,10 +60,10 @@ namespace SnapDotNet.ControlClient
         public async Task ConnectAsync(string ip, int port, int timeout = 3000)
         {
             // connect
-            ServerData = null;
             m_Ip = ip;
             m_Port = port;
             ConnectionFailed = false;
+            ServerData = null;
 
             if (m_TcpClient != null)
             {

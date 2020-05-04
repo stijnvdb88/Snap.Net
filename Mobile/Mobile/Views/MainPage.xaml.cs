@@ -55,6 +55,8 @@ namespace SnapDotNet.Mobile.Views
 
                 IsPresented = false;
             }
+
+            menuPage.UpdateSelected(id);
         }
     }
 }

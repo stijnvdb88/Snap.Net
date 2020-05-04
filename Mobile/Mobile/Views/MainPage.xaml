@@ -8,7 +8,7 @@
             x:Class="SnapDotNet.Mobile.Views.MainPage">
 
     <MasterDetailPage.Master>
-        <views:MenuPage />
+        <views:MenuPage x:Name="menuPage" />
     </MasterDetailPage.Master>
 
     <MasterDetailPage.Detail>

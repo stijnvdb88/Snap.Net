@@ -20,12 +20,12 @@ namespace SnapDotNet.Mobile.Views
             ePort.Text = SnapSettings.ControlPort.ToString();
         }
 
-        private void Button_OnClicked(object sender, EventArgs e)
+        private async void Button_OnClicked(object sender, EventArgs e)
         {
             SnapSettings.Server = eServer.Text;
             SnapSettings.ControlPort = int.Parse(ePort.Text);
 
-            App.Instance.Reconnect();
+            await App.Instance.Reconnect().ConfigureAwait(false);
         }
     }
 }

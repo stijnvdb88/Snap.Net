@@ -36,5 +36,10 @@ namespace SnapDotNet.Mobile.Views
                 await RootPage.NavigateFromMenu(id);
             };
         }
+
+        public void UpdateSelected(int selected)
+        {
+            ListViewMenu.SelectedItem = menuItems[selected];
+        }
     }
 }
