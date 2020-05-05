@@ -65,16 +65,6 @@ namespace SnapDotNet.ControlClient
             ConnectionFailed = false;
             ServerData = null;
 
-            if (m_TcpClient != null)
-            {
-                if (m_Stream != null)
-                {
-                    m_Stream.Close();
-                }
-
-                m_TcpClient.Close(); // make sure we close our previous attempt if it's still running
-            }
-
             m_TcpClient = new TcpClient();
             try
             {
@@ -91,6 +81,12 @@ namespace SnapDotNet.ControlClient
             {
                 // logging this to debug because we don't want to spam the log file (connection gets retried indefinitely if it had previously succeeded)
                 Debug("Connect exception: ", e.Message);
+                _HandleConnectionFailure();
+                return;
+            }
+
+            if (m_TcpClient.Connected == false)
+            {
                 _HandleConnectionFailure();
                 return;
             }
@@ -204,7 +200,7 @@ namespace SnapDotNet.ControlClient
 
         public async Task GetServerStatusAsync()
         {
-            if (m_TcpClient.Connected)
+            if (m_TcpClient.Connected && m_JsonRpc != null)
             {
                 Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
                 _ServerUpdated(result.server);

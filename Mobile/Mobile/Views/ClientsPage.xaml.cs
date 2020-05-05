@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -67,7 +68,7 @@ namespace SnapDotNet.Mobile.Views
 
             Groups.Children.Clear();
 
-            if (m_Client != null && m_Client.ServerData != null)
+            if (m_Client != null && m_Client.IsConnected() && m_Client.ServerData != null)
             {
                 foreach (Group g in m_Client.ServerData.groups)
                 {
@@ -76,7 +77,15 @@ namespace SnapDotNet.Mobile.Views
                 }
             }
 
-            GroupsRefreshView.IsRefreshing = (m_Client?.IsConnected() == false) && m_Client?.ConnectionFailed == false;
+            try
+            {
+                GroupsRefreshView.IsRefreshing = m_Client.IsConnected() == false &&
+                                                 m_Client?.ConnectionFailed == false;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Exc: " + e.Message);
+            }
 
             if (m_Client?.ConnectionFailed == true)
             {
