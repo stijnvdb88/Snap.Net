@@ -5,7 +5,6 @@ using Xamarin.Forms.Xaml;
 using SnapDotNet.Mobile.Views;
 using SnapDotNet.ControlClient;
 using System.Threading.Tasks;
-using Android.Runtime;
 using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Models;
 
@@ -26,6 +25,7 @@ namespace SnapDotNet.Mobile
             MainPage = new MainPage(m_SnapcastClient);
         }
 
+#if DESPERATE_DEBUGGING_MODE
         private static void SetupExceptionHandlers()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
@@ -67,6 +67,7 @@ namespace SnapDotNet.Mobile
             App.Log(newExc.Message, newExc.StackTrace);
             App.Log(aggException.Message, aggException.StackTrace);
         }
+#endif
 
         public async Task Reconnect()
         {
@@ -101,7 +102,9 @@ namespace SnapDotNet.Mobile
 
         protected override void OnStart()
         {
+#if DESPERATE_DEBUGGING_MODE
             SetupExceptionHandlers();
+#endif
             Connect();
         }
 
