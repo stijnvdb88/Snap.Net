@@ -202,11 +202,13 @@ namespace SnapDotNet.ControlClient
             return;
         }
 
-        public async Task<Data> GetServerStatusAsync()
+        public async Task GetServerStatusAsync()
         {
-            Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
-            _ServerUpdated(result.server);
-            return result;
+            if (m_TcpClient.Connected)
+            {
+                Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
+                _ServerUpdated(result.server);
+            }
         }
 
         private void _StartReconnectLoop()

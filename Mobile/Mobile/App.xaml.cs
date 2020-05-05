@@ -27,8 +27,10 @@ namespace SnapDotNet.Mobile
 
         public async Task Reconnect()
         {
-            await (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
-            await _ConnectClientAsync().ConfigureAwait(false);
+            Task[] tasks = new Task[2];
+            tasks[0] = _ConnectClientAsync();
+            tasks[1] = (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
+            await Task.WhenAll(tasks);
         }
 
         public void Connect()

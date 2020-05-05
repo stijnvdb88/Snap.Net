@@ -75,20 +75,19 @@ namespace SnapDotNet.Mobile.Views
                     Groups.Children.Add(cGroup);
                 }
             }
-            GroupsRefreshView.IsRefreshing = (m_Client?.ServerData == null) && m_Client.ConnectionFailed == false;
+
+            GroupsRefreshView.IsRefreshing = (m_Client?.IsConnected() == false) && m_Client?.ConnectionFailed == false;
+
+            if (m_Client?.ConnectionFailed == true)
+            {
+                Label lb = new Label();
+                lb.Text = string.Format("Couldn't connect to snapserver at {0}:{1}", SnapSettings.Server, SnapSettings.ControlPort);
+                lb.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                lb.VerticalOptions = LayoutOptions.CenterAndExpand;
+                Groups.Children.Add(lb);
+            }
         }
 
-        //async void OnItemSelected(object sender, EventArgs args)
-        //{
-        //    var layout = (BindableObject)sender;
-        //    var item = (Item)layout.BindingContext;
-        //    await Navigation.PushAsync(new ClientDetailPage(new ClientDetailViewModel(item)));
-        //}
-
-        //async void AddItem_Clicked(object sender, EventArgs e)
-        //{
-        //    await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
-        //}
 
         protected override void OnAppearing()
         {
@@ -98,7 +97,7 @@ namespace SnapDotNet.Mobile.Views
 
         private async void MenuItem_OnClicked(object sender, EventArgs e)
         {
-            m_Player.PlayAsync("192.168.1.112", 1704);
+            m_Player.PlayAsync(SnapSettings.Server, SnapSettings.PlayerPort);
         }
     }
 }

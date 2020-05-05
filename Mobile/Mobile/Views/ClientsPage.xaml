@@ -15,7 +15,9 @@
     <RefreshView x:Name="GroupsRefreshView" IsRefreshing="True">
         <ScrollView x:Name="ScrollView">
             <StackLayout Orientation="Vertical" x:Name="Groups">
+
             </StackLayout>
         </ScrollView>
     </RefreshView>
+    
 </ContentPage>

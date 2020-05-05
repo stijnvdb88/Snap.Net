@@ -17,13 +17,15 @@ namespace SnapDotNet.Mobile.Views
             InitializeComponent();
 
             eServer.Text = SnapSettings.Server;
-            ePort.Text = SnapSettings.ControlPort.ToString();
+            eControlPort.Text = SnapSettings.ControlPort.ToString();
+            ePlayerPort.Text = SnapSettings.PlayerPort.ToString();
         }
 
         private async void Button_OnClicked(object sender, EventArgs e)
         {
             SnapSettings.Server = eServer.Text;
-            SnapSettings.ControlPort = int.Parse(ePort.Text);
+            SnapSettings.ControlPort = int.Parse(eControlPort.Text);
+            SnapSettings.PlayerPort = int.Parse(ePlayerPort.Text);
 
             await App.Instance.Reconnect().ConfigureAwait(false);
         }

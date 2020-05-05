@@ -33,6 +33,19 @@ namespace SnapDotNet.Mobile.Common
             }
         }
 
+        public static int PlayerPort
+        {
+            get
+            {
+                return Get<int>("PlayerPort", 1704);
+            }
+
+            set
+            {
+                Set<int>("PlayerPort", value);
+            }
+        }
+
         public static void Set<T>(string key, T value)
         {
             if (Xamarin.Forms.Application.Current.Properties.ContainsKey(key) == false)
