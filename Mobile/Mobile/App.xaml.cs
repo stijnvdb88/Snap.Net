@@ -21,7 +21,7 @@ namespace SnapDotNet.Mobile
             InitializeComponent();
             Instance = this;
             m_SnapcastClient = new SnapcastClient();
-            SnapcastClient.AutoReconnect = false;
+            SnapcastClient.AutoReconnect = true;
             MainPage = new MainPage(m_SnapcastClient);
         }
 

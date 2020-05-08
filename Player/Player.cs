@@ -166,7 +166,7 @@ namespace SnapDotNet.Player
                     string lastLine = "";
                     Action<string> stdOut = (line) =>
                     {
-                        lastLine = line; // we only are about the last line from the output - in case there's an error (snapclient should probably ben sending these to stderr though)
+                        lastLine = line; // we only care about the last line from the output - in case there's an error (snapclient should probably be sending these to stderr though)
                     };
                     string resampleArg = "";
                     if (string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
@@ -201,6 +201,7 @@ namespace SnapDotNet.Player
                         DeviceSettings nDeviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
                         if (nDeviceSettings.AutoRestartOnFailure == true && (attempts <= nDeviceSettings.RestartAttempts || nDeviceSettings.RestartAttempts == 0))
                         {
+                            DevicePlayStateChanged?.Invoke(deviceUniqueId, EState.Playing);
                             await _PlayAsync(deviceUniqueId, cancellationTokenSource, attempts + 1).ConfigureAwait(false);
                         }
                     }
