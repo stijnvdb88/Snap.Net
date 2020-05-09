@@ -39,22 +39,25 @@ namespace SnapDotNet.Mobile.Droid
 
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
-
-            m_SnapclientServiceConnection = new SnapclientServiceConnection(this);
-            Intent intent = new Intent(this, typeof(SnapclientService));
-            BindService(intent, m_SnapclientServiceConnection, Bind.AutoCreate);
             DependencyService.Register<IPlayer>();
         }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+            m_SnapclientServiceConnection = new SnapclientServiceConnection(this);
+            Intent intent = new Intent(this, typeof(SnapclientService));
+            BindService(intent, m_SnapclientServiceConnection, Bind.AutoCreate);
+        }
 
         protected override void OnStop()
         {
+            base.OnStop();
             if (m_SnapclientServiceConnection != null && m_SnapclientServiceConnection.IsConnected)
             {
                 UnbindService(m_SnapclientServiceConnection);
-                m_SnapclientServiceConnection = null;
+                m_SnapclientServiceConnection.IsConnected = false;
             }
-            base.OnStop();
         }
 
         public void Play(string host, int port)

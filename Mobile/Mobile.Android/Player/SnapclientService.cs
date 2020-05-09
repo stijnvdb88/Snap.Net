@@ -261,47 +261,47 @@ namespace SnapDotNet.Mobile.Droid.Player
 
             if (m_SnapclientListener != null)
             {
-                int idxSeverityOpen = msg.IndexOf('[');
-                int idxSeverityClose = msg.IndexOf(']', idxSeverityOpen);
-                int idxTagOpen = msg.IndexOf('(', idxSeverityClose);
-                int idxTagClose = msg.IndexOf(')', idxTagOpen);
-                if ((idxSeverityOpen > 0) && (idxSeverityClose > 0))
-                {
-                    string severity = msg.Substring(idxSeverityOpen + 1, idxSeverityClose);
-                    string tag = "";
-                    if ((idxTagOpen > 0) && (idxTagClose > 0))
-                        tag = msg.Substring(idxTagOpen + 1, idxTagClose);
-                    string timestamp = msg.Substring(0, idxSeverityOpen - 1);
-                    string message = msg.Substring(Math.Max(idxSeverityClose, idxTagClose) + 2);
-                    m_SnapclientListener.OnLog(this, timestamp, severity, tag, message);
+                //int idxSeverityOpen = msg.IndexOf('[');
+                //int idxSeverityClose = msg.IndexOf(']', idxSeverityOpen);
+                //int idxTagOpen = msg.IndexOf('(', idxSeverityClose);
+                //int idxTagClose = msg.IndexOf(')', idxTagOpen);
+                //if ((idxSeverityOpen > 0) && (idxSeverityClose > 0))
+                //{
+                //    string severity = msg.Substring(idxSeverityOpen + 1, idxSeverityClose);
+                //    string tag = "";
+                //    if ((idxTagOpen > 0) && (idxTagClose > 0))
+                //        tag = msg.Substring(idxTagOpen + 1, idxTagClose);
+                //    string timestamp = msg.Substring(0, idxSeverityOpen - 1);
+                //    string message = msg.Substring(Math.Max(idxSeverityClose, idxTagClose) + 2);
+                //    m_SnapclientListener.OnLog(this, timestamp, severity, tag, message);
 
-                    if ((message.Equals("Init start")) && (m_RestartRunnable == null))
-                    {
-                        m_RestartRunnable = new Runnable(() =>
-                        {
-                            _StopProcess();
-                            try
-                            {
-                                _StartProcess();
-                            }
-                            catch (IOException e)
-                            {
-                                e.PrintStackTrace();
-                            }
-                        });
-                        m_RestartHandler.PostDelayed(m_RestartRunnable, 3000);
-                    }
-                    else if ((message.Contains("Init failed")) && (m_RestartRunnable != null))
-                    {
-                        m_RestartHandler.RemoveCallbacks(m_RestartRunnable);
-                        m_RestartHandler.Post(m_RestartRunnable);
-                    }
-                    else if ((message.Equals("Init done")) && (m_RestartRunnable != null))
-                    {
-                        m_RestartHandler.RemoveCallbacks(m_RestartRunnable);
-                        m_RestartRunnable = null;
-                    }
-                }
+                //    if ((message.Equals("Init start")) && (m_RestartRunnable == null))
+                //    {
+                //        m_RestartRunnable = new Runnable(() =>
+                //        {
+                //            _StopProcess();
+                //            try
+                //            {
+                //                _StartProcess();
+                //            }
+                //            catch (IOException e)
+                //            {
+                //                e.PrintStackTrace();
+                //            }
+                //        });
+                //        m_RestartHandler.PostDelayed(m_RestartRunnable, 3000);
+                //    }
+                //    else if ((message.Contains("Init failed")) && (m_RestartRunnable != null))
+                //    {
+                //        m_RestartHandler.RemoveCallbacks(m_RestartRunnable);
+                //        m_RestartHandler.Post(m_RestartRunnable);
+                //    }
+                //    else if ((message.Equals("Init done")) && (m_RestartRunnable != null))
+                //    {
+                //        m_RestartHandler.RemoveCallbacks(m_RestartRunnable);
+                //        m_RestartRunnable = null;
+                //    }
+                //}
             }
         }
 
@@ -381,7 +381,7 @@ namespace SnapDotNet.Mobile.Droid.Player
         static readonly string TAG = typeof(SnapclientServiceConnection).FullName;
 
         MainActivity m_MainActivity;
-        public bool IsConnected { get; private set; }
+        public bool IsConnected { get; set; }
         public LocalBinder Binder { get; private set; }
         public SnapclientService Player { get; private set; }
 
