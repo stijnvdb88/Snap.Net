@@ -3,6 +3,7 @@
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Media;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
@@ -21,6 +22,8 @@ namespace SnapDotNet.Mobile.Droid
 
         private SnapclientServiceConnection m_SnapclientServiceConnection = null;
         private Action m_OnPlayStateChangedCallback = null;
+
+        private SnapcastBroadcastReceiver m_AudioPlugChangedReceiver = new SnapcastBroadcastReceiver();
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -48,6 +51,7 @@ namespace SnapDotNet.Mobile.Droid
             m_SnapclientServiceConnection = new SnapclientServiceConnection(this);
             Intent intent = new Intent(this, typeof(SnapclientService));
             BindService(intent, m_SnapclientServiceConnection, Bind.AutoCreate);
+            RegisterReceiver(m_AudioPlugChangedReceiver, new IntentFilter(AudioManager.ActionHeadsetPlug));
         }
 
         protected override void OnStop()
@@ -58,6 +62,8 @@ namespace SnapDotNet.Mobile.Droid
                 UnbindService(m_SnapclientServiceConnection);
                 m_SnapclientServiceConnection.IsConnected = false;
             }
+
+            UnregisterReceiver(m_AudioPlugChangedReceiver);
         }
 
         public void Play(string host, int port)
@@ -69,6 +75,14 @@ namespace SnapDotNet.Mobile.Droid
             i.SetAction(SnapclientService.ACTION_START);
 
             StartService(i);
+        }
+
+        public void Restart()
+        {
+            if (m_SnapclientServiceConnection != null && m_SnapclientServiceConnection.IsConnected)
+            {
+                m_SnapclientServiceConnection.Player.Restart();
+            }
         }
 
         public void Stop()

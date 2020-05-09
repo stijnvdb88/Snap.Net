@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
     <Compile Include="Player\Player.cs" />
+    <Compile Include="Player\SnapcastBroadcastReceiver.cs" />
     <Compile Include="Player\SnapclientService.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

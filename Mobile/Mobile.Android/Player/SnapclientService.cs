@@ -46,7 +46,7 @@ namespace SnapDotNet.Mobile.Droid.Player
 
         private ISnapclientListener m_SnapclientListener = null;
         private bool m_LogReceived = false;
-        private Handler m_RestartHandler = null;
+        private Handler m_RestartHandler = new Handler();
         private Runnable m_RestartRunnable = null;
         private string m_Host = "";
         private int m_Port = 1704;
@@ -64,6 +64,27 @@ namespace SnapDotNet.Mobile.Droid.Player
                 "Snapclient service", NotificationImportance.Low);
             channel.Description = "Snapcast player service";
             notificationManager.CreateNotificationChannel(channel);
+
+            m_RestartRunnable = new Runnable(() =>
+            {
+                _StopProcess();
+                try
+                {
+                    _StartProcess();
+                }
+                catch (IOException e)
+                {
+                    e.PrintStackTrace();
+                }
+            });
+        }
+
+        public void Restart()
+        {
+            if (m_RestartHandler != null)
+            {
+                m_RestartHandler.Post(m_RestartRunnable);
+            }
         }
 
         public void SetListener(ISnapclientListener listener)
@@ -304,6 +325,8 @@ namespace SnapDotNet.Mobile.Droid.Player
                 //}
             }
         }
+
+
 
         private void _StopProcess()
         {
