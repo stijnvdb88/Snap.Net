@@ -6,9 +6,9 @@ namespace SnapDotNet.Mobile.Player
 {
     public interface IPlayer
     {
-        void Init();
+        void OnPlayStateChanged(Action callback);
         bool SupportsSnapclient();
-        void PlayAsync(string host, int port);
+        void Play(string host, int port);
         void Stop();
         bool IsPlaying();
     }

@@ -62,6 +62,14 @@ namespace SnapDotNet.Mobile.Views
 
         void _Update()
         {
+            if (MainThread.IsMainThread == false)
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    _Update();
+                });
+                return;
+            }
             tbPlay.IsEnabled = App.Instance.Player.SupportsSnapclient();
             tbPlay.Text = App.Instance.Player.IsPlaying() == false ? "Play" : "Stop";
 
@@ -101,13 +109,20 @@ namespace SnapDotNet.Mobile.Views
         {
             base.OnAppearing();
             _Update();
+            App.Instance.OnPlayStateChanged += _Update;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            App.Instance.OnPlayStateChanged -= _Update;
         }
 
         private async void MenuItem_OnClicked(object sender, EventArgs e)
         {
             if (App.Instance.Player.IsPlaying() == false)
             {
-                App.Instance.Player.PlayAsync(SnapSettings.Server, SnapSettings.PlayerPort);
+                App.Instance.Player.Play(SnapSettings.Server, SnapSettings.PlayerPort);
             }
             else
             {

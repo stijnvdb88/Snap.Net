@@ -12,6 +12,11 @@ namespace SnapDotNet.Mobile.iOS.Player
 {
     public class Player : IPlayer
     {
+        public Player()
+        {
+
+        }
+
         public void Init()
         {
 
@@ -22,7 +27,7 @@ namespace SnapDotNet.Mobile.iOS.Player
             return false;
         }
 
-        public async void PlayAsync(string host, int port) { }
+        public void Play(string host, int port) { }
         public void Stop() {}
 
         public bool IsPlaying()

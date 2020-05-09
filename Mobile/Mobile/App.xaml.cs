@@ -18,6 +18,7 @@ namespace SnapDotNet.Mobile
         private SnapcastClient m_SnapcastClient = null;
         public static App Instance { get; private set; } = null;
         public Task m_ConnectTask = null;
+        public event Action OnPlayStateChanged = null;
 
         public IPlayer Player
         {
@@ -31,9 +32,6 @@ namespace SnapDotNet.Mobile
             m_SnapcastClient = new SnapcastClient();
             SnapcastClient.AutoReconnect = true;
             MainPage = new MainPage(m_SnapcastClient);
-
-            m_Player = DependencyService.Get<IPlayer>();
-            m_Player.Init();
         }
         
         public async Task Reconnect()
@@ -73,6 +71,13 @@ namespace SnapDotNet.Mobile
             SetupExceptionHandlers();
 #endif
             Connect();
+
+
+            m_Player = DependencyService.Get<IPlayer>();
+            m_Player.OnPlayStateChanged(() =>
+            {
+                OnPlayStateChanged?.Invoke();
+            });
         }
 
         protected override void OnSleep()
