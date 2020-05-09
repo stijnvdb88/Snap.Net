@@ -43,6 +43,7 @@ namespace SnapDotNet.Mobile.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
             DependencyService.Register<IPlayer>();
+            RegisterReceiver(m_AudioPlugChangedReceiver, new IntentFilter(AudioManager.ActionHeadsetPlug));
         }
 
         protected override void OnStart()
@@ -51,7 +52,7 @@ namespace SnapDotNet.Mobile.Droid
             m_SnapclientServiceConnection = new SnapclientServiceConnection(this);
             Intent intent = new Intent(this, typeof(SnapclientService));
             BindService(intent, m_SnapclientServiceConnection, Bind.AutoCreate);
-            RegisterReceiver(m_AudioPlugChangedReceiver, new IntentFilter(AudioManager.ActionHeadsetPlug));
+            
         }
 
         protected override void OnStop()
@@ -63,7 +64,7 @@ namespace SnapDotNet.Mobile.Droid
                 m_SnapclientServiceConnection.IsConnected = false;
             }
 
-            UnregisterReceiver(m_AudioPlugChangedReceiver);
+            //UnregisterReceiver(m_AudioPlugChangedReceiver);
         }
 
         public void Play(string host, int port)

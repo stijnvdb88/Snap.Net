@@ -422,6 +422,9 @@ namespace SnapDotNet.Mobile.Droid.Player
             Player.Init();
             IsConnected = true;
             Player.SetListener(m_MainActivity);
+
+            // force play state update (UI sometimes tries to check it while service not bound - this make sure it gets updated once we are bound)
+            m_MainActivity.OnPlayStateChanged(Player); 
         }
 
         public void OnServiceDisconnected(ComponentName name)
