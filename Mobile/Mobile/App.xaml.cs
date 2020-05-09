@@ -7,14 +7,22 @@ using SnapDotNet.ControlClient;
 using System.Threading.Tasks;
 using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Models;
+using SnapDotNet.Mobile.Player;
 
 namespace SnapDotNet.Mobile
 {
     public partial class App : Application
     {
+        private IPlayer m_Player = null;
+
         private SnapcastClient m_SnapcastClient = null;
         public static App Instance { get; private set; } = null;
         public Task m_ConnectTask = null;
+
+        public IPlayer Player
+        {
+            get { return m_Player; }
+        }
 
         public App()
         {
@@ -23,52 +31,11 @@ namespace SnapDotNet.Mobile
             m_SnapcastClient = new SnapcastClient();
             SnapcastClient.AutoReconnect = true;
             MainPage = new MainPage(m_SnapcastClient);
-        }
 
-#if DESPERATE_DEBUGGING_MODE
-        private static void SetupExceptionHandlers()
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
-            AndroidEnvironment.UnhandledExceptionRaiser += AndroidEnvironmentOnUnhandledExceptionRaiser;
+            m_Player = DependencyService.Get<IPlayer>();
+            m_Player.Init();
         }
-
-        private static void Log(string msg, string extra)
-        {
-            Debug.WriteLine(string.Format("{0} - {1}", msg, extra));
-        }
-
-        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
-        {
-            var exception = args.ExceptionObject as Exception;
-            if (exception != null)
-            {
-                Console.WriteLine(exception.GetType());
-                App.Log(exception.Message, exception.StackTrace);
-            }
-            else
-            {
-                App.Log(args.ExceptionObject.GetType().ToString(),
-                    $"{nameof(args.IsTerminating)}: {args.IsTerminating}");
-            }
-        }
-
-        private static void AndroidEnvironmentOnUnhandledExceptionRaiser(object sender, RaiseThrowableEventArgs e)
-        {
-            e.Handled = true;
-            App.Log(e.Exception.Message, e.Exception.StackTrace);
-        }
-
-        private static void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            var aggException = e.Exception;
-            var newExc = new Exception("TaskSchedulerOnUnobservedTaskException", aggException);
-            
-            App.Log(newExc.Message, newExc.StackTrace);
-            App.Log(aggException.Message, aggException.StackTrace);
-        }
-#endif
-
+        
         public async Task Reconnect()
         {
             Task[] tasks = new Task[2];
@@ -119,5 +86,50 @@ namespace SnapDotNet.Mobile
                 Task.Run(_ConnectClientAsync).ConfigureAwait(false);
             }
         }
+
+
+#if DESPERATE_DEBUGGING_MODE
+        private static void SetupExceptionHandlers()
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+            AndroidEnvironment.UnhandledExceptionRaiser += AndroidEnvironmentOnUnhandledExceptionRaiser;
+        }
+
+        private static void Log(string msg, string extra)
+        {
+            Debug.WriteLine(string.Format("{0} - {1}", msg, extra));
+        }
+
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+        {
+            var exception = args.ExceptionObject as Exception;
+            if (exception != null)
+            {
+                Console.WriteLine(exception.GetType());
+                App.Log(exception.Message, exception.StackTrace);
+            }
+            else
+            {
+                App.Log(args.ExceptionObject.GetType().ToString(),
+                    $"{nameof(args.IsTerminating)}: {args.IsTerminating}");
+            }
+        }
+
+        private static void AndroidEnvironmentOnUnhandledExceptionRaiser(object sender, RaiseThrowableEventArgs e)
+        {
+            e.Handled = true;
+            App.Log(e.Exception.Message, e.Exception.StackTrace);
+        }
+
+        private static void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            var aggException = e.Exception;
+            var newExc = new Exception("TaskSchedulerOnUnobservedTaskException", aggException);
+            
+            App.Log(newExc.Message, newExc.StackTrace);
+            App.Log(aggException.Message, aggException.StackTrace);
+        }
+#endif
     }
 }

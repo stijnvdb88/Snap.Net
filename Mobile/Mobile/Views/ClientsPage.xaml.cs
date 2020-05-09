@@ -25,14 +25,12 @@ namespace SnapDotNet.Mobile.Views
     {
         private SnapcastClient m_Client = null;
 
-        private IPlayer m_Player = null;
 
         public ClientsPage(SnapcastClient client)
         {
             InitializeComponent();
             m_Client = client;
             m_Client.OnServerUpdated += Client_OnServerUpdated;
-            m_Player = DependencyService.Get<IPlayer>();
             GroupsRefreshView.Command = new AsyncCommand(_Reload);
         }
 
@@ -64,7 +62,8 @@ namespace SnapDotNet.Mobile.Views
 
         void _Update()
         {
-            tbPlay.IsEnabled = m_Player.SupportsSnapclient();
+            tbPlay.IsEnabled = App.Instance.Player.SupportsSnapclient();
+            tbPlay.Text = App.Instance.Player.IsPlaying() == false ? "Play" : "Stop";
 
             Groups.Children.Clear();
 
@@ -106,7 +105,14 @@ namespace SnapDotNet.Mobile.Views
 
         private async void MenuItem_OnClicked(object sender, EventArgs e)
         {
-            m_Player.PlayAsync(SnapSettings.Server, SnapSettings.PlayerPort);
+            if (App.Instance.Player.IsPlaying() == false)
+            {
+                App.Instance.Player.PlayAsync(SnapSettings.Server, SnapSettings.PlayerPort);
+            }
+            else
+            {
+                App.Instance.Player.Stop();
+            }
         }
     }
 }
