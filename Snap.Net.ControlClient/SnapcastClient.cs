@@ -17,6 +17,7 @@ using SnapDotNet.ControlClient.JsonRpcData;
 using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -202,8 +203,17 @@ namespace SnapDotNet.ControlClient
         {
             if (m_TcpClient.Connected && m_JsonRpc != null)
             {
-                Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
-                _ServerUpdated(result.server);
+                try
+                {
+                    Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
+                    _ServerUpdated(result.server);
+                }
+                catch(StreamJsonRpc.ConnectionLostException connectionLostException)
+                {
+                    Debug("got connectionLostException, retrying connect...");
+                    ConnectAsync(m_Ip, m_Port);
+                }
+                
             }
         }
 
@@ -229,11 +239,6 @@ namespace SnapDotNet.ControlClient
             {
                 ServerData.SERVER_Invalidate(); // make sure everyone know the server is no longer with us
                 ServerData = null; // rip
-            }
-
-            if (m_JsonRpc != null)
-            {
-                m_JsonRpc.Dispose();
             }
 
             while (m_TcpClient.Connected == false
@@ -711,11 +716,13 @@ namespace SnapDotNet.ControlClient
 
         private static void Debug(string message, params object[] args)
         {
+            //System.Diagnostics.Debug.WriteLine(string.Format(message, args));
             // Logger.Debug(message, args);
         }
 
         private static void Info(string message, params object[] args)
         {
+            //System.Diagnostics.Debug.WriteLine(string.Format(message, args));
             // Logger.Info(message, args);
         }
 

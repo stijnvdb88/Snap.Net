@@ -16,6 +16,9 @@ using Exception = Java.Lang.Exception;
 namespace SnapDotNet.Mobile.Droid
 {
     [Activity(Label = "Snapcast", Icon = "@drawable/ic_launcher", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [IntentFilter(
+        actions: new string[] { "android.intent.action.MAIN" },
+        Categories = new string[] { "android.intent.category.LEANBACK_LAUNCHER" })]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, ISnapclientListener
     {
         internal static MainActivity Instance { get; private set; }
