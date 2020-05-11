@@ -24,7 +24,7 @@ namespace SnapDotNet.Mobile.Views
     public partial class ClientsPage : ContentPage
     {
         private SnapcastClient m_Client = null;
-
+        private Label m_ConnectionFailedLabel = null;
 
         public ClientsPage(SnapcastClient client)
         {
@@ -96,11 +96,19 @@ namespace SnapDotNet.Mobile.Views
 
             if (m_Client?.ConnectionFailed == true)
             {
-                Label lb = new Label();
-                lb.Text = string.Format("Couldn't connect to snapserver at {0}:{1}", SnapSettings.Server, SnapSettings.ControlPort);
-                lb.HorizontalOptions = LayoutOptions.CenterAndExpand;
-                lb.VerticalOptions = LayoutOptions.CenterAndExpand;
-                Groups.Children.Add(lb);
+                m_ConnectionFailedLabel = new Label();
+                m_ConnectionFailedLabel.Text = string.Format("Couldn't connect to snapserver at {0}:{1}", SnapSettings.Server, SnapSettings.ControlPort);
+                m_ConnectionFailedLabel.HorizontalOptions = LayoutOptions.CenterAndExpand;
+                m_ConnectionFailedLabel.VerticalOptions = LayoutOptions.CenterAndExpand;
+                Groups.Children.Add(m_ConnectionFailedLabel);
+            }
+            else
+            {
+                if (m_ConnectionFailedLabel != null)
+                {
+                    Groups.Children.Remove(m_ConnectionFailedLabel);
+                    m_ConnectionFailedLabel = null;
+                }
             }
         }
 
