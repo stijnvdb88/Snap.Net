@@ -201,6 +201,7 @@ namespace SnapDotNet.Player
                         DeviceSettings nDeviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
                         if (nDeviceSettings.AutoRestartOnFailure == true && (attempts <= nDeviceSettings.RestartAttempts || nDeviceSettings.RestartAttempts == 0))
                         {
+                            m_ActivePlayers.Add(deviceUniqueId, cancellationTokenSource);
                             DevicePlayStateChanged?.Invoke(deviceUniqueId, EState.Playing);
                             await _PlayAsync(deviceUniqueId, cancellationTokenSource, attempts + 1).ConfigureAwait(false);
                         }
