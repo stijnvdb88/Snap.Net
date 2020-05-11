@@ -9,6 +9,7 @@
 
   <p align="center">
     A control client and player for <a href="https://github.com/badaix/snapcast">Snapcast</a>
+    <br /><b>Windows &middot; iOS &middot; Android</b>
     <br />
     <br />
     <img src="https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Control.png?raw=true">
@@ -30,8 +31,21 @@ If you don't like the colors, change them!
 
 ![Settings](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Settings.png)
 
+## iOS ##
+
+![iOS](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS.png?raw=true)
+![iOS_Client](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS_Client.png?raw=true)
+![iOS_Group](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS_Group.png?raw=true)
+
+## Android ##
+
+![Android](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android.png?raw=true)
+![Android_Client](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android_Client.png?raw=true)
+![Android_Group](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android_Group.png?raw=true)
+
+
 ### Todo ###
-* Cross-platform support: Android, iOS (control only), OSX, Linux
+* Cross-platform support: ~Android, iOS (control only)~, OSX, Linux
 * ~~Player settings (sampleformat, shared/exclusive mode)~~
 
 ## Acknowledgements
