@@ -82,9 +82,12 @@ namespace SnapDotNet.Mobile.Controls
                 m_Stream.SERVER_OnStreamUpdated -= _OnStreamUpdated; // unhook event from old m_Stream object
             }
             m_Stream = m_SnapcastClient.GetStream(m_Group.stream_id);
-            m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
 
-            lbGroup.Text = string.Format("{0} - {1} ({2})", m_Group.Name, m_Stream.id, m_Stream.status);
+            if (m_Stream != null)
+            {
+                m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
+                lbGroup.Text = string.Format("{0} - {1} ({2})", m_Group.Name, m_Stream.id, m_Stream.status);
+            }
         }
 
         private void _OnStreamUpdated()

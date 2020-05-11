@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 using Foundation;
 using UIKit;
 using SnapDotNet.Mobile;
+using System.Threading.Tasks;
 
 namespace SnapDotnet.Mobile.iOS
 {
@@ -26,7 +29,48 @@ namespace SnapDotnet.Mobile.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+
             return base.FinishedLaunching(app, options);
+        }
+
+        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Debug.WriteLine("EXCEPTION: " + e.Exception.Message + " st " + e.Exception.StackTrace);
+        }
+
+        private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Debug.WriteLine("EXCEPTION: " + e.ExceptionObject.ToString());
+        }
+
+        /// <summary>
+        // If there is an unhandled exception, the exception information is diplayed 
+        // on screen the next time the app is started (only in debug configuration)
+        /// </summary>
+        [Conditional("DEBUG")]
+        private static void DisplayCrashReport()
+        {
+            const string errorFilename = "Fatal.log";
+            var libraryPath = Environment.GetFolderPath(Environment.SpecialFolder.Resources);
+            var errorFilePath = Path.Combine(libraryPath, errorFilename);
+
+            if (!File.Exists(errorFilePath))
+            {
+                return;
+            }
+
+            var errorText = File.ReadAllText(errorFilePath);
+            var alertView = new UIAlertView("Crash Report", errorText, null, "Close", "Clear") { UserInteractionEnabled = true };
+            alertView.Clicked += (sender, args) =>
+            {
+                if (args.ButtonIndex != 0)
+                {
+                    File.Delete(errorFilePath);
+                }
+            };
+            alertView.Show();
         }
     }
 }

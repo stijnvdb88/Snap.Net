@@ -17,6 +17,11 @@ namespace SnapDotNet.Mobile.iOS.Player
 
         }
 
+        public void OnPlayStateChanged(Action callback)
+        {
+            
+        }
+
         public void Init()
         {
 
