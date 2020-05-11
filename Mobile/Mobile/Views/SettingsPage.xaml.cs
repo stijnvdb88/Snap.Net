@@ -27,7 +27,7 @@ namespace SnapDotNet.Mobile.Views
             SnapSettings.ControlPort = int.Parse(eControlPort.Text);
             SnapSettings.PlayerPort = int.Parse(ePlayerPort.Text);
 
-            await App.Instance.Reconnect().ConfigureAwait(false);
+            await App.Instance.ReconnectAsync().ConfigureAwait(false);
         }
     }
 }

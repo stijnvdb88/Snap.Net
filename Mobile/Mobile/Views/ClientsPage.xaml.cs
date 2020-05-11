@@ -31,10 +31,10 @@ namespace SnapDotNet.Mobile.Views
             InitializeComponent();
             m_Client = client;
             m_Client.OnServerUpdated += Client_OnServerUpdated;
-            GroupsRefreshView.Command = new AsyncCommand(_Reload);
+            GroupsRefreshView.Command = new AsyncCommand(_ReloadAsync);
         }
 
-        private async Task _Reload()
+        private async Task _ReloadAsync()
         {
             if (m_Client.IsConnected() == false)
             {
@@ -126,7 +126,7 @@ namespace SnapDotNet.Mobile.Views
             App.Instance.OnPlayStateChanged -= _Update;
         }
 
-        private async void MenuItem_OnClicked(object sender, EventArgs e)
+        private void MenuItem_OnClicked(object sender, EventArgs e)
         {
             if (App.Instance.Player.IsPlaying() == false)
             {

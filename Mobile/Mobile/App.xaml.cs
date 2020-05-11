@@ -34,11 +34,11 @@ namespace SnapDotNet.Mobile
             MainPage = new MainPage(m_SnapcastClient);
         }
         
-        public async Task Reconnect()
+        public async Task ReconnectAsync()
         {
             Task[] tasks = new Task[2];
             tasks[0] = _ConnectClientAsync();
-            tasks[1] = (MainPage as MainPage).NavigateFromMenu((int)MenuItemType.Clients);
+            tasks[1] = (MainPage as MainPage).NavigateFromMenuAsync((int)MenuItemType.Clients);
             await Task.WhenAll(tasks);
         }
 
@@ -61,7 +61,7 @@ namespace SnapDotNet.Mobile
             }
             catch (Exception e)
             {
-                //await Current.Dispatcher.BeginInvoke(new Action<string, string>(ShowNotification), "Connection error", string.Format("Exception during connect: {0}", e.Message));
+                Debug.WriteLine("Exception during connection: " + e.Message);
             }
         }
 

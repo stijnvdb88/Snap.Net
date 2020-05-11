@@ -29,7 +29,7 @@ namespace SnapDotNet.Mobile.Views
             //NavPage.RootPage = new ClientsPage(m_Client);
         }
 
-        public async Task NavigateFromMenu(int id)
+        public async Task NavigateFromMenuAsync(int id)
         {
             if (!MenuPages.ContainsKey(id))
             {
