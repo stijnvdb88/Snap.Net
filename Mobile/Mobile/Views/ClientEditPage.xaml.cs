@@ -53,7 +53,7 @@ namespace SnapDotNet.Mobile.Views
             lbArchitecture.Text = m_Client.host.arch;
             lbVersion.Text = m_Client.snapclient.version;
             lbLastSeen.Text = m_Client.connected == true ? "Online" : m_Client.lastSeen.GetDateTime().ToString();
-            //btRemove.IsEnabled = m_Client.connected == false;
+            btRemove.IsEnabled = m_Client.connected == false;
 
             //spWarning.Visibility = m_SnapServer.version == m_Client.snapclient.version ? Visibility.Hidden : Visibility.Visible;
             //if (m_SnapServer.version != m_Client.snapclient.version)
@@ -66,6 +66,12 @@ namespace SnapDotNet.Mobile.Views
         {
             m_Client.CLIENT_SetName(eName.Text);
             m_Client.config.CLIENT_SetLatency(int.Parse(eLatency.Text, System.Globalization.CultureInfo.CurrentCulture));
+        }
+
+        private void BtRemove_OnClicked(object sender, EventArgs e)
+        {
+            m_Client.CLIENT_Remove();
+            Navigation.PopAsync().ConfigureAwait(false);
         }
     }
 }

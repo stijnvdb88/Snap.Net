@@ -35,6 +35,7 @@ namespace SnapDotNet.Mobile.Droid.Player
         public static string ACTION_START = "ACTION_START";
         public static string ACTION_STOP = "ACTION_STOP";
         private const string NOTIFICATION_CHANNEL_ID = "com.stijnvdb88.snapcast.snapclientservice.defaultchannel";
+        private const int NOTIFICATION_CHANNEL = 666;
 
         private IBinder m_Binder;
         private Process m_Process = null;
@@ -117,13 +118,13 @@ namespace SnapDotNet.Mobile.Droid.Player
                 PendingIntent PiStop = PendingIntent.GetService(this, 0, stopIntent, 0);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                    .SetSmallIcon(Resource.Drawable.ic_speaker_icon) // ic_media_play
+                    .SetSmallIcon(Resource.Drawable.ic_media_play)
                     .SetTicker("Snapclient started")
                     .SetContentTitle("Snapclient")
                     .SetContentText("Snapclient is running...")
                     .SetContentInfo(string.Format("{0}:{1}", host, port))
                     .SetStyle(new NotificationCompat.BigTextStyle().BigText("Snapclient is running..."))
-                    .AddAction(Resource.Drawable.ic_speaker_icon, "Stop", PiStop); // ic_media_stop
+                    .AddAction(Resource.Drawable.ic_media_stop, "Stop", PiStop); 
 
                 Intent resultIntent = new Intent(this, typeof(MainActivity));
 
@@ -140,7 +141,7 @@ namespace SnapDotNet.Mobile.Droid.Player
                 builder.SetContentIntent(resultPendingIntent);
                 Notification notification = builder.Build();
 
-                StartForeground(666, notification);
+                StartForeground(NOTIFICATION_CHANNEL, notification);
 
                 _Start(host, port);
 
@@ -181,7 +182,7 @@ namespace SnapDotNet.Mobile.Droid.Player
 
             NotificationManager mNotificationManager =
                 (NotificationManager) GetSystemService(Context.NotificationService);
-            mNotificationManager.Cancel(666);
+            mNotificationManager.Cancel(NOTIFICATION_CHANNEL);
         }
 
         private void _StartProcess()
