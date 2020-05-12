@@ -33,15 +33,15 @@ If you don't like the colors, change them!
 
 ## iOS ##
 
-![iOS](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS.png?raw=true)
-![iOS_Client](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS_Client.png?raw=true)
-![iOS_Group](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/iOS_Group.png?raw=true)
+![iOS](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/iOS.png?raw=true)
+![iOS_Client](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/iOS_Client.png?raw=true)
+![iOS_Group](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/iOS_Group.png?raw=true)
 
 ## Android ##
 
-![Android](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android.png?raw=true)
-![Android_Client](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android_Client.png?raw=true)
-![Android_Group](https://github.com/stijnvdb88/Snap.Net/blob/mobile/Doc/Android_Group.png?raw=true)
+![Android](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Android.png?raw=true)
+![Android_Client](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Android_Client.png?raw=true)
+![Android_Group](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Android_Group.png?raw=true)
 
 
 ### Todo ###
