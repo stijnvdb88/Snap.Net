@@ -250,11 +250,11 @@ namespace SnapDotNet.Mobile.Droid.Player
                 PowerManager powerManager = (PowerManager) GetSystemService(PowerService);
                 m_WakeLock =
                     powerManager.NewWakeLock(WakeLockFlags.Partial,
-                        "snapcast:SnapcastPartialWakeLock"); // make sure this doesn't collide with snapdroid's ids
+                        "snapdotnet:SnapcastPartialWakeLock");
                 m_WakeLock.Acquire();
 
                 WifiManager wifiManager = (WifiManager) GetSystemService(WifiService);
-                m_WifiLock = wifiManager.CreateWifiLock(WifiMode.FullHighPerf, "snapcast:SnapcastWifiWakeLock");
+                m_WifiLock = wifiManager.CreateWifiLock(WifiMode.FullHighPerf, "snapdotnet:SnapcastWifiWakeLock");
                 m_WifiLock.Acquire();
 
                 m_Host = host;
