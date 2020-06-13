@@ -10,7 +10,7 @@
         <Slider 
             x:Name="slVolume" 
             AutoToolTipPlacement="TopLeft"
-            LargeChange="5"
+            LargeChange="2"
             HorizontalAlignment="Center" 
             Height="146" Margin="12,8,10,0"
             VerticalAlignment="Top" 
@@ -22,12 +22,9 @@
             Controls:SliderHelper.EnableMouseWheel="MouseHover"
             ValueChanged="slVolume_ValueChanged" 
             Interval="500" 
-            SmallChange="0.5" 
             PreviewMouseDown="slVolume_PreviewMouseDown" 
             Style="{DynamicResource MahApps.Metro.Styles.Slider.Win10}"
-            PreviewMouseUp="slVolume_PreviewMouseUp">
-
-        </Slider>
+            PreviewMouseUp="slVolume_PreviewMouseUp"/>
         <iconPacks:PackIconBoxIcons 
             x:Name="imgSound" 
             Kind="RegularVolume"            
