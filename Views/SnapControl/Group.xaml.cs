@@ -89,8 +89,11 @@ namespace SnapDotNet.SnapControl
                 m_Stream.SERVER_OnStreamUpdated -= _OnStreamUpdated; // unhook event from old m_Stream object
             }
             m_Stream = m_SnapcastClient.GetStream(m_Group.stream_id);
-            m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
-            _OnStreamUpdated();
+            if (m_Stream != null)
+            {
+                m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
+                _OnStreamUpdated();
+            }
         }
 
         private void _OnStreamUpdated()
