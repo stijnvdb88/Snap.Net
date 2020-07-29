@@ -34,7 +34,7 @@ namespace SnapDotNet.Mobile.Droid.Player
         public static string EXTRA_PORT = "EXTRA_PORT";
         public static string ACTION_START = "ACTION_START";
         public static string ACTION_STOP = "ACTION_STOP";
-        private const string NOTIFICATION_CHANNEL_ID = "com.stijnvdb88.snapcast.snapclientservice.defaultchannel";
+        private const string NOTIFICATION_CHANNEL_ID = "com.stijnvdb88.snapdotnet.snapclientservice.defaultchannel";
         private const int NOTIFICATION_CHANNEL = 666;
 
         private IBinder m_Binder;

@@ -26,9 +26,9 @@
 	<key>CFBundleDisplayName</key>
 	<string>Snapcast</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.stijnvdb88.snapcast</string>
+	<string>com.stijnvdb88.snapdotnet</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>0.20.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
