@@ -185,6 +185,9 @@ namespace SnapDotNet
 
         public void ShowNotification(string title, string message)
         {
+            if (SnapSettings.NotificationBehaviour == SnapSettings.ENotificationBehaviour.Disabled)
+                return;
+
             Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Logger.Info("Notification: {0}: {1}", title, message);

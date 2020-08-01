@@ -12,11 +12,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+using System.Collections.Generic;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SnapDotNet.Windows
@@ -31,6 +34,8 @@ namespace SnapDotNet.Windows
 
         private string[] m_DismissMethods = {"Click outside", "Right-click"};
 
+        private Dictionary<SnapSettings.ENotificationBehaviour, RadioButton> m_NotificationBehaviourRadioButtons = new Dictionary<SnapSettings.ENotificationBehaviour, RadioButton>();
+
         public Settings()
         {
             InitializeComponent();
@@ -44,6 +49,21 @@ namespace SnapDotNet.Windows
             cbAutoLaunch.IsChecked = SnapSettings.LaunchesOnWindowsStartup();
             lbVersion.Content = string.Format("{0}: {1}", Snapcast.ProductName, Snapcast.Version);
             cbAutoReconnect.IsChecked = SnapSettings.AutoReconnect;
+
+            m_NotificationBehaviourRadioButtons.Add(SnapSettings.ENotificationBehaviour.Default, rbDefault);
+            m_NotificationBehaviourRadioButtons.Add(SnapSettings.ENotificationBehaviour.AutoDismiss, rbAutoDismiss);
+            m_NotificationBehaviourRadioButtons.Add(SnapSettings.ENotificationBehaviour.Disabled, rbDisable);
+
+            m_NotificationBehaviourRadioButtons[SnapSettings.NotificationBehaviour].IsChecked = true;
+            tbAutoDismissSeconds.Text = SnapSettings.NotificationAutoDismissSeconds.ToString();
+            tbAutoDismissSeconds.IsEnabled = (bool)rbAutoDismiss.IsChecked;
+
+            foreach (RadioButton rb in m_NotificationBehaviourRadioButtons.Values)
+            {
+                rb.Checked += rbNotificationBehaviourGroup_CheckChanged;
+                //rb.Unchecked += rbNotificationBehaviourGroup_CheckChanged;
+            }
+
 
             System.Tuple<AppTheme, Accent> activeTheme = ThemeManager.DetectAppStyle(Application.Current);
 
@@ -85,6 +105,9 @@ namespace SnapDotNet.Windows
             SnapSettings.Server = tbHost.Text;
             SnapSettings.ControlPort = controlPort;
             SnapSettings.PlayerPort = playerPort;
+            SnapSettings.NotificationAutoDismissSeconds =
+                int.Parse(tbAutoDismissSeconds.Text, CultureInfo.CurrentCulture);
+            
             if (modified == true)
             {
                 Snapcast.Instance.Connect();
@@ -92,7 +115,7 @@ namespace SnapDotNet.Windows
             Close();
         }
 
-        private void tbPort_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void PreviewTextInputNumbersOnly(object sender, TextCompositionEventArgs e)
         {
             e.Handled = Utils.IsNumbersOnly(e.Text) == false;
         }
@@ -122,6 +145,20 @@ namespace SnapDotNet.Windows
         private void cbDismiss_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             SnapSettings.SnapControlDismiss = cbDismiss.SelectedIndex;
+        }
+
+        private void rbNotificationBehaviourGroup_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            tbAutoDismissSeconds.IsEnabled = (bool)rbAutoDismiss.IsChecked;
+
+            foreach (KeyValuePair<SnapSettings.ENotificationBehaviour, RadioButton> kvp in
+                m_NotificationBehaviourRadioButtons)
+            {
+                if (kvp.Value.IsChecked == true)
+                {
+                    SnapSettings.NotificationBehaviour = kvp.Key;
+                }
+            }
         }
     }
 }

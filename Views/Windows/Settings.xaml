@@ -8,7 +8,7 @@
         WindowTransitionsEnabled="False"
         mc:Ignorable="d"
         GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="Settings" Height="574.458" Width="284.154" 
+        Title="Settings" Height="574.458" Width="532.764" 
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Loaded="Window_Loaded">
     <Grid Margin="0,0,0,-3">
@@ -19,9 +19,9 @@
                 <Label x:Name="lbHost" Content="Host" HorizontalAlignment="Left" Margin="0,16,0,0" VerticalAlignment="Top" Width="77"/>
                 <TextBox x:Name="tbHost" HorizontalAlignment="Left" Height="23" Margin="115,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 <Label x:Name="lbPort" Content="Control port" HorizontalAlignment="Left" Margin="0,52,0,0" VerticalAlignment="Top" Width="86" RenderTransformOrigin="0.442,0.962"/>
-                <TextBox x:Name="tbControlPort" HorizontalAlignment="Left" Height="21" Margin="115,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="tbPort_PreviewTextInput" />
+                <TextBox x:Name="tbControlPort" HorizontalAlignment="Left" Height="21" Margin="115,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="PreviewTextInputNumbersOnly" />
                 <Label x:Name="lbPort_Copy" Content="Player port" HorizontalAlignment="Left" Margin="0,89,0,0" VerticalAlignment="Top" Width="77"/>
-                <TextBox x:Name="tbPlayerPort" HorizontalAlignment="Left" Height="21" Margin="115,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="tbPort_PreviewTextInput" />
+                <TextBox x:Name="tbPlayerPort" HorizontalAlignment="Left" Height="21" Margin="115,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" PreviewTextInput="PreviewTextInputNumbersOnly" />
                 <CheckBox x:Name="cbAutoReconnect" HorizontalAlignment="Left" Height="21" Margin="5,126,0,0" VerticalAlignment="Top" Width="225" Content="Auto-retry if connection is lost?" Checked="cbAutoReconnect_Toggled" Unchecked="cbAutoReconnect_Toggled" />
             </Grid>
         </GroupBox>
@@ -34,7 +34,7 @@
             Height="76" 
             Margin="11,10,0,0" 
             VerticalAlignment="Top"
-            Width="257">
+            Width="506">
             <CheckBox x:Name="cbAutoLaunch" Content="Launch on Windows startup" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="224" Checked="cbAutoLaunch_Toggled" Unchecked="cbAutoLaunch_Toggled" />
         </GroupBox>
         <Label x:Name="lbVersion" Content="" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="177" Height="27"/>
@@ -58,6 +58,17 @@
                 <Label x:Name="lbDismiss" Content="Panel dismiss method" HorizontalAlignment="Left" Height="30" Margin="0,5,0,0" Width="127"/>
                 <ComboBox x:Name="cbDismiss" Width="105" HorizontalAlignment="Stretch" Height="20" Margin="7,7" SelectionChanged="cbDismiss_SelectionChanged"></ComboBox>
             </StackPanel>
+        </GroupBox>
+        <GroupBox x:Name="gbNotifications" Header="Notifications"  Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="147" Margin="283,105,0,0" VerticalAlignment="Top" Width="234">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10 10 10 10">
+                <RadioButton x:Name="rbDefault" Content="Default" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30"  GroupName="NotificationBehaviour" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="rbAutoDismiss" Content="Auto-dismiss (seconds):" HorizontalAlignment="Stretch"  VerticalAlignment="Top" Height="30"  GroupName="NotificationBehaviour" />
+                    <TextBox x:Name="tbAutoDismissSeconds" Width="40" Height="20" VerticalAlignment="Top" Margin="10 0 0 0" IsEnabled="false" PreviewTextInput="PreviewTextInputNumbersOnly" />
+                </StackPanel>
+                <RadioButton x:Name="rbDisable" Content="Disable" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" GroupName="NotificationBehaviour" />
+            </StackPanel>
+
         </GroupBox>
     </Grid>
 </Controls:MetroWindow>

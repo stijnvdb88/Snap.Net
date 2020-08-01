@@ -166,5 +166,29 @@ namespace SnapDotNet.Properties {
                 this["SnapControlDismiss"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int NotificationBehaviour {
+            get {
+                return ((int)(this["NotificationBehaviour"]));
+            }
+            set {
+                this["NotificationBehaviour"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int NotificationAutoDismissSeconds {
+            get {
+                return ((int)(this["NotificationAutoDismissSeconds"]));
+            }
+            set {
+                this["NotificationAutoDismissSeconds"] = value;
+            }
+        }
     }
 }

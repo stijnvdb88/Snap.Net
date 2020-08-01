@@ -13,6 +13,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Timers;
 using System.Windows.Controls;
 
 namespace SnapDotNet.Controls
@@ -24,6 +25,7 @@ namespace SnapDotNet.Controls
     {
         public Action OnClosed;
         private readonly Hardcodet.Wpf.TaskbarNotification.Interop.Point m_Origin;
+        private Timer m_Timer = null;
 
         public Notification(Hardcodet.Wpf.TaskbarNotification.Interop.Point origin, string title, string message)
         {
@@ -31,6 +33,17 @@ namespace SnapDotNet.Controls
             m_Origin = origin;
             tbTitle.Text = title;
             tbMessage.Text = message;
+
+            if (SnapSettings.NotificationBehaviour == SnapSettings.ENotificationBehaviour.AutoDismiss && SnapSettings.NotificationAutoDismissSeconds > 0)
+            {
+                m_Timer = new Timer(SnapSettings.NotificationAutoDismissSeconds * 1000);
+                m_Timer.Start();
+                m_Timer.Elapsed += (sender, args) =>
+                {
+                    Snapcast.TaskbarIcon.CloseBalloon();
+                    m_Timer = null;
+                };
+            }
         }
 
         private void _Close()

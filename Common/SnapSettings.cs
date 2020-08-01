@@ -25,6 +25,14 @@ namespace SnapDotNet
     /// </summary>
     public static class SnapSettings
     {
+        public enum ENotificationBehaviour
+        {
+            Default,
+            AutoDismiss,
+            Disabled
+        }
+
+
         private const string AUTOLAUNCH_REGISTRY_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
         public static event Action OnThemeChanged;
 
@@ -38,7 +46,6 @@ namespace SnapDotNet
                 Properties.Settings.Default.Save();
             }
         }
-
 
         /// <summary>
         /// Server ip or hostname
@@ -55,6 +62,8 @@ namespace SnapDotNet
                 _Save();
             }
         }
+
+
 
         /// <summary>
         /// Server port to connect to for JSON-RPC control
@@ -157,6 +166,39 @@ namespace SnapDotNet
         public static ESnapControlDismissMethod SnapControlDismissMethod
         {
             get { return (ESnapControlDismissMethod) SnapControlDismiss; }
+        }
+
+
+        /// <summary>
+        /// Notification behaviour
+        /// </summary>
+        public static ENotificationBehaviour NotificationBehaviour
+        {
+            get
+            {
+                return (ENotificationBehaviour)Properties.Settings.Default.NotificationBehaviour;
+            }
+            set
+            {
+                Properties.Settings.Default.NotificationBehaviour = (int)value;
+                _Save();
+            }
+        }
+
+        /// <summary>
+        /// Number of seconds after which to auto dismiss any open notification
+        /// </summary>
+        public static int NotificationAutoDismissSeconds
+        {
+            get
+            {
+                return Properties.Settings.Default.NotificationAutoDismissSeconds;
+            }
+            set
+            {
+                Properties.Settings.Default.NotificationAutoDismissSeconds = value;
+                _Save();
+            }
         }
 
         private static void _Save()
