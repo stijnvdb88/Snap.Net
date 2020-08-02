@@ -35,6 +35,7 @@ namespace SnapDotNet.Windows
         private string[] m_DismissMethods = {"Click outside", "Right-click"};
 
         private Dictionary<SnapSettings.ENotificationBehaviour, RadioButton> m_NotificationBehaviourRadioButtons = new Dictionary<SnapSettings.ENotificationBehaviour, RadioButton>();
+        private Dictionary<SnapSettings.EDeviceMissingBehaviour, RadioButton> m_DeviceMissingBehaviourRadioButtons = new Dictionary<SnapSettings.EDeviceMissingBehaviour, RadioButton>();
 
         public Settings()
         {
@@ -54,14 +55,26 @@ namespace SnapDotNet.Windows
             m_NotificationBehaviourRadioButtons.Add(SnapSettings.ENotificationBehaviour.AutoDismiss, rbAutoDismiss);
             m_NotificationBehaviourRadioButtons.Add(SnapSettings.ENotificationBehaviour.Disabled, rbDisable);
 
+            m_DeviceMissingBehaviourRadioButtons.Add(SnapSettings.EDeviceMissingBehaviour.Default, rbMissingDeviceError);
+            m_DeviceMissingBehaviourRadioButtons.Add(SnapSettings.EDeviceMissingBehaviour.RetrySilent, rbMissingDeviceRetry);
+
             m_NotificationBehaviourRadioButtons[SnapSettings.NotificationBehaviour].IsChecked = true;
+            m_DeviceMissingBehaviourRadioButtons[SnapSettings.DeviceMissingBehaviour].IsChecked = true;
+
             tbAutoDismissSeconds.Text = SnapSettings.NotificationAutoDismissSeconds.ToString();
             tbAutoDismissSeconds.IsEnabled = (bool)rbAutoDismiss.IsChecked;
+
+            tbMissingDeviceRetrySeconds.Text = SnapSettings.DeviceMissingRetryIntervalSeconds.ToString();
+            tbMissingDeviceRetrySeconds.IsEnabled = (bool) rbMissingDeviceRetry.IsChecked;
 
             foreach (RadioButton rb in m_NotificationBehaviourRadioButtons.Values)
             {
                 rb.Checked += rbNotificationBehaviourGroup_CheckChanged;
-                //rb.Unchecked += rbNotificationBehaviourGroup_CheckChanged;
+            }
+
+            foreach (RadioButton rb in m_DeviceMissingBehaviourRadioButtons.Values)
+            {
+                rb.Checked += rbDeviceMissingBehaviourGroup_CheckChanged;
             }
 
 
@@ -157,6 +170,20 @@ namespace SnapDotNet.Windows
                 if (kvp.Value.IsChecked == true)
                 {
                     SnapSettings.NotificationBehaviour = kvp.Key;
+                }
+            }
+        }
+
+        private void rbDeviceMissingBehaviourGroup_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            tbMissingDeviceRetrySeconds.IsEnabled = (bool)rbMissingDeviceRetry.IsChecked;
+
+            foreach (KeyValuePair<SnapSettings.EDeviceMissingBehaviour, RadioButton> kvp in
+                m_DeviceMissingBehaviourRadioButtons)
+            {
+                if (kvp.Value.IsChecked == true)
+                {
+                    SnapSettings.DeviceMissingBehaviour = kvp.Key;
                 }
             }
         }

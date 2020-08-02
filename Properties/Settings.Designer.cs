@@ -190,5 +190,29 @@ namespace SnapDotNet.Properties {
                 this["NotificationAutoDismissSeconds"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int DeviceMissingBehaviour {
+            get {
+                return ((int)(this["DeviceMissingBehaviour"]));
+            }
+            set {
+                this["DeviceMissingBehaviour"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int DeviceMissingRetryIntervalSeconds {
+            get {
+                return ((int)(this["DeviceMissingRetryIntervalSeconds"]));
+            }
+            set {
+                this["DeviceMissingRetryIntervalSeconds"] = value;
+            }
+        }
     }
 }

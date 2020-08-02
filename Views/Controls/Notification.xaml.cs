@@ -41,6 +41,7 @@ namespace SnapDotNet.Controls
                 m_Timer.Elapsed += (sender, args) =>
                 {
                     Snapcast.TaskbarIcon.CloseBalloon();
+                    m_Timer.Stop();
                     m_Timer = null;
                 };
             }

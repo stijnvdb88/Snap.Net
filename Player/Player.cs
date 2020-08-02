@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Timer = System.Timers.Timer;
 
 namespace SnapDotNet.Player
 {
@@ -132,15 +133,33 @@ namespace SnapDotNet.Player
             }
             catch (NullReferenceException e)
             {
-                Logger.Error(e, "Error while trying to play, device {0}", friendlyName);
-                Snapcast.Instance.ShowNotification("Device not found", string.Format("Couldn't find sound device '{0}'. Has it been unplugged?", friendlyName));
                 DevicePlayStateChanged?.Invoke(deviceUniqueId, EState.Stopped);
                 m_ActivePlayers.Remove(deviceUniqueId);
-                if (System.Windows.MessageBox.Show(string.Format("The audio device '{0}' had been marked for auto-play, but is missing from the system. Would you like to remove it from auto-play?", friendlyName),
-                    "Snap.Net - Auto-play device missing", System.Windows.MessageBoxButton.YesNo) == System.Windows.MessageBoxResult.Yes)
+                Logger.Error(e, "Error while trying to play, device {0}", friendlyName);
+
+                if (SnapSettings.DeviceMissingBehaviour == SnapSettings.EDeviceMissingBehaviour.Default)
                 {
-                    SnapSettings.SetAudioDeviceAutoPlay(deviceUniqueId, false, friendlyName);
+                    Snapcast.Instance.ShowNotification("Device not found", string.Format("Couldn't find sound device '{0}'. Has it been unplugged?", friendlyName));
                 }
+                else if(SnapSettings.DeviceMissingRetryIntervalSeconds > 0)
+                {
+                    Timer timer = new Timer(SnapSettings.DeviceMissingRetryIntervalSeconds * 1000);
+                    timer.Start();
+                    timer.Elapsed += async (sender, args)  =>
+                    {
+                        timer.Stop();
+                        await PlayAsync(deviceUniqueId, friendlyName);
+                    };
+                }
+                
+                // this prompt needs rethinking - it's only useful when a device has permanently disappeared
+                // maybe add an extra player list at the bottom with "not found" devices? (disable play button etc)
+                
+                //if (System.Windows.MessageBox.Show(string.Format("The audio device '{0}' had been marked for auto-play, but is missing from the system. Would you like to remove it from auto-play?", friendlyName),
+                //    "Snap.Net - Auto-play device missing", System.Windows.MessageBoxButton.YesNo) == System.Windows.MessageBoxResult.Yes)
+                //{
+                //    SnapSettings.SetAudioDeviceAutoPlay(deviceUniqueId, false, friendlyName);
+                //}
             }
         }
 

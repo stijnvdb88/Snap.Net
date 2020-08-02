@@ -32,6 +32,12 @@ namespace SnapDotNet
             Disabled
         }
 
+        public enum EDeviceMissingBehaviour
+        {
+            Default,
+            RetrySilent
+        }
+
 
         private const string AUTOLAUNCH_REGISTRY_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
         public static event Action OnThemeChanged;
@@ -200,6 +206,39 @@ namespace SnapDotNet
                 _Save();
             }
         }
+
+        /// <summary>
+        /// Device missing behaviour
+        /// </summary>
+        public static EDeviceMissingBehaviour DeviceMissingBehaviour
+        {
+            get
+            {
+                return (EDeviceMissingBehaviour)Properties.Settings.Default.DeviceMissingBehaviour;
+            }
+            set
+            {
+                Properties.Settings.Default.DeviceMissingBehaviour = (int)value;
+                _Save();
+            }
+        }
+
+        /// <summary>
+        /// Number of seconds between retries for missing devices
+        /// </summary>
+        public static int DeviceMissingRetryIntervalSeconds
+        {
+            get
+            {
+                return Properties.Settings.Default.DeviceMissingRetryIntervalSeconds;
+            }
+            set
+            {
+                Properties.Settings.Default.DeviceMissingRetryIntervalSeconds = value;
+                _Save();
+            }
+        }
+
 
         private static void _Save()
         {

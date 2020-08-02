@@ -8,7 +8,7 @@
         WindowTransitionsEnabled="False"
         mc:Ignorable="d"
         GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="Settings" Height="574.458" Width="532.764" 
+        Title="Settings" Height="574.458" Width="568.969" 
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Loaded="Window_Loaded">
     <Grid Margin="0,0,0,-3">
@@ -34,7 +34,7 @@
             Height="76" 
             Margin="11,10,0,0" 
             VerticalAlignment="Top"
-            Width="506">
+            Width="542">
             <CheckBox x:Name="cbAutoLaunch" Content="Launch on Windows startup" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="224" Checked="cbAutoLaunch_Toggled" Unchecked="cbAutoLaunch_Toggled" />
         </GroupBox>
         <Label x:Name="lbVersion" Content="" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="177" Height="27"/>
@@ -59,7 +59,7 @@
                 <ComboBox x:Name="cbDismiss" Width="105" HorizontalAlignment="Stretch" Height="20" Margin="7,7" SelectionChanged="cbDismiss_SelectionChanged"></ComboBox>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="gbNotifications" Header="Notifications"  Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="147" Margin="283,105,0,0" VerticalAlignment="Top" Width="234">
+        <GroupBox x:Name="gbNotifications" Header="Notifications"  Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="148" Margin="283,105,0,0" VerticalAlignment="Top" Width="270">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10 10 10 10">
                 <RadioButton x:Name="rbDefault" Content="Default" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30"  GroupName="NotificationBehaviour" />
                 <StackPanel Orientation="Horizontal">
@@ -69,6 +69,16 @@
                 <RadioButton x:Name="rbDisable" Content="Disable" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30" GroupName="NotificationBehaviour" />
             </StackPanel>
 
+        </GroupBox>
+        <GroupBox x:Name="gbDevices" Header="Devices" Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="152" Margin="283,258,0,0" VerticalAlignment="Top" Width="270">
+            <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                <Label Content="If auto-play device missing:" />
+                <RadioButton x:Name="rbMissingDeviceError" Content="Show error notification" Margin="10 10 0 0" GroupName="MissingDevice" VerticalAlignment="Top" Height="30" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="rbMissingDeviceRetry" VerticalAlignment="Top" Content="Silent retry (interval seconds)" Margin="10 0 0 0" Height="30" GroupName="MissingDevice" />
+                    <TextBox x:Name="tbMissingDeviceRetrySeconds" Width="40" Height="20" Margin="10 0 0 0" VerticalAlignment="Top" IsEnabled="false" PreviewTextInput="PreviewTextInputNumbersOnly" />
+                </StackPanel>
+            </StackPanel>
         </GroupBox>
     </Grid>
 </Controls:MetroWindow>
