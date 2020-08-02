@@ -115,7 +115,7 @@ namespace SnapDotNet.Windows
             int controlPort = int.Parse(tbControlPort.Text, CultureInfo.CurrentCulture);
             int playerPort = int.Parse(tbPlayerPort.Text, CultureInfo.CurrentCulture);
             bool modified = SnapSettings.Server != tbHost.Text || SnapSettings.ControlPort != controlPort || SnapSettings.PlayerPort != playerPort;
-            SnapSettings.Server = tbHost.Text;
+            SnapSettings.Server = tbHost.Text.Trim();
             SnapSettings.ControlPort = controlPort;
             SnapSettings.PlayerPort = playerPort;
             SnapSettings.NotificationAutoDismissSeconds =

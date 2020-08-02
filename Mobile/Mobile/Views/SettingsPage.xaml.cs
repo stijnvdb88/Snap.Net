@@ -23,9 +23,9 @@ namespace SnapDotNet.Mobile.Views
 
         private async void Button_OnClicked(object sender, EventArgs e)
         {
-            SnapSettings.Server = eServer.Text;
-            SnapSettings.ControlPort = int.Parse(eControlPort.Text);
-            SnapSettings.PlayerPort = int.Parse(ePlayerPort.Text);
+            SnapSettings.Server = eServer.Text.Trim();
+            SnapSettings.ControlPort = int.Parse(eControlPort.Text.Trim());
+            SnapSettings.PlayerPort = int.Parse(ePlayerPort.Text.Trim());
 
             await App.Instance.ReconnectAsync().ConfigureAwait(false);
         }
