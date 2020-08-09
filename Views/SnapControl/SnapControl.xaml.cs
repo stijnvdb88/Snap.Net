@@ -59,6 +59,9 @@ namespace SnapDotNet.SnapControl
         private void _OnServerUpdated()
         {
             spGroups.Children.Clear();
+            if (m_SnapcastClient.ServerData == null) // happens when server is disconnected
+                return;
+
             foreach (SnapDotNet.ControlClient.JsonRpcData.Group group in m_SnapcastClient.ServerData.groups)
             {
                 spGroups.Children.Add(new Group(m_SnapcastClient, group));
