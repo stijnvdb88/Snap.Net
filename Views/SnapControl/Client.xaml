@@ -15,6 +15,9 @@
                 BorderThickness="0,0,0,0" 
                 FontWeight="Thin" 
                 VerticalContentAlignment="Center"
+                PreviewMouseUp="LbClient_OnPreviewMouseUp"
+                PreviewMouseDown="LbClient_OnPreviewMouseDown"
+                PreviewMouseMove="LbClient_OnPreviewMouseMove"
                 HorizontalContentAlignment="Center" Click="lbClient_Click">
             <StackPanel Orientation="Horizontal" x:Name="spTitle">
                 <TextBlock x:Name="tbClient" FontSize="11" VerticalAlignment="Center">

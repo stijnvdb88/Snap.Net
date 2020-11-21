@@ -14,6 +14,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -28,7 +29,7 @@ namespace SnapDotNet.SnapControl
         private List<Client> m_ClientControls = new List<Client>();
         private readonly SnapDotNet.ControlClient.JsonRpcData.Group m_Group;
         private SnapDotNet.ControlClient.JsonRpcData.Stream m_Stream;
-
+        
         public Group(SnapDotNet.ControlClient.SnapcastClient snapcastClient, SnapDotNet.ControlClient.JsonRpcData.Group group)
         {
             InitializeComponent();
@@ -123,6 +124,38 @@ namespace SnapDotNet.SnapControl
         {
             ViewStream viewStream = new ViewStream(m_Stream);
             viewStream.ShowDialog();
+        }
+
+        private void Group_OnDrop(object sender, DragEventArgs e)
+        {
+            base.OnDrop(e);
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string dataString = (string) e.Data.GetData(DataFormats.StringFormat);
+                ControlClient.JsonRpcData.Group from = null;
+                foreach (ControlClient.JsonRpcData.Group group in m_SnapcastClient.ServerData.groups)
+                {
+                    if (group.HasClientWithId(dataString))
+                    {
+                        from = group;
+                    }
+                }
+
+                if (from != m_Group)
+                {
+                    List<ControlClient.JsonRpcData.Client> clients = new List<ControlClient.JsonRpcData.Client>(from.clients);
+                    // remove client from old group
+                    clients.Remove(clients.Find(c => c.id == dataString)); 
+                    from.CLIENT_SetClients(clients.Select(c => c.id).ToArray());
+
+                    // add to ours
+                    clients = new List<ControlClient.JsonRpcData.Client>(m_Group.clients);
+                    List<string> ids = clients.Select(c => c.id).ToList();
+                    ids.Add(dataString);
+                    m_Group.CLIENT_SetClients(ids.ToArray());
+                }
+            }
+
         }
     }
 }

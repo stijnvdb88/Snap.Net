@@ -239,7 +239,7 @@ namespace SnapDotNet.Player
             if (lastLine.Contains("WASAPI"))
             {
                 string errorCode = _FindErrorCode(lastLine);
-                if (string.IsNullOrEmpty(errorCode) == false)
+                if (string.IsNullOrEmpty(errorCode) == false && s_WASAPIErrorCodes.ContainsKey(errorCode))
                 {
                     sb.Append(string.Format("...that's WASAPI-nese for {0} - {1})", s_WASAPIErrorCodes[errorCode].Item1, s_WASAPIErrorCodes[errorCode].Item2));
                 }

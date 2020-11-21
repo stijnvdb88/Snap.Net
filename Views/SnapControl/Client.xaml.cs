@@ -14,8 +14,10 @@
 */
 using MahApps.Metro.IconPacks;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace SnapDotNet.SnapControl
@@ -28,6 +30,9 @@ namespace SnapDotNet.SnapControl
     {
         private readonly SnapDotNet.ControlClient.JsonRpcData.Client m_Client = null;
         private readonly SnapDotNet.ControlClient.JsonRpcData.Snapserver m_SnapServer = null;
+        private bool m_Dragging = false;
+        private const float DRAG_THRESHOLD = 1.0f;
+        private Point m_StartPos = new Point(0, 0);
 
         public Client(SnapDotNet.ControlClient.JsonRpcData.Client client, SnapDotNet.ControlClient.JsonRpcData.Snapserver server)
         {
@@ -108,6 +113,41 @@ namespace SnapDotNet.SnapControl
         {
             EditClient editClient = new EditClient(m_Client, m_SnapServer);
             editClient.ShowDialog();
+        }
+
+        private void LbClient_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            Point pos = e.GetPosition(this);
+            Vector delta = pos - m_StartPos;
+            if ((delta.Length > DRAG_THRESHOLD || m_Dragging) && e.LeftButton == MouseButtonState.Pressed)
+            {
+                m_Dragging = true;
+                DataObject data = new DataObject();
+                data.SetData(DataFormats.StringFormat, m_Client.id);
+                DragDrop.DoDragDrop(this, data, DragDropEffects.Move);
+                Debug.WriteLine("DRAGGING");
+            }
+        }
+
+        private void LbClient_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left)
+                return;
+            m_Dragging = false;
+
+            m_StartPos = e.GetPosition(this);
+        }
+
+        private void LbClient_OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (m_Dragging)
+            {
+                m_Dragging = false;
+                e.Handled = true;
+                var button = sender as Button;
+                button.ReleaseMouseCapture();
+            }
         }
     }
 }

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SnapDotNet.SnapControl"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d" Width="Auto" Height="Auto">
+             mc:Ignorable="d" Width="Auto" Height="Auto" AllowDrop="True"
+             Drop="Group_OnDrop" Background="Transparent">
     <Grid Height="Auto">
         <local:VolumeControl x:Name="vcGroup" HorizontalAlignment="Left" Margin="10,73,0,10" Width="47" />
         <StackPanel Orientation="Horizontal" 
@@ -25,7 +26,7 @@
             <Button x:Name="btStream"                                                 
                     BorderThickness="0.9"
                     Style="{DynamicResource AccentedSquareButtonStyle}"
-                    BorderBrush="{DynamicResource AccentColorBrush}"        
+                    BorderBrush="{DynamicResource AccentColorBrush}"      
                     VerticalContentAlignment="Center"
                     FontWeight="Thin"                     
                     HorizontalContentAlignment="Center" Click="btStream_Click">
