@@ -67,7 +67,15 @@ namespace SnapDotNet
         }
 
 
-        // make async
+        /// <summary>
+        /// Deprecated - use Cli.Wrap instead
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="arguments"></param>
+        /// <param name="onOutputReceived"></param>
+        /// <param name="onErrorReceived"></param>
+        /// <param name="onExit"></param>
+        /// <returns></returns>
         public static string GetProcessOutput(string command, string arguments, Action<string> onOutputReceived = null, Action<string> onErrorReceived = null, Action onExit = null)
         {
             Process process = new System.Diagnostics.Process();
@@ -76,6 +84,7 @@ namespace SnapDotNet
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
+            startInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
             startInfo.CreateNoWindow = true;
             process.StartInfo = startInfo;
             process.Start();

@@ -72,16 +72,16 @@ namespace SnapDotNet.Windows
 
         }
 
-        private void btRefreshDevices_Click(object sender, RoutedEventArgs e)
+        private async void btRefreshDevices_Click(object sender, RoutedEventArgs e)
         {
-            _ListDevices();
+            await _ListDevices();
         }
 
-        private void _ListDevices()
+        private async Task _ListDevices()
         {
+            SnapDotNet.Player.Device[] devices = await SnapDotNet.Player.Player.GetDevicesAsync();
             m_DeviceControls.Clear();
             spDevices.Children.Clear();
-            SnapDotNet.Player.Device[] devices = SnapDotNet.Player.Device.GetDevices();
             foreach (SnapDotNet.Player.Device device in devices)
             {
                 Controls.Device d = new Controls.Device(device);

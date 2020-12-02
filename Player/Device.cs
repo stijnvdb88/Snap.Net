@@ -34,44 +34,5 @@ namespace SnapDotNet.Player
             UniqueId = uniqueId;
             Name = name;
         }
-
-        private static Device[] _GetFromSnapClientListOutput(string output, bool includeDefault)
-        {
-            List<Device> devices = new List<Device>();
-            string[] lines = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            lines = lines.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            for (int i = 0; i < lines.Length; i += 2) // each device entry consists of 2 lines: idx + id, name
-            {
-                if (includeDefault == true || i != 0)
-                {
-                    string[] ids = lines[i].Split(new[] { ": " }, StringSplitOptions.None);
-                    int index = int.Parse(ids[0], CultureInfo.InvariantCulture);
-                    string uniqueId = ids[1];
-                    string name = lines[i + 1]; // name is line 2
-                    devices.Add(new Device(index, uniqueId, name));
-                }
-            }
-            return devices.ToArray();
-        }
-
-        public static Device FindDevice(string uniqueId)
-        {
-            Device[] devices = Device.GetDevices();
-            foreach (Device d in devices)
-            {
-                if (d.UniqueId == uniqueId)
-                {
-                    return d;
-                }
-            }
-            return null;
-        }
-
-        public static Device[] GetDevices(bool includeDefault = false)
-        {
-            string path = System.IO.Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
-            string output = Utils.GetProcessOutput(path, "-l");
-            return _GetFromSnapClientListOutput(output, includeDefault);
-        }
     }
 }

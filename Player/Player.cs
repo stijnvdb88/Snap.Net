@@ -17,11 +17,13 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CliWrap.Buffered;
 using Timer = System.Timers.Timer;
 
 namespace SnapDotNet.Player
@@ -163,14 +165,14 @@ namespace SnapDotNet.Player
             }
         }
 
-        private string _SnapClient()
+        private static string _SnapClient()
         {
             return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
         }
-
+        
         private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource, int attempts = 0)
         {
-            Device device = Device.FindDevice(deviceUniqueId);
+            Device device = await FindDeviceAsync(deviceUniqueId);
             if (device == null)
             {
                 await Task.FromException(new NullReferenceException("Couldn't get device with uniqueId " + deviceUniqueId)).ConfigureAwait(false);
@@ -229,6 +231,46 @@ namespace SnapDotNet.Player
             }
             DevicePlayStateChanged?.Invoke(deviceUniqueId, EState.Stopped);
             m_ActivePlayers.Remove(deviceUniqueId);
+        }
+
+
+        public static async Task<Device[]> GetDevicesAsync(bool includeDefault = false)
+        {
+            BufferedCommandResult result = await Cli.Wrap(_SnapClient()).WithArguments("--list")
+                .ExecuteBufferedAsync(Encoding.UTF8, Encoding.UTF8);
+            return _GetFromSnapClientListOutput(result.StandardOutput, includeDefault);
+        }
+
+        public static async Task<Device> FindDeviceAsync(string uniqueId)
+        {
+            Device[] devices = await GetDevicesAsync();
+            foreach (Device d in devices)
+            {
+                if (d.UniqueId == uniqueId)
+                {
+                    return d;
+                }
+            }
+            return null;
+        }
+
+        private static Device[] _GetFromSnapClientListOutput(string output, bool includeDefault)
+        {
+            List<Device> devices = new List<Device>();
+            string[] lines = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            lines = lines.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            for (int i = 0; i < lines.Length; i += 2) // each device entry consists of 2 lines: idx + id, name
+            {
+                if (includeDefault == true || i != 0)
+                {
+                    string[] ids = lines[i].Split(new[] { ": " }, StringSplitOptions.None);
+                    int index = int.Parse(ids[0], CultureInfo.InvariantCulture);
+                    string uniqueId = ids[1];
+                    string name = lines[i + 1]; // name is line 2
+                    devices.Add(new Device(index, uniqueId, name));
+                }
+            }
+            return devices.ToArray();
         }
 
         private string _BuildErrorMessage(Device device, string lastLine)
