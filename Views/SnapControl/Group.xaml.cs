@@ -38,11 +38,14 @@ namespace SnapDotNet.SnapControl
 
             foreach (SnapDotNet.ControlClient.JsonRpcData.Client client in m_Group.clients)
             {
-                Client c = new Client(client, m_SnapcastClient.ServerData.server.snapserver);
-                c.HorizontalAlignment = HorizontalAlignment.Stretch;
-                c.HorizontalContentAlignment = HorizontalAlignment.Center;
-                m_ClientControls.Add(c);
-                spClients.Children.Add(c);
+                if (SnapSettings.HideOfflineClients == false || client.connected == true)
+                {
+                    Client c = new Client(client, m_SnapcastClient.ServerData.server.snapserver);
+                    c.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    c.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    m_ClientControls.Add(c);
+                    spClients.Children.Add(c);
+                }
             }
 
             m_Group.SERVER_OnGroupUpdated += () =>

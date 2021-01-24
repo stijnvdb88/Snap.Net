@@ -14,6 +14,7 @@
 */
 using System;
 using System.Collections.Generic;
+using MessagePack.Resolvers;
 
 namespace SnapDotNet.ControlClient.JsonRpcData
 {
@@ -121,6 +122,21 @@ namespace SnapDotNet.ControlClient.JsonRpcData
                 return avg;
             }
         }
+
+        public int GetNumClientsOnline()
+        {
+            int n = 0;
+            for (int i = 0; i < clients.Length; i++)
+            {
+                if (clients[i].connected == true)
+                {
+                    n++;
+                }
+            }
+
+            return n;
+        }
+
 
         public Client[] clients { get; set; }
         public string id { get; set; }

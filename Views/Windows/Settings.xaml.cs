@@ -67,6 +67,8 @@ namespace SnapDotNet.Windows
             tbMissingDeviceRetrySeconds.Text = SnapSettings.DeviceMissingRetryIntervalSeconds.ToString();
             tbMissingDeviceRetrySeconds.IsEnabled = (bool) rbMissingDeviceRetry.IsChecked;
 
+            cbHideOfflineClients.IsChecked = SnapSettings.HideOfflineClients;
+
             foreach (RadioButton rb in m_NotificationBehaviourRadioButtons.Values)
             {
                 rb.Checked += rbNotificationBehaviourGroup_CheckChanged;
@@ -186,6 +188,11 @@ namespace SnapDotNet.Windows
                     SnapSettings.DeviceMissingBehaviour = kvp.Key;
                 }
             }
+        }
+
+        private void cbHideOfflineClients_Toggled(object sender, RoutedEventArgs e)
+        {
+            SnapSettings.HideOfflineClients = (bool) cbHideOfflineClients.IsChecked;
         }
     }
 }

@@ -151,6 +151,19 @@ namespace SnapDotNet
             }
         }
 
+        public static bool HideOfflineClients
+        {
+            get
+            {
+                return Properties.Settings.Default.HideOfflineClients;
+            }
+            set
+            {
+                Properties.Settings.Default.HideOfflineClients = value;
+                _Save();
+            }
+        }
+
         public enum ESnapControlDismissMethod
         {
             ClickOutside,

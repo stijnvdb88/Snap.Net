@@ -54,10 +54,20 @@
         </GroupBox>
         <GroupBox x:Name="gbSnapControl" Header="Misc" 
                   Background="{DynamicResource ControlBackgroundBrush}" Margin="11,424,10,42">
-            <StackPanel Orientation="Horizontal">
-                <Label x:Name="lbDismiss" Content="Panel dismiss method" HorizontalAlignment="Left" Height="30" Margin="0,5,0,0" Width="127"/>
-                <ComboBox x:Name="cbDismiss" Width="105" HorizontalAlignment="Stretch" Height="20" Margin="7,7" SelectionChanged="cbDismiss_SelectionChanged"></ComboBox>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label x:Name="lbDismiss" Content="Panel dismiss method" HorizontalAlignment="Left" Height="30" Margin="0,5,0,0" Width="127" />
+                        <ComboBox x:Name="cbDismiss" Width="105" HorizontalAlignment="Stretch" Height="20" Margin="7,7" SelectionChanged="cbDismiss_SelectionChanged"></ComboBox>
+                    </StackPanel>
+                </StackPanel>
+
+                <CheckBox x:Name="cbHideOfflineClients" HorizontalAlignment="Right" Grid.Column="1" Checked="cbHideOfflineClients_Toggled" Unchecked="cbHideOfflineClients_Toggled">Hide offline clients?</CheckBox>
+            </Grid>
         </GroupBox>
         <GroupBox x:Name="gbNotifications" Header="Notifications"  Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="148" Margin="283,105,0,0" VerticalAlignment="Top" Width="270">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10 10 10 10">

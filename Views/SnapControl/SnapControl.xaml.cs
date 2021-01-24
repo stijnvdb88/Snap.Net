@@ -64,7 +64,10 @@ namespace SnapDotNet.SnapControl
 
             foreach (SnapDotNet.ControlClient.JsonRpcData.Group group in m_SnapcastClient.ServerData.groups)
             {
-                spGroups.Children.Add(new Group(m_SnapcastClient, group));
+                if (SnapSettings.HideOfflineClients == false || group.GetNumClientsOnline() > 0)
+                {
+                    spGroups.Children.Add(new Group(m_SnapcastClient, group));
+                }
             }
         }
 
