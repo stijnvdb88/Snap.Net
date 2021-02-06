@@ -70,7 +70,15 @@ namespace SnapDotNet.Mobile.Views
                 });
                 return;
             }
-            tbPlay.IsEnabled = App.Instance.Player.SupportsSnapclient();
+
+            if (App.Instance.Player.SupportsSnapclient() == false)
+            {
+                if (ToolbarItems.Contains(tbPlay))
+                {
+                    ToolbarItems.Remove(tbPlay); // remove "Play" button for platforms that don't support it
+                }
+            }
+            //tbPlay.IsEnabled = App.Instance.Player.SupportsSnapclient();
             tbPlay.Text = App.Instance.Player.IsPlaying() == false ? "Play" : "Stop";
 
             Groups.Children.Clear();
