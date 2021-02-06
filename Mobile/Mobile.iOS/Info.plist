@@ -27,13 +27,15 @@
 	<string>Snapcast</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.stijnvdb88.snapdotnet</string>
-	<key>CFBundleVersion</key>
-	<string>0.20.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
 	<string>Mobile</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.23.0</string>
+	<key>CFBundleVersion</key>
+	<string>0</string>
 </dict>
 </plist>
