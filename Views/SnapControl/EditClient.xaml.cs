@@ -14,6 +14,7 @@
 */
 using MahApps.Metro.Controls;
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 
@@ -73,14 +74,26 @@ namespace SnapDotNet.SnapControl
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            m_Client.CLIENT_SetName(tbName.Text);
-            m_Client.config.CLIENT_SetLatency(int.Parse(tbLatency.Text, System.Globalization.CultureInfo.CurrentCulture));
-            this.Close();
+            int latency = 0;
+            if (int.TryParse(tbLatency.Text, NumberStyles.AllowLeadingSign, System.Globalization.CultureInfo.CurrentCulture, out latency))
+            {
+                m_Client.CLIENT_SetName(tbName.Text);
+                m_Client.config.CLIENT_SetLatency(latency);
+                this.Close();
+            }
         }
 
         private void tbLatency_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = Utils.IsNumbersOnly(e.Text) == false || e.Text.Length >= 4;
+            string input = e.Text;
+            if (input.StartsWith("-"))
+            {
+                e.Handled = Utils.IsNumbersOnly(input.Substring(1)) == false || input.Length >= 5 || input.Length != 1;
+            }
+            else
+            {
+                e.Handled = Utils.IsNumbersOnly(e.Text) == false || e.Text.Length >= 4;
+            }
         }
 
         private void btRemove_Click(object sender, RoutedEventArgs e)
