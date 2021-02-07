@@ -78,8 +78,11 @@ namespace SnapDotNet.Mobile.Views
                     ToolbarItems.Remove(tbPlay); // remove "Play" button for platforms that don't support it
                 }
             }
-            //tbPlay.IsEnabled = App.Instance.Player.SupportsSnapclient();
+
+            tbPlay.IsEnabled = m_Client != null && m_Client.IsConnected() && m_Client.ServerData != null;
             tbPlay.Text = App.Instance.Player.IsPlaying() == false ? "Play" : "Stop";
+
+            _ClearConnectionFailureLabel();
 
             Groups.Children.Clear();
 
@@ -104,7 +107,11 @@ namespace SnapDotNet.Mobile.Views
 
             if (m_Client?.ConnectionFailed == true)
             {
-                m_ConnectionFailedLabel = new Label();
+                if (m_ConnectionFailedLabel == null)
+                {
+                    m_ConnectionFailedLabel = new Label();
+                }
+
                 m_ConnectionFailedLabel.HorizontalTextAlignment = TextAlignment.Center;
                 m_ConnectionFailedLabel.Margin = new Thickness(40);
                 if (string.IsNullOrWhiteSpace(SnapSettings.Server))
@@ -123,11 +130,17 @@ namespace SnapDotNet.Mobile.Views
             }
             else
             {
-                if (m_ConnectionFailedLabel != null)
-                {
-                    Groups.Children.Remove(m_ConnectionFailedLabel);
-                    m_ConnectionFailedLabel = null;
-                }
+                _ClearConnectionFailureLabel();
+            }
+        }
+
+        private void _ClearConnectionFailureLabel()
+        {
+            if (m_ConnectionFailedLabel != null)
+            {
+                m_ConnectionFailedLabel.Text = "";
+                Groups.Children.Remove(m_ConnectionFailedLabel);
+                m_ConnectionFailedLabel = null;
             }
         }
 
