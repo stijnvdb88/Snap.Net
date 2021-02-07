@@ -8,7 +8,7 @@
         WindowTransitionsEnabled="False"
         mc:Ignorable="d"
         GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="Settings" Height="574.458" Width="568.969" 
+        Title="Settings" Height="599.458" Width="568.969" 
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Loaded="Window_Loaded">
     <Grid Margin="0,0,0,-3">
@@ -40,20 +40,20 @@
         <Label x:Name="lbVersion" Content="" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="177" Height="27"/>
         <GroupBox x:Name="groupBox" Header="Theme" 
                   Background="{DynamicResource ControlBackgroundBrush}"
-                  HorizontalAlignment="Left" Height="100" Margin="11,310,0,0" VerticalAlignment="Top" Width="257">
+                  HorizontalAlignment="Left" Height="109" Margin="11,310,0,0" VerticalAlignment="Top" Width="257">
             <UniformGrid Grid.Row="0" Columns="2">
                 <DockPanel Margin="5">
                     <Label Content="Base" DockPanel.Dock="Top" />
-                    <ComboBox x:Name="cbTheme" Height="Auto" SelectionChanged="Theme_SelectionChanged"></ComboBox>
+                    <ComboBox x:Name="cbTheme" Height="Auto" SelectionChanged="Theme_SelectionChanged" Margin="0,0,0,10"></ComboBox>
                 </DockPanel>
                 <DockPanel Margin="5">
                     <Label Content="Accent" DockPanel.Dock="Top" />
-                    <ComboBox x:Name="cbAccent" SelectionChanged="Theme_SelectionChanged"></ComboBox>
+                    <ComboBox x:Name="cbAccent" SelectionChanged="Theme_SelectionChanged" Margin="0,0,0,10"></ComboBox>
                 </DockPanel>
             </UniformGrid>
         </GroupBox>
         <GroupBox x:Name="gbSnapControl" Header="Misc" 
-                  Background="{DynamicResource ControlBackgroundBrush}" Margin="11,424,10,42">
+                  Background="{DynamicResource ControlBackgroundBrush}" Margin="11,434,10,42">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="300"></ColumnDefinition>
@@ -80,13 +80,17 @@
             </StackPanel>
 
         </GroupBox>
-        <GroupBox x:Name="gbDevices" Header="Devices" Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="152" Margin="283,258,0,0" VerticalAlignment="Top" Width="270">
+        <GroupBox x:Name="gbDevices" Header="Devices" Background="{DynamicResource ControlBackgroundBrush}" HorizontalAlignment="Left" Height="161" Margin="283,258,0,0" VerticalAlignment="Top" Width="270">
             <StackPanel Orientation="Vertical" Margin="0,0,0,0">
                 <Label Content="If auto-play device missing:" />
                 <RadioButton x:Name="rbMissingDeviceError" Content="Show error notification" Margin="10 10 0 0" GroupName="MissingDevice" VerticalAlignment="Top" Height="30" />
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton x:Name="rbMissingDeviceRetry" VerticalAlignment="Top" Content="Silent retry (interval seconds)" Margin="10 0 0 0" Height="30" GroupName="MissingDevice" />
+                    <RadioButton x:Name="rbMissingDeviceRetry" VerticalAlignment="Top" Content="Silent retry (interval seconds)" Margin="10 0 0 0" Height="30" GroupName="MissingDevice" Width="192" />
                     <TextBox x:Name="tbMissingDeviceRetrySeconds" Width="40" Height="20" Margin="10 0 0 0" VerticalAlignment="Top" IsEnabled="false" PreviewTextInput="PreviewTextInputNumbersOnly" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label VerticalAlignment="Top" Content="Remove after (# days of inactivity)" Margin="10 0 0 0" Height="30" Width="192" />
+                    <TextBox x:Name="tbMissingDeviceExpiryDays" Width="40" Height="20" Margin="10 0 0 0" VerticalAlignment="Top" IsEnabled="true" PreviewTextInput="PreviewTextInputNumbersOnly" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>

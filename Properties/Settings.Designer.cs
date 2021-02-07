@@ -226,5 +226,17 @@ namespace SnapDotNet.Properties {
                 this["HideOfflineClients"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int DeviceMissingExpiryDays {
+            get {
+                return ((int)(this["DeviceMissingExpiryDays"]));
+            }
+            set {
+                this["DeviceMissingExpiryDays"] = value;
+            }
+        }
     }
 }

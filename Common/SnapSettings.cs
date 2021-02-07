@@ -252,6 +252,24 @@ namespace SnapDotNet
             }
         }
 
+        /// <summary>
+        /// We keep track of how long ago each audio device was last "seen".
+        /// In case an auto-play device has not been seen for a few days, it should be removed from the auto-play list to avoid us retrying it forever.
+        /// The below setting indicates the # of days a device is allowed to be missing before we remove it
+        /// </summary>
+        public static int DeviceMissingExpiryDays
+        {
+            get
+            {
+                return Properties.Settings.Default.DeviceMissingExpiryDays;
+            }
+            set
+            {
+                Properties.Settings.Default.DeviceMissingExpiryDays = value;
+                _Save();
+            }
+        }
+
 
         private static void _Save()
         {

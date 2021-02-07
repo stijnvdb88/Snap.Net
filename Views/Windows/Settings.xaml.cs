@@ -67,6 +67,8 @@ namespace SnapDotNet.Windows
             tbMissingDeviceRetrySeconds.Text = SnapSettings.DeviceMissingRetryIntervalSeconds.ToString();
             tbMissingDeviceRetrySeconds.IsEnabled = (bool) rbMissingDeviceRetry.IsChecked;
 
+            tbMissingDeviceExpiryDays.Text = SnapSettings.DeviceMissingExpiryDays.ToString();
+
             cbHideOfflineClients.IsChecked = SnapSettings.HideOfflineClients;
 
             foreach (RadioButton rb in m_NotificationBehaviourRadioButtons.Values)
@@ -122,6 +124,15 @@ namespace SnapDotNet.Windows
             SnapSettings.PlayerPort = playerPort;
             SnapSettings.NotificationAutoDismissSeconds =
                 int.Parse(tbAutoDismissSeconds.Text, CultureInfo.CurrentCulture);
+
+            if (int.TryParse(tbMissingDeviceRetrySeconds.Text, NumberStyles.None, CultureInfo.CurrentCulture,
+                out var retryInterval))
+            {
+                SnapSettings.DeviceMissingRetryIntervalSeconds = retryInterval;
+            }
+
+            SnapSettings.DeviceMissingExpiryDays =
+                int.Parse(tbMissingDeviceExpiryDays.Text, CultureInfo.CurrentCulture);
             
             if (modified == true)
             {

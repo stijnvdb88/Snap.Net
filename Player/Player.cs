@@ -153,10 +153,26 @@ namespace SnapDotNet.Player
                         await PlayAsync(deviceUniqueId, friendlyName);
                     };
                 }
-                
+
+                DeviceSettings settings = SnapSettings.GetDeviceSettings(deviceUniqueId);
+                if (settings.LastSeen == null) // in case we're migrating from a version that didn't have the LastSeen field yet
+                {
+                    settings.LastSeen = DateTime.Now;
+                    SnapSettings.SaveDeviceSettings(deviceUniqueId, settings);
+                }
+
+                // if a device hasn't been seen for x days, stop trying to auto-play it
+                if (SnapSettings.DeviceMissingExpiryDays != 0)
+                {
+                    if (DateTime.Now - settings.LastSeen > new TimeSpan(SnapSettings.DeviceMissingExpiryDays, 0, 0, 0))
+                    {
+                        SnapSettings.SetAudioDeviceAutoPlay(deviceUniqueId, false, friendlyName);
+                    }
+                }
+
                 // this prompt needs rethinking - it's only useful when a device has permanently disappeared
                 // maybe add an extra player list at the bottom with "not found" devices? (disable play button etc)
-                
+
                 //if (System.Windows.MessageBox.Show(string.Format("The audio device '{0}' had been marked for auto-play, but is missing from the system. Would you like to remove it from auto-play?", friendlyName),
                 //    "Snap.Net - Auto-play device missing", System.Windows.MessageBoxButton.YesNo) == System.Windows.MessageBoxResult.Yes)
                 //{
@@ -183,6 +199,10 @@ namespace SnapDotNet.Player
                 DeviceSettings deviceSettings = SnapSettings.GetDeviceSettings(deviceUniqueId);
                 if (deviceInstanceId != -1)
                 {
+                    // update device's last seen:
+                    deviceSettings.LastSeen = DateTime.Now;
+                    SnapSettings.SaveDeviceSettings(deviceUniqueId, deviceSettings);
+
                     StringBuilder stdError = new StringBuilder();
                     string lastLine = "";
                     Action<string> stdOut = (line) =>

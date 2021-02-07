@@ -13,6 +13,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+
 namespace SnapDotNet.Player
 {
     public enum EShareMode
@@ -28,5 +30,6 @@ namespace SnapDotNet.Player
         public EShareMode ShareMode;
         public bool AutoRestartOnFailure;
         public int RestartAttempts;
+        public DateTime? LastSeen;
     }
 }
