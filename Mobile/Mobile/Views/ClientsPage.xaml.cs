@@ -105,7 +105,18 @@ namespace SnapDotNet.Mobile.Views
             if (m_Client?.ConnectionFailed == true)
             {
                 m_ConnectionFailedLabel = new Label();
-                m_ConnectionFailedLabel.Text = string.Format("Couldn't connect to snapserver at {0}:{1}", SnapSettings.Server, SnapSettings.ControlPort);
+                m_ConnectionFailedLabel.HorizontalTextAlignment = TextAlignment.Center;
+                m_ConnectionFailedLabel.Margin = new Thickness(40);
+                if (string.IsNullOrWhiteSpace(SnapSettings.Server))
+                {
+                    m_ConnectionFailedLabel.Text ="This app requires Snapserver to be installed and running on your local network.\n" +
+                                                     "Fill in the address to your server via\nMenu -> Settings.\n\n" +
+                                                     "For more information, visit:\n\nhttps://github.com/badaix/snapcast\nand\nhttps://github.com/stijnvdb88/snap.net";
+                }
+                else
+                {
+                    m_ConnectionFailedLabel.Text = $"Couldn't connect to snapserver at {SnapSettings.Server}:{SnapSettings.ControlPort}";
+                }
                 m_ConnectionFailedLabel.HorizontalOptions = LayoutOptions.CenterAndExpand;
                 m_ConnectionFailedLabel.VerticalOptions = LayoutOptions.CenterAndExpand;
                 Groups.Children.Add(m_ConnectionFailedLabel);
