@@ -204,10 +204,28 @@ namespace SnapDotNet
 
         private void _ConfigureLogger()
         {
+            string prevLogFile = Path.Combine(Utils.GetDefaultDataDirectory(), "SnapDotNet-previous.log");
+            string logFile = Path.Combine(Utils.GetDefaultDataDirectory(), "SnapDotNet.log");
+
+            // to avoid getting a huge log file over time, we should create a new one each session. however, the first thing most users do after
+            // encountering an error is to restart the app - which would also cause them to lose the logs of that faulty session.
+            // to avoid that, we'll preserve the logs for both the current session and the previous one.
+
+            if (File.Exists(prevLogFile)) // on this boot, the previous log file is already 2 sessions old and can be discarded
+            {
+                File.Delete(prevLogFile);
+            }
+
+            if (File.Exists(logFile)) // this is the actual previous log file, rename it
+            {
+                File.Move(logFile, prevLogFile);
+            }
+
             var config = new NLog.Config.LoggingConfiguration();
 
-            // Targets where to log to: File and Console
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = Path.Combine(Utils.GetDefaultDataDirectory(), "SnapDotNet.log") };
+
+            // Start logging to the regular log file:
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = logFile };
             var logconsole = new NLog.Targets.ColoredConsoleTarget("logconsole");
 
             // Rules for mapping loggers to targets            
