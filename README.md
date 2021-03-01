@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/dpv9jhmife5m628r?svg=true)](https://ci.appveyor.com/project/stijnvdb88/snap-net) [![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
 <br />
+AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br />
 <p align="center">
   <a href="https://github.com/stijnvdb88/Snap.Net">
     <img src="Assets/snapcast.png" alt="Logo" width="80" height="80">
@@ -9,7 +10,7 @@
 
   <p align="center">
     A control client and player for <a href="https://github.com/badaix/snapcast">Snapcast</a>
-    <br /><b>Windows &middot; iOS &middot; Android</b>
+    <br /><b>Windows &middot; <a href="https://apps.apple.com/us/app/snapcast-control/id1552559653">iOS</a> &middot; Android</b>
     <br />
     <br />
     <img src="https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Control.png?raw=true">
