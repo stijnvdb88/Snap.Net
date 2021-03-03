@@ -14,6 +14,7 @@ AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br
     <br />
     <br />
     <img src="https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Control.png?raw=true">
+    <br /> Overview
   </p>
 </p>
 
@@ -23,6 +24,7 @@ AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br
 ![Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Player.png)
 
 ### Control ###
+The client/group name and client latency can be set in their menus. These menus are accessible by clicking on client/group name in the overview.
 
 ![Client](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Client.png?raw=true)
 ![Group](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Group.png?raw=true)
