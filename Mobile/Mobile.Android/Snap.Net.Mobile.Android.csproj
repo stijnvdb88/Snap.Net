@@ -112,6 +112,10 @@
     <AndroidResource Include="Resources\drawable\xamarin_logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Snap.Net.SnapClient\Snap.Net.SnapClient.csproj">
+      <Project>{ace89f24-6d09-4a67-ba89-eb899e6f0c67}</Project>
+      <Name>Snap.Net.SnapClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mobile\Snap.Net.Mobile.csproj">
       <Project>{949E17DB-7DDA-47FA-9E5C-2D2C2A9E4BA9}</Project>
       <Name>Snap.Net.Mobile</Name>
