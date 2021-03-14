@@ -8,6 +8,7 @@ using Foundation;
 using UIKit;
 using SnapDotNet.Mobile;
 using System.Threading.Tasks;
+using AVFoundation;
 
 namespace SnapDotnet.Mobile.iOS
 {
@@ -31,6 +32,10 @@ namespace SnapDotnet.Mobile.iOS
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+
+            AVAudioSession session = AVAudioSession.SharedInstance();
+            session.SetCategory(AVAudioSessionCategory.Playback, AVAudioSessionCategoryOptions.MixWithOthers);
+            session.SetActive(true);
 
             return base.FinishedLaunching(app, options);
         }

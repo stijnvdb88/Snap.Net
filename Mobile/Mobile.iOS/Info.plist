@@ -34,8 +34,14 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.23.0</string>
+	<string>0.24.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>9</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

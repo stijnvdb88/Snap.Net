@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using Xamarin.Forms;
 using Foundation;
+using NAudio.Wave;
+using Snap.Net.SnapClient;
+using Snap.Net.SnapClient.Player;
 using SnapDotNet.Mobile.Player;
 using UIKit;
 
@@ -12,14 +15,13 @@ namespace SnapDotNet.Mobile.iOS.Player
 {
     public class Player : IPlayer
     {
-        public Player()
-        {
+        private Controller m_Controller = null;
+        private Action m_OnPlayStateCallback = null;
 
-        }
 
         public void OnPlayStateChanged(Action callback)
         {
-            
+            m_OnPlayStateCallback = callback;
         }
 
         public void Init()
@@ -29,15 +31,36 @@ namespace SnapDotNet.Mobile.iOS.Player
 
         public bool SupportsSnapclient()
         {
-            return false;
+            return true;
         }
 
-        public void Play(string host, int port) { }
-        public void Stop() {}
+        public void Play(string host, int port)
+        {
+            NAudioPlayer audioPlayer = new NAudioPlayer(_CreatePlayer, 100, 50, 50);
+            string architecture = ObjCRuntime.Runtime.IsARM64CallingConvention ? "arm64" : "armv7"; // https://github.com/xamarin/xamarin-macios/issues/4907
+            m_Controller = new Controller(audioPlayer, new HelloMessage(UIDevice.CurrentDevice.IdentifierForVendor.AsString(),
+                $"iOS {UIDevice.CurrentDevice.SystemVersion}", architecture));
+            m_Controller.StartAsync(host, port);
+            m_OnPlayStateCallback?.Invoke();
+            //MainActivity.Instance.Play(host, port);
+        }
+
+        private IWavePlayer _CreatePlayer()
+        {
+            return new AVAudioEngineOut() { DesiredLatency = 100 };
+        }
+
+        public void Stop()
+        {
+            m_Controller.Stop();
+            m_Controller.Dispose();
+            m_Controller = null;
+            m_OnPlayStateCallback?.Invoke();
+        }
 
         public bool IsPlaying()
         {
-            return false;
+            return m_Controller != null;
         }
     }
 }
