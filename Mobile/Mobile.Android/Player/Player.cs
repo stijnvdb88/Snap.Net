@@ -7,7 +7,6 @@ namespace SnapDotNet.Mobile.Droid.Player
 {
     public class Player : IPlayer
     {
-
         public Player()
         {
 

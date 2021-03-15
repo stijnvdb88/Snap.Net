@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudio.Flac", "Snap.Net.Sna
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snap.Net.SnapClient", "Snap.Net.SnapClient\Snap.Net.SnapClient.csproj", "{ACE89F24-6D09-4A67-BA89-EB899E6F0C67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapClient.Net", "SnapClient.Net\SnapClient.Net.csproj", "{EC69267F-932C-4F48-8E78-5745268F529B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,30 @@ Global
 		{ACE89F24-6D09-4A67-BA89-EB899E6F0C67}.Release|x64.Build.0 = Release|Any CPU
 		{ACE89F24-6D09-4A67-BA89-EB899E6F0C67}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACE89F24-6D09-4A67-BA89-EB899E6F0C67}.Release|x86.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|ARM.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|ARM.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|iPhone.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|x64.Build.0 = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EC69267F-932C-4F48-8E78-5745268F529B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
