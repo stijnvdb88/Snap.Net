@@ -31,5 +31,6 @@ namespace SnapDotNet.Player
         public bool AutoRestartOnFailure;
         public int RestartAttempts;
         public DateTime? LastSeen;
+        public bool UseSnapClientNet;
     }
 }

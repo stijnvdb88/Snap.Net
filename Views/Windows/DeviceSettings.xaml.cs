@@ -66,6 +66,7 @@ namespace SnapDotNet.Windows
 
             tbRestartTries.Text = m_Settings.RestartAttempts.ToString();
             cbAutoRestart.IsChecked = m_Settings.AutoRestartOnFailure;
+            cbUseSnapClientNet.IsChecked = m_Settings.UseSnapClientNet;
         }
 
         private void btSave_Click(object sender, RoutedEventArgs e)
@@ -73,6 +74,7 @@ namespace SnapDotNet.Windows
             m_Settings.ResampleFormat = cbSampleFormat.SelectedIndex == 0 ? "" : cbSampleFormat.SelectedItem.ToString();
             m_Settings.ShareMode = (SnapDotNet.Player.EShareMode)cbSharemode.SelectedIndex;
             m_Settings.AutoRestartOnFailure = (bool)cbAutoRestart.IsChecked;
+            m_Settings.UseSnapClientNet = (bool) cbUseSnapClientNet.IsChecked;
             if (m_Settings.AutoRestartOnFailure)
             {
                 m_Settings.RestartAttempts = int.Parse(tbRestartTries.Text, System.Globalization.CultureInfo.CurrentCulture);
@@ -85,7 +87,7 @@ namespace SnapDotNet.Windows
         {
             tbRestartTries.IsEnabled = (bool)cbAutoRestart.IsChecked;
         }
-
+        
         private void tbRestartTries_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = Utils.IsNumbersOnly(e.Text) == false;

@@ -71,10 +71,6 @@ namespace SnapDotNet.Player
             {"88890009", new Tuple<string, string>("AUDCLNT_E_INVALID_SIZE", "The NumFramesWritten value exceeds the NumFramesRequested value specified in the previous IAudioRenderClient::GetBuffer call") },
         };
 
-        public Player()
-        {
-
-        }
 
         /// <summary>
         /// Checks which devices need to start playing on startup, and plays them
@@ -185,7 +181,12 @@ namespace SnapDotNet.Player
         {
             return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient", "snapclient.exe");
         }
-        
+
+        private static string _SnapClientDotNet()
+        {
+            return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient.Net", "SnapClient.Net.exe");
+        }
+
         private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource, int attempts = 0)
         {
             Device device = await FindDeviceAsync(deviceUniqueId);
@@ -210,16 +211,38 @@ namespace SnapDotNet.Player
                         lastLine = line; // we only care about the last line from the output - in case there's an error (snapclient should probably be sending these to stderr though)
                     };
                     string resampleArg = "";
-                    if (string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
+
+                    CommandTask<CommandResult> task = null;
+
+                    if (deviceSettings.UseSnapClientNet == false)
                     {
-                        resampleArg = string.Format("--sampleformat {0}:0", deviceSettings.ResampleFormat);
+                        // Launch native client:
+                        if (string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
+                        {
+                            resampleArg = string.Format("--sampleformat {0}:0", deviceSettings.ResampleFormat);
+                        }
+
+                        string command = string.Format("-h {0} -p {1} -s {2} -i {3} --sharingmode={4} {5}",
+                            SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId,
+                            deviceSettings.ShareMode.ToString().ToLower(), resampleArg);
+                        Logger.Debug("Snapclient command: {0}", command);
+                        task = Cli.Wrap(_SnapClient())
+                            .WithArguments(command)
+                            .WithStandardOutputPipe(PipeTarget.ToDelegate(stdOut))
+                            .ExecuteAsync(cancellationTokenSource.Token);
                     }
-                    string command = string.Format("-h {0} -p {1} -s {2} -i {3} --sharingmode={4} {5}", SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId, deviceSettings.ShareMode.ToString().ToLower(), resampleArg);
-                    Logger.Debug("Snapclient command: {0}", command);
-                    CommandTask<CommandResult> task = Cli.Wrap(_SnapClient())
-                                                        .WithArguments(command)
-                                                        .WithStandardOutputPipe(PipeTarget.ToDelegate(stdOut))
-                                                        .ExecuteAsync(cancellationTokenSource.Token);
+                    else
+                    {
+                        // launch experimental .NET port of snapclient:
+                        string command = string.Format("-h {0} -p {1} -s {2} -i {3}",
+                            SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId);
+
+                        Logger.Debug("SnapClient.Net command: {0}", command);
+                        task = Cli.Wrap(_SnapClientDotNet())
+                            .WithArguments(command)
+                            .WithStandardOutputPipe(PipeTarget.ToDelegate(stdOut))
+                            .ExecuteAsync(cancellationTokenSource.Token);
+                    }
 
                     Logger.Debug("Snapclient PID: {0}", task.ProcessId);
                     ChildProcessTracker.AddProcess(Process.GetProcessById(task.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes

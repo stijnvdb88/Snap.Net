@@ -9,7 +9,7 @@
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         mc:Ignorable="d"
         WindowTransitionsEnabled="False"
-        Title="Device Settings" Height="205.133" Width="259.446" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Device Settings" Height="236.246" Width="286.867" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10">
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
@@ -21,13 +21,16 @@
                 <ComboBox Width="110" x:Name="cbSampleFormat"></ComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                <CheckBox x:Name="cbUseSnapClientNet">Use SnapClient.Net? (experimental)</CheckBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
                 <CheckBox x:Name="cbAutoRestart" Unchecked="cbAutoRestart_Toggled" Checked="cbAutoRestart_Toggled">Auto-restart on errror?</CheckBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
                 <Label Content="# restart attempts" Width="120"></Label>
                 <TextBox Width="110" x:Name="tbRestartTries" PreviewTextInput="tbRestartTries_PreviewTextInput"></TextBox>
             </StackPanel>
-            <Button x:Name="btSave" Content="Save" Width="70" Margin="5" Click="btSave_Click"></Button>
+            <Button x:Name="btSave" Content="Save" Width="70" Margin="82,5,81,5" Click="btSave_Click"/>
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>
