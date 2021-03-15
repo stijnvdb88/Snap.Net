@@ -44,14 +44,5 @@ namespace Snap.Net.SnapClient
             MsRate = m_Rate / 1000.0f;
         }
 
-        public WaveFormat ToWaveFormat()
-        {
-            return new WaveFormat(m_Rate, m_Bits, m_Channels);
-        }
-
-        public static SampleFormat FromWaveFormat(WaveFormat format)
-        {
-            return new SampleFormat(format.SampleRate, format.Channels, format.BitsPerSample);
-        }
     }
 }

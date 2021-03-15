@@ -132,5 +132,18 @@ namespace Snap.Net.SnapClient.Player
         {
             m_OutputDevice?.Dispose();
         }
+
+        public static SampleFormat WaveFormatToSampleFormat(WaveFormat format)
+        {
+            return new SampleFormat(format.SampleRate, format.Channels, format.BitsPerSample);
+        }
+    }
+
+    public static class SampleFormatExtensions
+    {
+        public static WaveFormat ToWaveFormat(this SampleFormat sampleFormat)
+        {
+            return new WaveFormat(sampleFormat.Rate, sampleFormat.Bits, sampleFormat.Channels);
+        }
     }
 }

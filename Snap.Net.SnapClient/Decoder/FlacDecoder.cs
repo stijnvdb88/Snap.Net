@@ -17,6 +17,7 @@ using NAudio.Flac;
 using Snap.Net.SnapClient.Message;
 using System;
 using System.IO;
+using Snap.Net.SnapClient.Player;
 
 namespace Snap.Net.SnapClient.Decoder
 {
@@ -30,7 +31,7 @@ namespace Snap.Net.SnapClient.Decoder
             MemoryStream stream = new MemoryStream(buffer);
             using (FlacReader reader = new FlacReader(stream))
             {
-                return SampleFormat.FromWaveFormat(reader.WaveFormat);
+                return NAudioPlayer.WaveFormatToSampleFormat(reader.WaveFormat);
             }
         }
 
@@ -46,7 +47,7 @@ namespace Snap.Net.SnapClient.Decoder
                 using (FlacReader reader = new FlacReader(stream))
                 {
                     byte[] newPayload = new byte[reader.Length];
-                    reader.Read(newPayload, 0, newPayload.Length); // this is leaking memory
+                    reader.Read(newPayload, 0, newPayload.Length);
                     flacChunk.ClearPayload();
                     flacChunk.SetPayload(newPayload);
                 }
