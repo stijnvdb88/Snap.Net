@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.Win32;
+using NAudio.Wave.Compression;
 using Snap.Net.SnapClient;
 using Snap.Net.SnapClient.Player;
 
@@ -71,7 +72,7 @@ namespace SnapClient.Net
             //handle command line option errors
             foreach (Error e in errs)
             {
-                if (e.Tag != ErrorType.HelpRequestedError)
+                if (e.Tag != ErrorType.HelpRequestedError && e.Tag != ErrorType.VersionRequestedError)
                 {
                     Console.WriteLine(e.Tag);
                 }
