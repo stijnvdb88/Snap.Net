@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.Win32;
@@ -27,11 +28,13 @@ namespace SnapClient.Net
 {
     class Program
     {
-        private static int s_PlayerIndex = 0;
-        private static int s_DacLatency = 100;
+        private static System.Version s_Version = null;
 
         static async Task<int> Main(string[] args)
         {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            s_Version = assembly.GetName().Version;
+
             Task<int> result = Parser.Default.ParseArguments<Options>(args)
                 .MapResult(_RunAsync, _HandleParseErrorAsync);
 
@@ -55,7 +58,8 @@ namespace SnapClient.Net
             }
 
             HelloMessage helloMessage = new HelloMessage(_GetMacAddress(), _GetOS(), options.Instance);
-            Player player = new NAudioPlayer(device.DeviceFactory, s_DacLatency, options.BufferDurationMs, options.OffsetToleranceMs);
+            helloMessage.Version = string.Join(".", s_Version.Major, s_Version.Minor, s_Version.Build);
+            Player player = new NAudioPlayer(device.DeviceFactory, options.DacLatency, options.BufferDurationMs, options.OffsetToleranceMs);
             Controller controller = new Controller(player, helloMessage);
 
             await controller.StartAsync(options.HostName, options.Port);
