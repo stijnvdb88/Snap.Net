@@ -6,3 +6,9 @@ build_script:
     msbuild /t:restore
 
     msbuild /p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
+clone_script:
+  - cmd: >-
+      git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+      && cd %APPVEYOR_BUILD_FOLDER%
+      && git checkout -qf %APPVEYOR_REPO_COMMIT%
+      && git submodule update --init --recursive
