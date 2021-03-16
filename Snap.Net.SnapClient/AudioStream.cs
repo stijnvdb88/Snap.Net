@@ -101,7 +101,7 @@ namespace Snap.Net.SnapClient
                     return new byte[bufferFrameCount * format.FrameSize];
                 }
 
-                Console.WriteLine(age); // this value is the best indicator we have to measure how tight our audio loop is. the less this value strays from zero, the better
+                //Console.WriteLine(age); // this value is the best indicator we have to measure how tight our audio loop is. the less this value strays from zero, the better
 
                 // if the current chunk is (x)ms too young or old, seek to the correct position (seeking causes audible pops, but can't be helped if we somehow get this far out of sync)
                 if (Math.Abs(age) > m_OffsetToleranceMs)
