@@ -26,7 +26,7 @@ namespace Snap.Net.SnapClient
         private float m_BufferMs = 0;
         private Queue<PcmChunkMessage> m_Chunks = new Queue<PcmChunkMessage>(); // the queue we'll read our audio chunks off of
         private PcmChunkMessage m_Chunk = null; // the chunk currently being read
-        private int m_OffsetToleranceMs = 50; // how far we can be off before resorting to a hard sync (this causes an audible pop)
+        private int m_OffsetToleranceMs = 5; // how far we can be off before resorting to a hard sync (this causes an audible pop)
 
         public AudioStream(TimeProvider timeProvider, SampleFormat sampleFormat, float bufferMs, int offsetToleranceMs)
         {
@@ -67,7 +67,6 @@ namespace Snap.Net.SnapClient
                 }
             }
         }
-
         /// <summary>
         /// This function is the one where all the cool stuff happens :)
         /// It returns the requested number of audio frames, with time compensation for the latency values (server buffer, local buffer, DAC latency)
@@ -92,7 +91,7 @@ namespace Snap.Net.SnapClient
             if (m_Chunk != null)
             {
                 double serverPlayTimeMs = m_TimeProvider.ServerNow() - bufferMs + dacLatency;
-                double age = serverPlayTimeMs - m_Chunk.StartMs; // age = server time - the time the server says this chunk needs to start playing
+                double age = serverPlayTimeMs - m_Chunk.StartMs(); // age = server time - the time the server says this chunk needs to start playing
                 double requestedFramesDurationMs = frames / m_SampleFormat.MsRate; // duration in milliseconds of the frames being requested
                 int read = 0; // this will hold the number of frames we've read from the queued chunks (we often get asked to read more frames than a single chunk holds, which means we need to read across chunks)
                 if (age < -requestedFramesDurationMs)
@@ -102,16 +101,16 @@ namespace Snap.Net.SnapClient
                     return new byte[bufferFrameCount * format.FrameSize];
                 }
 
-                //Console.WriteLine(age); // this value is the best indicator we have to measure how tight our audio loop is. the less this value strays from zero, the better
+                Console.WriteLine(age); // this value is the best indicator we have to measure how tight our audio loop is. the less this value strays from zero, the better
 
                 // if the current chunk is (x)ms too young or old, seek to the correct position (seeking causes audible pops, but can't be helped if we somehow get this far out of sync)
                 if (Math.Abs(age) > m_OffsetToleranceMs)
                 {
                     // first, just skip through chunks as long as they're too old (eg if this chunk lasts 16ms but it's 16ms too old, just skipping this one puts us back in sync) 
-                    while (m_Chunk != null && age > m_Chunk.Duration)
+                    while (m_Chunk != null && age > m_Chunk.Duration())
                     {
                         // this chunk is too old, just skip it
-                        //Console.WriteLine("chunk too old, dropping (age: " + age + " > " + m_Chunk.Duration + ") " + m_Chunk.StartMs);
+                        //Console.WriteLine("chunk too old, dropping (age: " + age + " > " + m_Chunk.Duration() + ") " + m_Chunk.StartMs());
                         lock (m_Chunks)
                         {
                             if (m_Chunks.Count == 0) // no chunks left, return silence
@@ -121,7 +120,7 @@ namespace Snap.Net.SnapClient
                             }
                             m_Chunk = m_Chunks.Dequeue();
                         }
-                        age = serverPlayTimeMs - m_Chunk.StartMs;
+                        age = serverPlayTimeMs - m_Chunk.StartMs();
                     }
 
                     // at this point we've got the right chunk, now we just need to seek to the correct position inside of it

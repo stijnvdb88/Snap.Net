@@ -102,7 +102,11 @@ namespace Snap.Net.SnapClient.Player
                 _PlayNext();
                 while (true)
                 {
-                    if (m_OutputBuffer.BufferedBytes == 0)
+                    // this approach is slightly different from the original implementation:
+                    // if we wait for the output buffer to completely run out of audio, the next buffer isn't fed in quickly enough and playback isn't smooth.
+                    // instead, we wait for the output buffer to have less than a full buffer left, and we go ahead and add the next buffer to the back.
+                    // this means we are constantly playing with a latency of m_BufferDurationMs (which is why we compensate for it in our call to GetNextBuffer later)
+                    if (m_OutputBuffer.BufferedBytes <= (m_BufferFrameCount * m_SampleFormat.FrameSize))
                     {
                         _PlayNext();
                     }
@@ -119,7 +123,8 @@ namespace Snap.Net.SnapClient.Player
         protected override void _PlayNext()
         {
             // this is where we ask for the next buffer worth of audio. m_BufferMs already has our client's latency factored in, as set through the RPC protocol
-            byte[] buffer = m_AudioStream.GetNextBuffer(m_SampleFormat, m_BufferFrameCount, m_BufferMs, m_DacLatency);
+            // m_BufferDurationMs is compensated for because of the way we're feeding audio in (see comment block in the audio loop)
+            byte[] buffer = m_AudioStream.GetNextBuffer(m_SampleFormat, m_BufferFrameCount, m_BufferMs - m_BufferDurationMs, m_DacLatency);
             m_OutputBuffer.AddSamples(buffer, 0, buffer.Length);
         }
 

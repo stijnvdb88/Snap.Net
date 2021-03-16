@@ -32,12 +32,6 @@ namespace Snap.Net.SnapClient.Message
 
         public SampleFormat SampleFormat => m_SampleFormat;
 
-        public long StartMs => m_StartMs;
-        private long m_StartMs;
-
-        public long Duration => m_Duration;
-        private long m_Duration;
-
         private int m_FrameCount = 0;
 
         public PcmChunkMessage(byte[] buffer)
@@ -48,16 +42,21 @@ namespace Snap.Net.SnapClient.Message
         public void SetSampleFormat(SampleFormat sampleFormat)
         {
             m_SampleFormat = sampleFormat;
+            
             // we calculate these values beforehand as they get requested often on the hot path:
-            float add = 1000 * (m_Idx / (float)m_SampleFormat.Rate);
-            m_StartMs = (long)m_Timestamp.GetMilliseconds() + (long)add;
-
             m_FrameCount = m_Payload.Length / m_SampleFormat.FrameSize;
-
-            float fr = (((float)m_FrameCount - m_Idx) / (float)m_SampleFormat.Rate);
-            m_Duration = (int)(1000.0f * fr);
+        }
+        public long StartMs()
+        {
+            float add = 1000 * (m_Idx / (float)m_SampleFormat.Rate);
+            return (long)m_Timestamp.GetMilliseconds() + (long)add;
         }
 
+        public long Duration()
+        {
+            float fr = (((float)m_FrameCount - m_Idx) / (float)m_SampleFormat.Rate);
+            return (int)(1000.0f * fr);
+        }
 
         public byte[] ReadFrames(int frames)
         {
@@ -97,8 +96,6 @@ namespace Snap.Net.SnapClient.Message
         {
             m_Payload = newPayload;
             m_FrameCount = m_Payload.Length / m_SampleFormat.FrameSize;
-            float fr = (((float)m_FrameCount - m_Idx) / (float)m_SampleFormat.Rate);
-            m_Duration = (int)(1000.0f * fr);
         }
 
         public override void Deserialize(byte[] buffer)
