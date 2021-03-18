@@ -50,7 +50,7 @@ namespace SnapClient.Net
         [Option("buffer-duration", Default = 50, HelpText = "The duration of the audio device's buffer in milliseconds")]
         public int BufferDurationMs { get; set; }
 
-        [Option("offset-tolerance", Default = 10, HelpText = "The tolerance for offset in milliseconds. This determines how quickly we'll enforce 'hard' syncs (cause audible pops).")]
+        [Option("offset-tolerance", Default = 5, HelpText = "The tolerance for offset in milliseconds. This determines how quickly we'll enforce 'hard' syncs (cause audible pops).")]
         public int OffsetToleranceMs { get; set; }
     }
 }

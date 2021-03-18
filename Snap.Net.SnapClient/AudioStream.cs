@@ -94,6 +94,7 @@ namespace Snap.Net.SnapClient
                 double age = serverPlayTimeMs - m_Chunk.StartMs(); // age = server time - the time the server says this chunk needs to start playing
                 double requestedFramesDurationMs = frames / m_SampleFormat.MsRate; // duration in milliseconds of the frames being requested
                 int read = 0; // this will hold the number of frames we've read from the queued chunks (we often get asked to read more frames than a single chunk holds, which means we need to read across chunks)
+                int pos = 0; // this will keep track of our position within the output buffer as we write to it (in bytes)
                 if (age < -requestedFramesDurationMs)
                 {
                     // eg. we're being asked to play 80ms worth of audio, and the current chunk is 80ms too young,
@@ -137,12 +138,36 @@ namespace Snap.Net.SnapClient
                             // the current chunk is slightly ahead, so we need to play a bit of silence until we're synced up (seeking backward)
                             int silentFrames = (int)Math.Floor(-age * m_Chunk.SampleFormat.MsRate);
                             read = silentFrames; // this makes sure we offset our output bytes so the first x frames are zeroes
+                            pos = silentFrames * m_SampleFormat.FrameSize;
                         }
+
+                        age = 0; // we don't want any frame corrections to be applied after this
                     }
                 }
 
+                int addFrames = 0; // number of frames we'll add / remove
+                int everyN = 0; // interval at which we'll add / remove frames
+                if (age > 0.1f)
+                {
+                    addFrames = (int)Math.Ceiling(age);
+                }
+                else if (age < -0.1f)
+                {
+                    addFrames = (int)Math.Floor(age);
+                }
+
+                // number of frames we'll need to actually read from the buffer
+                // when we want to play faster (aka age > 0), we'll read more frames from the buffer, but skip a few in playback
+                // when we want to play slower, we read less frames from the buffer and duplicate a few in playback
+                int numFramesToRead = frames + addFrames - read; 
+
+                if (addFrames != 0)
+                {
+                    everyN = (int)Math.Ceiling((frames + addFrames - read) / (Math.Abs(addFrames) + 1.0f));
+                }
+
                 byte[] output = new byte[bufferFrameCount * format.FrameSize]; // prepare the actual output bytes!
-                while (read < bufferFrameCount) // as long as we haven't read in the number of frames requested
+                while (read < numFramesToRead) // as long as we haven't read in the number of frames requested
                 {
                     lock (m_Chunks)
                     {
@@ -159,13 +184,34 @@ namespace Snap.Net.SnapClient
                             }
                         }
                     }
-                    // try to read the number of frames we need, minus the number of frames we've already read
-                    // (often the chunk has less frames than we're requesting, which is the reason this is a while loop)
-                    byte[] chunk = (m_Chunk.ReadFrames(bufferFrameCount - read));
-                    Buffer.BlockCopy(chunk, 0, output, read * format.FrameSize, chunk.Length);
 
-                    // number of frames we've read = number of bytes / frame size
-                    read += chunk.Length / format.FrameSize;
+                    // try to read the number of frames we need, minus the number of frames we've already read
+                    // (often the chunk has less frames than we're requesting, which is the reason this is inside of a while loop)
+                    byte[] chunk = (m_Chunk.ReadFrames(numFramesToRead - read));
+                    for (int i = 0; i < chunk.Length; i += m_SampleFormat.FrameSize) // iterate through the chunk frame by frame
+                    {
+                        read++;
+                        Buffer.BlockCopy(chunk, i, output, pos, m_SampleFormat.FrameSize); // copy the frame from the chunk to the output buffer
+                        if (everyN != 0 && read % everyN == 0) // if we reached a point where a frame needs to be added/removed
+                        {
+                            if (addFrames > 0)
+                            {
+                                // adding a frame: move back our position pointer.
+                                // this means we'll effectively skip a frame from being played, while reading an extra one from the buffer instead
+                                // (playing faster)
+                                pos -= m_SampleFormat.FrameSize; 
+                            }
+                            else
+                            {
+                                // removing a frame: copy the current frame to the next position, and move forward our position pointer
+                                // this means we'll duplicate one frame, while reading a frame less from the chunk
+                                // (playing slower)
+                                Buffer.BlockCopy(output, pos, output, pos + m_SampleFormat.FrameSize, m_SampleFormat.FrameSize);
+                                pos += m_SampleFormat.FrameSize;
+                            }
+                        }
+                        pos += m_SampleFormat.FrameSize;
+                    }
                 }
                 return output;
             }
