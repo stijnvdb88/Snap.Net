@@ -16,6 +16,7 @@
 using Snap.Net.SnapClient.Message;
 using System;
 using System.Collections.Generic;
+using Snap.Net.SnapClient.Time;
 
 namespace Snap.Net.SnapClient
 {

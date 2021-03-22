@@ -15,24 +15,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace Snap.Net.SnapClient
+namespace Snap.Net.SnapClient.Time
 {
-    public class TimeProvider : IMessageListener<TimeMessage>
+    public abstract class TimeProvider : IMessageListener<TimeMessage>
     {
-        private Stopwatch m_Stopwatch = new Stopwatch();
         private double m_Diff = 0;
         private List<double> m_DiffBuffer = new List<double>();
 
-        public TimeProvider()
-        {
-            m_Stopwatch.Start();
-        }
-        public double Now()
-        {
-            return m_Stopwatch.Elapsed.TotalMilliseconds;
-        }
+        public abstract double Now();
 
         public double NowSec()
         {
@@ -46,6 +37,12 @@ namespace Snap.Net.SnapClient
         /// <param name="s2c">Server to client</param>
         public void SetDiff(double c2s, double s2c)
         {
+            if (Now() == 0) // this happens with audio device time providers, which return zero until we start playing
+            {
+                Reset();
+                return;
+            }
+
             double add = ((c2s - s2c)) / 2.0f;
 
             m_DiffBuffer.Add(add);

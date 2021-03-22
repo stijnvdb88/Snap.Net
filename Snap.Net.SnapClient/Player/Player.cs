@@ -15,6 +15,7 @@
 
 using Snap.Net.SnapClient.Message;
 using System;
+using Snap.Net.SnapClient.Time;
 
 namespace Snap.Net.SnapClient.Player
 {
@@ -25,6 +26,7 @@ namespace Snap.Net.SnapClient.Player
     {
         protected AudioStream m_AudioStream = null;
         protected SampleFormat m_SampleFormat = null;
+        protected TimeProvider m_TimeProvider = null;
         protected int m_BufferDurationMs = 0;
 
         protected int m_BufferMs = 0;
@@ -32,11 +34,8 @@ namespace Snap.Net.SnapClient.Player
         protected bool m_Muted = false;
         protected int m_DacLatency = 0;
 
-        public abstract void Start(TimeProvider timeProvider, SampleFormat sampleFormat);
+        public abstract void Start(SampleFormat sampleFormat);
         public abstract void Stop();
-
-        protected abstract void _PlayLoop();
-        protected abstract void _PlayNext();
 
         public virtual void OnMessageReceived(JsonMessage<ServerSettingsMessage> message)
         {
@@ -54,6 +53,16 @@ namespace Snap.Net.SnapClient.Player
         public int GetDacLatency()
         {
             return m_DacLatency;
+        }
+
+        /// <summary>
+        /// Override this function if your player has access to a more accurate clock than Stopwatch
+        /// e.g. audio engine clock
+        /// </summary>
+        /// <returns></returns>
+        public virtual TimeProvider GetTimeProvider()
+        {
+            return m_TimeProvider ?? (m_TimeProvider = new StopwatchTimeProvider());
         }
 
         public abstract void Dispose();

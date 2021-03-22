@@ -17,6 +17,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Threading;
+using Snap.Net.SnapClient.Time;
 
 namespace Snap.Net.SnapClient.Player
 {
@@ -40,20 +41,21 @@ namespace Snap.Net.SnapClient.Player
         /// <param name="dacLatency">Output device latency</param>
         /// <param name="bufferDurationMs">Length of our output buffer (ms)</param>
         /// <param name="offsetToleranceMs">How far we can be off before resorting to a hard sync (this causes an audible pop)</param>
-        public NAudioPlayer(Func<IWavePlayer> outputDeviceFactory, int dacLatency, int bufferDurationMs, int offsetToleranceMs)
+        public NAudioPlayer(Func<IWavePlayer> outputDeviceFactory, int dacLatency, int bufferDurationMs, int offsetToleranceMs, TimeProvider customTimeProvider = null)
         {
             m_OutputDeviceFactory = outputDeviceFactory;
             m_DacLatency = dacLatency;
             m_BufferDurationMs = bufferDurationMs;
             m_OffsetToleranceMs = offsetToleranceMs;
+            m_TimeProvider = customTimeProvider;
         }
 
-        public override void Start(TimeProvider timeProvider, SampleFormat sampleFormat)
+        public override void Start(SampleFormat sampleFormat)
         {
             m_OutputDevice = m_OutputDeviceFactory();
             m_SampleFormat = sampleFormat;
 
-            m_AudioStream = new AudioStream(timeProvider, m_SampleFormat, m_BufferDurationMs, m_OffsetToleranceMs);
+            m_AudioStream = new AudioStream(GetTimeProvider(), m_SampleFormat, m_BufferDurationMs, m_OffsetToleranceMs);
 
             m_BufferFrameCount = (int)Math.Floor(m_BufferDurationMs * m_SampleFormat.MsRate);
 
@@ -81,6 +83,7 @@ namespace Snap.Net.SnapClient.Player
             m_OutputDevice = null;
         }
 
+
         public override void OnMessageReceived(JsonMessage<ServerSettingsMessage> message)
         {
             base.OnMessageReceived(message);
@@ -95,7 +98,7 @@ namespace Snap.Net.SnapClient.Player
             }
         }
 
-        protected override void _PlayLoop()
+        private void _PlayLoop()
         {
             try
             {
@@ -120,7 +123,7 @@ namespace Snap.Net.SnapClient.Player
             }
         }
 
-        protected override void _PlayNext()
+        private void _PlayNext()
         {
             // this is where we ask for the next buffer worth of audio. m_BufferMs already has our client's latency factored in, as set through the RPC protocol
             // m_BufferDurationMs is compensated for because of the way we're feeding audio in (see comment block in the audio loop)

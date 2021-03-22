@@ -31,6 +31,7 @@ namespace Snap.Net.SnapClient
         public int FrameSize { get; } = 0;
         public int SampleSize { get; } = 0;
         public double MsRate { get; } = 0;
+    
 
         public SampleFormat(int rate, int channels, int bits)
         {

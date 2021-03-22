@@ -18,6 +18,7 @@ using Snap.Net.SnapClient.Message;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Snap.Net.SnapClient.Time;
 using Timer = System.Threading.Timer;
 
 namespace Snap.Net.SnapClient
@@ -42,7 +43,7 @@ namespace Snap.Net.SnapClient
         public Controller(Player.Player player, HelloMessage helloMessage)
         {
             m_Player = player;
-            m_TimeProvider = new TimeProvider();
+            m_TimeProvider = m_Player.GetTimeProvider();
             m_HelloMessage = helloMessage;
             m_ClientConnection = new ClientConnection(m_MessageRouter);
         }
@@ -72,7 +73,6 @@ namespace Snap.Net.SnapClient
 
             // start our periodic diff calculation (each second we ping-pong with the server to figure out the latency between us)
             m_SyncTimer = new Timer(_SyncTimerElapsed, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1));
-
             // start the connection loop!
             while (m_Running)
             {
@@ -106,7 +106,7 @@ namespace Snap.Net.SnapClient
             {
                 m_Decoder = m_Decoders[message.Codec]; // grab the correct decoder
                 m_SampleFormat = m_Decoder.SetHeader(message.Payload); // figure out the sample format from the codec header
-                m_Player.Start(m_TimeProvider, m_SampleFormat);
+                m_Player.Start(m_SampleFormat);
             }
             else
             {
