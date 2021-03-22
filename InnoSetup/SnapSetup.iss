@@ -32,6 +32,7 @@ Source: ..\bin\Release\NLog.dll; DestDir: {app}; Flags: overwritereadonly ignore
 Source: ..\bin\Release\StreamJsonRpc.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\bin\Release\System.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SnapClient.Net\bin\Release\*; DestDir: "{app}/SnapClient.Net"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ..\Snap.Net.Broadcast\bin\Release\*; DestDir: "{app}/Broadcast"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Setup]
 AppId={#MyAppName}
