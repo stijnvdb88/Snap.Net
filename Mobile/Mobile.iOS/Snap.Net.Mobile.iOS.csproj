@@ -75,6 +75,8 @@
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
+    <Compile Include="Player\AudioQueuePlayer.cs" />
+    <Compile Include="Player\AudioQueueTimeProvider.cs" />
     <Compile Include="Player\AVAudioEngineOut.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

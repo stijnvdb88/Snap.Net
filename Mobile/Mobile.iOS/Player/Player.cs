@@ -17,7 +17,6 @@ namespace SnapDotNet.Mobile.iOS.Player
     {
         private Controller m_Controller = null;
         private Action m_OnPlayStateCallback = null;
-        private int s_DacLatency = 100;
 
 
         public void OnPlayStateChanged(Action callback)
@@ -37,17 +36,12 @@ namespace SnapDotNet.Mobile.iOS.Player
 
         public void Play(string host, int port)
         {
-            NAudioPlayer audioPlayer = new NAudioPlayer(_CreatePlayer, s_DacLatency, 80, 50);
+            AudioQueuePlayer audioPlayer = new AudioQueuePlayer(80, 5);
             string architecture = ObjCRuntime.Runtime.IsARM64CallingConvention ? "arm64" : "armv7"; // https://github.com/xamarin/xamarin-macios/issues/4907
             m_Controller = new Controller(audioPlayer, new HelloMessage(UIDevice.CurrentDevice.IdentifierForVendor.AsString(),
                 $"iOS {UIDevice.CurrentDevice.SystemVersion}", architecture));
             m_Controller.StartAsync(host, port);
             m_OnPlayStateCallback?.Invoke();
-        }
-
-        private IWavePlayer _CreatePlayer()
-        {
-            return new AVAudioEngineOut() { DesiredLatency = s_DacLatency };
         }
 
         public void Stop()
