@@ -62,10 +62,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>iPhone Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
+    <CodesignKey>iPhone Developer: Stijn Van der Borght (78TJCP63WF)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>Snapcast AppStore</CodesignProvision>
+    <CodesignProvision>Snapcast Development</CodesignProvision>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />

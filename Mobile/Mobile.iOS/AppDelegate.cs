@@ -35,6 +35,8 @@ namespace SnapDotnet.Mobile.iOS
 
             AVAudioSession session = AVAudioSession.SharedInstance();
             session.SetCategory(AVAudioSessionCategory.Playback, AVAudioSessionCategoryOptions.MixWithOthers);
+            NSError error;
+            session.SetPreferredIOBufferDuration(0.005f, out error);
             session.SetActive(true);
 
             return base.FinishedLaunching(app, options);
