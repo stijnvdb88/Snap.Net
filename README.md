@@ -48,10 +48,11 @@ If you don't like the colors, change them!
 
 
 ### Todo ###
-* Cross-platform support: ~Android, iOS (control only)~, OSX, Linux
+* Cross-platform support: ~Android, iOS~, OSX, Linux
 * ~~Player settings (sampleformat, shared/exclusive mode)~~
 
 ## Acknowledgements
+* [NAudio](https://github.com/naudio/NAudio)
 * [StreamJsonRpc](https://github.com/microsoft/vs-streamjsonrpc)
 * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 * [WPF NotifyIcon](https://github.com/hardcodet/wpf-notifyicon)
