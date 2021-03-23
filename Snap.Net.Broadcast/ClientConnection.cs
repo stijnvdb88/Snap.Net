@@ -13,11 +13,10 @@ namespace Snap.Net.Broadcast
         private TcpClient m_Socket = null;
         private NetworkStream m_Stream;
 
-        public event Action OnConnected = null;
+        public event Action<bool> OnConnected = null;
 
         private readonly string m_Address = "";
         private readonly int m_Port = 0;
-
 
         public ClientConnection(string address, int port)
         {
@@ -33,7 +32,7 @@ namespace Snap.Net.Broadcast
                 {
                     m_Socket = new TcpClient(m_Address, m_Port);
                     m_Stream = m_Socket.GetStream();
-                    OnConnected?.Invoke();
+                    OnConnected?.Invoke(true);
                 }
                 catch (Exception e)
                 {
@@ -55,6 +54,7 @@ namespace Snap.Net.Broadcast
             {
                 Console.WriteLine($"ClientConnection.Write exception: {e.Message}, starting reconnect loop");
                 Task.Run(ConnectAsync).ConfigureAwait(false);
+                OnConnected?.Invoke(false);
             }
         }
 
