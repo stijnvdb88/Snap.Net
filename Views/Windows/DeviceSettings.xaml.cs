@@ -63,7 +63,7 @@ namespace SnapDotNet.Windows
                     idx++;
                 }
             }
-
+            tbHostId.Text = m_Settings.HostId;
             tbRestartTries.Text = m_Settings.RestartAttempts.ToString();
             cbAutoRestart.IsChecked = m_Settings.AutoRestartOnFailure;
             cbUseSnapClientNet.IsChecked = m_Settings.UseSnapClientNet;
@@ -73,6 +73,7 @@ namespace SnapDotNet.Windows
         {
             m_Settings.ResampleFormat = cbSampleFormat.SelectedIndex == 0 ? "" : cbSampleFormat.SelectedItem.ToString();
             m_Settings.ShareMode = (SnapDotNet.Player.EShareMode)cbSharemode.SelectedIndex;
+            m_Settings.HostId = tbHostId.Text.Trim();
             m_Settings.AutoRestartOnFailure = (bool)cbAutoRestart.IsChecked;
             m_Settings.UseSnapClientNet = (bool) cbUseSnapClientNet.IsChecked;
             if (m_Settings.AutoRestartOnFailure)

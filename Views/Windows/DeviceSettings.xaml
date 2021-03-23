@@ -9,7 +9,7 @@
         Icon="/Snap.Net;component/Assets/snapcast.ico" 
         mc:Ignorable="d"
         WindowTransitionsEnabled="False"
-        Title="Device Settings" Height="236.246" Width="286.867" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Device Settings" Height="257.413" Width="286.867" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10">
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
@@ -19,6 +19,10 @@
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
                 <Label Content="Sample format" Width="120"></Label>
                 <ComboBox Width="110" x:Name="cbSampleFormat"></ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                <Label Content="Host ID" Width="120"></Label>
+                <TextBox Width="110" x:Name="tbHostId"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
                 <CheckBox x:Name="cbUseSnapClientNet">Use SnapClient.Net? (experimental)</CheckBox>

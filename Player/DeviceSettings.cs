@@ -32,5 +32,6 @@ namespace SnapDotNet.Player
         public int RestartAttempts;
         public DateTime? LastSeen;
         public bool UseSnapClientNet;
+        public string HostId;
     }
 }

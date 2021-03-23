@@ -211,6 +211,7 @@ namespace SnapDotNet.Player
                         lastLine = line; // we only care about the last line from the output - in case there's an error (snapclient should probably be sending these to stderr though)
                     };
                     string resampleArg = "";
+                    string hostIdArg = "";
 
                     CommandTask<CommandResult> task = null;
 
@@ -219,12 +220,16 @@ namespace SnapDotNet.Player
                         // Launch native client:
                         if (string.IsNullOrEmpty(deviceSettings.ResampleFormat) == false)
                         {
-                            resampleArg = string.Format("--sampleformat {0}:0", deviceSettings.ResampleFormat);
+                            resampleArg = $"--sampleformat {deviceSettings.ResampleFormat}:0";
                         }
 
-                        string command = string.Format("-h {0} -p {1} -s {2} -i {3} --sharingmode={4} {5}",
-                            SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId,
-                            deviceSettings.ShareMode.ToString().ToLower(), resampleArg);
+                        if (string.IsNullOrWhiteSpace(deviceSettings.HostId) == false)
+                        {
+                            hostIdArg = $"--hostID \"{deviceSettings.HostId}\"";
+                        }
+
+                        string command =
+                            $"-h {SnapSettings.Server} -p {SnapSettings.PlayerPort} -s {device.Index} -i {deviceInstanceId} --sharingmode={deviceSettings.ShareMode.ToString().ToLower()} {resampleArg} {hostIdArg}";
                         Logger.Debug("Snapclient command: {0}", command);
                         task = Cli.Wrap(_SnapClient())
                             .WithArguments(command)
@@ -234,8 +239,8 @@ namespace SnapDotNet.Player
                     else
                     {
                         // launch experimental .NET port of snapclient:
-                        string command = string.Format("-h {0} -p {1} -s {2} -i {3}",
-                            SnapSettings.Server, SnapSettings.PlayerPort, device.Index, deviceInstanceId);
+                        string command =
+                            $"-h {SnapSettings.Server} -p {SnapSettings.PlayerPort} -s {device.Index} -i {deviceInstanceId}";
 
                         Logger.Debug("SnapClient.Net command: {0}", command);
                         task = Cli.Wrap(_SnapClientDotNet())
