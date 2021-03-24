@@ -184,7 +184,7 @@ namespace SnapDotNet.Player
 
         private static string _SnapClientDotNet()
         {
-            return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient.Net", "SnapClient.Net.exe");
+            return Path.Combine(Utils.GetApplicationDirectory(), "SnapClient.Net.exe");
         }
 
         private async Task _PlayAsync(string deviceUniqueId, CancellationTokenSource cancellationTokenSource, int attempts = 0)
