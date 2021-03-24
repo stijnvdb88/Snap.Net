@@ -60,7 +60,7 @@ namespace SnapClient.Net
 
             HelloMessage helloMessage = new HelloMessage(_GetMacAddress(), _GetOS(), options.Instance);
             helloMessage.Version = string.Join(".", s_Version.Major, s_Version.Minor, s_Version.Build);
-            Player player = new NAudioPlayer(device.DeviceFactory, options.DacLatency, options.BufferDurationMs, options.OffsetToleranceMs);
+            Player player = new NAudioPlayer(options.DacLatency, options.BufferDurationMs, options.OffsetToleranceMs, device.DeviceFactory);
             Controller controller = new Controller(player, helloMessage);
 
             await controller.StartAsync(options.HostName, options.Port);

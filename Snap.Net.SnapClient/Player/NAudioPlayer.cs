@@ -26,13 +26,10 @@ namespace Snap.Net.SnapClient.Player
         // function which creates our IWavePlayer - we need this as we sometimes need to recreate the player ourselves (switching streams, restarting, etc)
         protected Func<IWavePlayer> m_OutputDeviceFactory = null;
         private BufferedWaveProvider m_OutputBuffer = null; // this is the buffer we'll feed samples into, the audio device will play these as they get filled
-        private int m_BufferFrameCount = 0; // number of frames we'll feed into the buffer with each iteration (this is calculated based on OutputBufferMs and SampleFormat)
         private IWavePlayer m_OutputDevice = null; 
 
         private VolumeSampleProvider m_VolumeSampleProvider = null; // utility for manipulating volume (just multiplies each sample by volume)
-
         private Thread m_AudioThread = null;
-        private int m_OffsetToleranceMs = 50;
 
         /// <summary>
         /// Class for playing back audio into a user supplied IWavePlayer, using an NAudio BufferedWaveProvider
@@ -41,30 +38,22 @@ namespace Snap.Net.SnapClient.Player
         /// <param name="dacLatency">Output device latency</param>
         /// <param name="bufferDurationMs">Length of our output buffer (ms)</param>
         /// <param name="offsetToleranceMs">How far we can be off before resorting to a hard sync (this causes an audible pop)</param>
-        public NAudioPlayer(Func<IWavePlayer> outputDeviceFactory, int dacLatency, int bufferDurationMs, int offsetToleranceMs, TimeProvider customTimeProvider = null)
+        public NAudioPlayer(int dacLatency, int bufferDurationMs, int offsetToleranceMs, Func<IWavePlayer> outputDeviceFactory, TimeProvider customTimeProvider = null)
+            : base(dacLatency, bufferDurationMs, offsetToleranceMs)
         {
             m_OutputDeviceFactory = outputDeviceFactory;
-            m_DacLatency = dacLatency;
-            m_BufferDurationMs = bufferDurationMs;
-            m_OffsetToleranceMs = offsetToleranceMs;
             m_TimeProvider = customTimeProvider;
         }
 
-        public override void Start(SampleFormat sampleFormat)
+        protected override void _Start()
         {
             m_OutputDevice = m_OutputDeviceFactory();
-            m_SampleFormat = sampleFormat;
-
-            m_AudioStream = new AudioStream(GetTimeProvider(), m_SampleFormat, m_BufferDurationMs, m_OffsetToleranceMs);
-
-            m_BufferFrameCount = (int)Math.Floor(m_BufferDurationMs * m_SampleFormat.MsRate);
-
             m_OutputBuffer = new BufferedWaveProvider(m_SampleFormat.ToWaveFormat());
             m_OutputBuffer.BufferLength = m_BufferFrameCount * m_SampleFormat.FrameSize * 2;
             m_OutputBuffer.ReadFully = true; // keeps the audio device playing silence while we're not sending any data
 
             m_VolumeSampleProvider = new VolumeSampleProvider(m_OutputBuffer.ToSampleProvider());
-            _UpdateVolume();
+            _OnSettingsUpdated();
 
             m_OutputDevice.Init(m_VolumeSampleProvider);
             m_OutputDevice.Play();
@@ -84,13 +73,7 @@ namespace Snap.Net.SnapClient.Player
         }
 
 
-        public override void OnMessageReceived(JsonMessage<ServerSettingsMessage> message)
-        {
-            base.OnMessageReceived(message);
-            _UpdateVolume();
-        }
-
-        private void _UpdateVolume()
+        protected override void _OnSettingsUpdated()
         {
             if (m_VolumeSampleProvider != null)
             {

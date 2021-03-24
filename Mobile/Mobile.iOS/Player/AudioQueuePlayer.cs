@@ -16,40 +16,30 @@ namespace SnapDotNet.Mobile.iOS.Player
     class AudioQueuePlayer : Snap.Net.SnapClient.Player.Player
     {
         private OutputAudioQueue m_AudioQueue = null;
-
-        private int m_BufferDurationMs = 0;
-        private int m_OffsetToleranceMs = 0;
-
-        private int m_BufferFrameCount = 0;
         private int m_NumBuffers = 3;
-
         private AudioQueueTimeProvider m_AudioQueueTimeProvider = null;
 
-        public AudioQueuePlayer(int bufferDurationMs, int offsetToleranceMs)
+        public AudioQueuePlayer(int dacLatency, int bufferDurationMs, int offsetToleranceMs) : base(dacLatency, bufferDurationMs, offsetToleranceMs)
         {
-            m_BufferDurationMs = bufferDurationMs;
-            m_OffsetToleranceMs = offsetToleranceMs;
         }
-
-        public override void Start(SampleFormat sampleFormat)
+        
+        protected override void _Start()
         {
-            m_SampleFormat = sampleFormat;
-            m_AudioStream = new AudioStream(GetTimeProvider(), m_SampleFormat, m_BufferDurationMs, m_OffsetToleranceMs);
-            m_BufferFrameCount = (int)Math.Floor(m_BufferDurationMs * m_SampleFormat.MsRate);
             AudioStreamBasicDescription format = new AudioStreamBasicDescription
             {
-                SampleRate = sampleFormat.Rate,
+                SampleRate = m_SampleFormat.Rate,
                 Format = AudioFormatType.LinearPCM,
                 FormatFlags = AudioFormatFlags.LinearPCMIsSignedInteger | AudioFormatFlags.LinearPCMIsPacked,
-                BitsPerChannel = sampleFormat.Bits,
-                ChannelsPerFrame = sampleFormat.Channels,
-                BytesPerFrame = sampleFormat.FrameSize,
-                BytesPerPacket = sampleFormat.FrameSize,
+                BitsPerChannel = m_SampleFormat.Bits,
+                ChannelsPerFrame = m_SampleFormat.Channels,
+                BytesPerFrame = m_SampleFormat.FrameSize,
+                BytesPerPacket = m_SampleFormat.FrameSize,
                 FramesPerPacket = 1
             };
+
             m_AudioQueue = new OutputAudioQueue(format);
             m_AudioQueueTimeProvider.Init(m_AudioQueue, m_SampleFormat);
-            m_AudioQueue.Volume = m_Volume;
+            _OnSettingsUpdated();
             int bufferSize = m_BufferFrameCount * m_SampleFormat.FrameSize;
             _UnsafeStart(bufferSize);
             m_AudioQueue.Start();
@@ -73,7 +63,6 @@ namespace SnapDotNet.Mobile.iOS.Player
             {
                 _PlayNext(e.UnsafeBuffer, m_BufferDurationMs * (m_NumBuffers - 1));
             };
-
         }
 
         private unsafe void _PlayNext(AudioQueueBuffer* buffer, int offset)
@@ -84,9 +73,8 @@ namespace SnapDotNet.Mobile.iOS.Player
             m_AudioQueue.EnqueueBuffer(buffer, null);
         }
 
-        public override void OnMessageReceived(JsonMessage<ServerSettingsMessage> message)
+        protected override void _OnSettingsUpdated()
         {
-            base.OnMessageReceived(message);
             if (m_AudioQueue != null)
             {
                 m_AudioQueue.Volume = m_Volume;
