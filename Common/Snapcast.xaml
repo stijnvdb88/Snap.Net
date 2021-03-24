@@ -21,6 +21,7 @@
                 <MenuItem Header="Connect" Command="{Binding ConnectCommand}" />
                 <MenuItem Header="Settings..." Command="{Binding ShowSettingsDialogCommand}" />
                 <MenuItem Header="Player" Command="{Binding ShowWindowCommand}" />
+                <MenuItem Header="Broadcast" Command="{Binding ShowBroadcastWindowCommand}" />
 
                 <Separator />
                 <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />

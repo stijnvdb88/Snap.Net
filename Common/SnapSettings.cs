@@ -372,6 +372,16 @@ namespace SnapDotNet
             return new Player.DeviceSettings();
         }
 
+        public static Broadcast.Broadcast.BroadcastSettings GetBroadcastSettings()
+        {
+            return LoadSetting<Broadcast.Broadcast.BroadcastSettings>("BroadcastSettings");
+        }
+
+        public static void SaveBroadcastSettings(Broadcast.Broadcast.BroadcastSettings settings)
+        {
+            SaveSetting("BroadcastSettings", settings);
+        }
+
         public static void SaveDeviceSettings(string deviceId, Player.DeviceSettings settings)
         {
             Dictionary<string, Player.DeviceSettings> allSettings = LoadSetting<Dictionary<string, Player.DeviceSettings>>("DeviceSettings");

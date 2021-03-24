@@ -44,6 +44,22 @@ namespace SnapDotNet
             }
         }
 
+        public ICommand ShowBroadcastWindowCommand
+        {
+            get
+            {
+                return new DelegateCommand
+                {
+                    CanExecuteFunc = () => true,
+                    CommandAction = () =>
+                    {
+                        Windows.BroadcastSettings broadcastSettings = new Windows.BroadcastSettings(Snapcast.Instance.Broadcast);
+                        broadcastSettings.ShowDialog();
+                    }
+                };
+            }
+        }
+
         public ICommand ConnectCommand
         {
             get

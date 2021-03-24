@@ -238,5 +238,17 @@ namespace SnapDotNet.Properties {
                 this["DeviceMissingExpiryDays"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BroadcastSettings {
+            get {
+                return ((string)(this["BroadcastSettings"]));
+            }
+            set {
+                this["BroadcastSettings"] = value;
+            }
+        }
     }
 }

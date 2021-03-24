@@ -45,6 +45,7 @@ namespace SnapDotNet
         public static Snapcast Instance { get; private set; } = null;
         public static TaskbarIcon TaskbarIcon { get; private set; }
         public Player.Player Player { get; private set; }
+        public Broadcast.Broadcast Broadcast { get; private set; }
 
         public static string ProductName { get; private set; }
 
@@ -83,6 +84,8 @@ namespace SnapDotNet
 
             Instance = this;
             Player = new Player.Player();
+            Broadcast = new Broadcast.Broadcast();
+
             if (string.IsNullOrEmpty(SnapSettings.Server) == false)
             {
                 Connect();
@@ -121,7 +124,6 @@ namespace SnapDotNet
 
         private async Task _ConnectClientAndStartAutoPlayAsync()
         {
-
             try
             {
                 m_ConnectTask = m_SnapcastClient.ConnectAsync(SnapSettings.Server, SnapSettings.ControlPort);
@@ -134,7 +136,10 @@ namespace SnapDotNet
 
             if (m_SnapcastClient.ServerData != null)
             {
-                await Player.StartAutoPlayAsync().ConfigureAwait(false);
+                // start auto-play
+                _ = Task.Run(Player.StartAutoPlayAsync).ConfigureAwait(false);
+                // start auto-broadcast
+                _ = Task.Run(Broadcast.StartAutoBroadcastAsync).ConfigureAwait(false);
             }
         }
 

@@ -17,6 +17,8 @@ namespace Snap.Net.Broadcast
 
         private readonly string m_Address = "";
         private readonly int m_Port = 0;
+        private int m_ConnectAttempts = 0;
+        private bool m_Quit = false;
 
         public ClientConnection(string address, int port)
         {
@@ -26,7 +28,7 @@ namespace Snap.Net.Broadcast
 
         public async Task ConnectAsync()
         {
-            while (m_Socket == null || m_Socket.Connected == false) // reconnect loop
+            while ((m_Socket == null || m_Socket.Connected == false) && m_Quit == false) // reconnect loop
             {
                 try
                 {
@@ -36,12 +38,23 @@ namespace Snap.Net.Broadcast
                 }
                 catch (Exception e)
                 {
+                    if (m_ConnectAttempts == 0)
+                    {
+                        OnConnected?.Invoke(false);
+                    }
                     Console.WriteLine("Failed to connect. Exception: " + e.Message);
                     m_Socket?.Dispose();
                     m_Socket = null;
                     await Task.Delay(100);
                 }
+
+                m_ConnectAttempts++;
             }
+        }
+
+        public void Stop()
+        {
+            m_Quit = true;
         }
 
         public void Write(byte[] data, int length)
@@ -57,7 +70,6 @@ namespace Snap.Net.Broadcast
                 OnConnected?.Invoke(false);
             }
         }
-
 
         public void Dispose()
         {

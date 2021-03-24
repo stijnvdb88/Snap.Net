@@ -10,15 +10,17 @@ using NAudio.Wave.SampleProviders;
 
 namespace Snap.Net.Broadcast
 {
-    public class Broadcast
+    public class BroadcastController
     {
         private ClientConnection m_Connection;
         private WasapiLoopbackCapture m_Capture = null;
         private MMDevice m_Device = null;
 
-        public event Action<bool> OnConnected = null; 
+        public event Action<bool> OnConnected = null;
 
-        public Broadcast(MMDevice device)
+        private bool m_Quit = false;
+
+        public BroadcastController(MMDevice device)
         {
             m_Device = device;
         }
@@ -32,10 +34,19 @@ namespace Snap.Net.Broadcast
             m_Capture.DataAvailable += _CaptureOnDataAvailable;
             m_Capture.StartRecording();
 
-            while (true)
+            while (m_Quit == false)
             {
                 await Task.Delay(100);
             }
+
+            m_Connection.Dispose();
+            m_Capture.Dispose();
+        }
+
+        public void Stop()
+        {
+            m_Quit = true;
+            m_Connection.Stop();
         }
 
         private void _OnConnected(bool connected)

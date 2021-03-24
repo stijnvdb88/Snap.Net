@@ -19,6 +19,19 @@ namespace Snap.Net.Broadcast
             return null;
         }
 
+        public static MMDevice GetDevice(string id)
+        {
+            List<MMDevice> devices = GetWasapiDevices();
+            for (int i = 0; i < devices.Count; i++)
+            {
+                if (devices[i].ID == id)
+                {
+                    return devices[i];
+                }
+            }
+            return null;
+        }
+
         public static List<MMDevice> GetWasapiDevices()
         {
             List<MMDevice> list = new List<MMDevice>();
@@ -33,6 +46,7 @@ namespace Snap.Net.Broadcast
 
             return list;
         }
+
 
         public static void PrintDevices()
         {

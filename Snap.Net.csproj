@@ -81,6 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Broadcast\Broadcast.cs" />
     <Compile Include="Common\EntryPoint.cs" />
     <Compile Include="Common\GlobalSuppressions.cs" />
     <Compile Include="Common\SingleInstanceManager.cs" />
@@ -153,6 +154,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Windows\BroadcastSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Windows\DeviceSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +173,9 @@
     <Compile Include="Common\Snapcast.xaml.cs">
       <DependentUpon>Snapcast.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\Windows\BroadcastSettings.xaml.cs">
+      <DependentUpon>BroadcastSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\DeviceSettings.xaml.cs">
       <DependentUpon>DeviceSettings.xaml</DependentUpon>
@@ -284,11 +292,16 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Snap.Net.Broadcast\Snap.Net.Broadcast.csproj">
+      <Project>{cdf033f6-712c-4762-b28a-cd0a365e651d}</Project>
+      <Name>Snap.Net.Broadcast</Name>
+    </ProjectReference>
     <ProjectReference Include="Snap.Net.ControlClient\Snap.Net.ControlClient.csproj">
       <Project>{1463b5b3-4301-4cb6-8c2a-902e27540e85}</Project>
       <Name>Snap.Net.ControlClient</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\BuildCommon.targets" />
 </Project>

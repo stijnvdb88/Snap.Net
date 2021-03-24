@@ -37,7 +37,7 @@ namespace Snap.Net.Broadcast
                 return -1;
             }
 
-            Broadcast broadcast = new Broadcast(device);
+            BroadcastController broadcast = new BroadcastController(device);
             await broadcast.RunAsync(options.HostName, options.Port);
 
             return 0;
