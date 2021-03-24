@@ -243,8 +243,9 @@ namespace SnapDotNet
 
         public void Quit()
         {
+            Broadcast.Stop();
             HookEvents.Dispose();
-            Shutdown();
+            Shutdown(); 
         }
 
         /// <summary>
