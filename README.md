@@ -14,10 +14,17 @@ AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br
     <br />
     <br />
     <img src="https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Control.png?raw=true">
-    <br /> Overview
   </p>
 </p>
 
+### SnapClient ###
+
+This project comes with a .NET port of snapclient. That library can be used to easily port snapclient to all platforms that are able to run .NET code.
+See the [documentation](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/README.md) for more information.
+
+### Broadcast ###
+
+A small [tool for broadcasting to snapserver](https://github.com/stijnvdb88/Snap.Net/blob/development/Snap.Net.Broadcast/README.md) is also included. This makes it easy to stream audio from your PC to all snapclients.
 
 ### Player ###
 
