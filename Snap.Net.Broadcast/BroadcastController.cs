@@ -13,8 +13,8 @@ namespace Snap.Net.Broadcast
     public class BroadcastController
     {
         private ClientConnection m_Connection;
-        private WasapiLoopbackCapture m_Capture = null;
-        private MMDevice m_Device = null;
+        private WasapiCapture m_Capture = null;
+        private readonly MMDevice m_Device = null;
 
         public event Action<bool> OnConnected = null;
 
@@ -30,7 +30,9 @@ namespace Snap.Net.Broadcast
             m_Connection = new ClientConnection(address, port);
             m_Connection.OnConnected += _OnConnected;
             await m_Connection.ConnectAsync();
-            m_Capture = new WasapiLoopbackCapture(m_Device);
+
+            m_Capture = m_Device.DataFlow == DataFlow.Render ? new WasapiLoopbackCapture(m_Device) : new WasapiCapture(m_Device);
+
             m_Capture.DataAvailable += _CaptureOnDataAvailable;
             m_Capture.StartRecording();
 
@@ -40,7 +42,7 @@ namespace Snap.Net.Broadcast
             }
 
             m_Connection.Dispose();
-            m_Capture.Dispose();
+            m_Capture?.Dispose();
         }
 
         public void Stop()
@@ -81,7 +83,7 @@ namespace Snap.Net.Broadcast
             var convertedPCM = new SampleToWaveProvider16(
                 new WdlResamplingSampleProvider(
                     new WaveToSampleProvider(inputStream),
-                    48000)
+                    96000 / format.Channels)
             );
 
             byte[] convertedBuffer = new byte[length];

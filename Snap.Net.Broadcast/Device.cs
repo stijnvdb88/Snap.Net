@@ -9,9 +9,9 @@ namespace Snap.Net.Broadcast
 {
     public class Device
     {
-        public static MMDevice GetDevice(int index)
+        public static MMDevice GetDevice(int index, DataFlow dataFlow = DataFlow.Render)
         {
-            List<MMDevice> devices = GetWasapiDevices();
+            List<MMDevice> devices = GetWasapiDevices(dataFlow);
             if (index < devices.Count)
             {
                 return devices[index];
@@ -32,14 +32,14 @@ namespace Snap.Net.Broadcast
             return null;
         }
 
-        public static List<MMDevice> GetWasapiDevices()
+        public static List<MMDevice> GetWasapiDevices(DataFlow dataFlow = DataFlow.Render)
         {
             List<MMDevice> list = new List<MMDevice>();
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
 
-            list.Add(enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+            list.Add(enumerator.GetDefaultAudioEndpoint(dataFlow, Role.Multimedia));
 
-            foreach (MMDevice device in enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
+            foreach (MMDevice device in enumerator.EnumerateAudioEndPoints(dataFlow, DeviceState.Active))
             {
                 list.Add(device);
             }
@@ -48,9 +48,9 @@ namespace Snap.Net.Broadcast
         }
 
 
-        public static void PrintDevices()
+        public static void PrintDevices(DataFlow dataFlow = DataFlow.Render)
         {
-            List<MMDevice> deviceList = GetWasapiDevices();
+            List<MMDevice> deviceList = GetWasapiDevices(dataFlow);
             for (int i = 0; i < deviceList.Count; i++)
             {
                 Console.WriteLine($"{i}: {deviceList[i].FriendlyName}");

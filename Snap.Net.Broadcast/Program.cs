@@ -24,11 +24,11 @@ namespace Snap.Net.Broadcast
         {
             if (options.ListDevices)
             {
-                Device.PrintDevices();
+                Device.PrintDevices(options.DataFlow);
                 return 0;
             }
 
-            MMDevice device = Device.GetDevice(options.SoundCard);
+            MMDevice device = Device.GetDevice(options.SoundCard, options.DataFlow);
             if (device == null)
             {
                 Console.WriteLine($"Invalid sound device index: {options.SoundCard}");
