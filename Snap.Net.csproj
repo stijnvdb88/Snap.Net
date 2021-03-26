@@ -222,6 +222,7 @@
     <Resource Include="Assets\snapcast.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Assets\snapcast_r.ico" />
     <Content Include="SnapClient\FLAC.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
 
 namespace SnapDotNet
 {
@@ -85,7 +86,7 @@ namespace SnapDotNet
             Instance = this;
             Player = new Player.Player();
             Broadcast = new Broadcast.Broadcast();
-
+            Broadcast.BroadcastStateChanged += _OnBroadcastStateChanged;
             if (string.IsNullOrEmpty(SnapSettings.Server) == false)
             {
                 Connect();
@@ -95,6 +96,16 @@ namespace SnapDotNet
                 SnapDotNet.Windows.Settings settings = new Windows.Settings();
                 settings.ShowDialog();
             }
+        }
+
+        private void _OnBroadcastStateChanged(Broadcast.Broadcast.EState state)
+        {
+            Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                string icon = state == SnapDotNet.Broadcast.Broadcast.EState.Broadcasting ? "snapcast_r" : "snapcast";
+                TaskbarIcon.IconSource =
+                    BitmapFrame.Create(new Uri($"pack://application:,,,/Snap.Net;component/Assets/{icon}.ico"));
+            }));
         }
 
         public void Activate()
