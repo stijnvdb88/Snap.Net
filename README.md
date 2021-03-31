@@ -24,7 +24,7 @@ See the [documentation](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.
 
 ### Broadcast ###
 
-A small [tool for broadcasting to snapserver](https://github.com/stijnvdb88/Snap.Net/blob/development/Snap.Net.Broadcast/README.md) is also included. This makes it easy to stream audio from your PC to all snapclients.
+A small [tool for broadcasting to snapserver](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.Broadcast/README.md) is also included. This makes it easy to stream audio from your PC to all snapclients.
 
 ### Player ###
 
