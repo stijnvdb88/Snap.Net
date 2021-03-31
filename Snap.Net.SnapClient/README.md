@@ -55,13 +55,13 @@ Parses incoming messages and forwards them to subscribers (those are registered 
 
 ### [TimeProvider](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/Time/TimeProvider.cs) ###
 
-This class is responsible for handling the time difference between us and the server. Periodic time messages are sent by the [Controller](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/Controller.cs) (about every second) with our own time included, to which the server replies with the difference between our clocks - that response gets routed to the TimeProvider. This lets us figure out the latency and use our own clock to calculate server time at any moment. We need this for when we start reading audio data, which contains timestamps indicating exactly when they need to start playing (in server time).
+This class is responsible for handling the time difference between us and the server. Periodic time messages are sent by the [Controller](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/Controller.cs) (about every second) with our own time included, to which the server replies with the difference between our clocks - that response gets routed to the TimeProvider. This lets us figure out the latency and use our own clock to calculate server time at any moment. We need this for when we start reading audio chunks, which contain timestamps indicating exactly when they need to start playing (in server time).
 
 By default we use [System.Diagnostics.Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch?view=net-5.0) for accurately telling time. On most platforms, this should be the most high resolution clock available. However if the audio device you're using has its own clock, that will be a better alternative, and you should create your own TimeProvider implementation to leverage it. See the iOS [AudioQueueTimeProvider](https://github.com/stijnvdb88/Snap.Net/blob/master/Mobile/Mobile.iOS/Player/AudioQueueTimeProvider.cs) for an example.
 
 ### [Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/Player/Player.cs) ###
 
-An abstract class which represents an audio player. It has an [AudioStream](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/AudioStream.cs), which it queries for new raw audio data whenever it has finished playback of the previous data. Some buffering may also happen here, depending on the implementation. 
+An abstract class which represents an audio player. It has an [AudioStream](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/AudioStream.cs), which it queries for new raw audio data whenever the audio device has finished playback of the previous data. Some buffering may also happen here, depending on the implementation. 
 
 ### [AudioStream](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.SnapClient/AudioStream.cs) ###
 
