@@ -49,23 +49,24 @@ namespace SnapDotNet.Broadcast
             }
         }
 
+        [Flags]
         public enum EState
         {
-            Broadcasting,
-            ActiveButNotConnected,
-            Stopped
+            Connected = 1,
+            Capturing = 2,
         }
 
-        public event Action<EState> BroadcastStateChanged = null;
-        private EState m_State = EState.Stopped;
+        public event Action<EState, string> BroadcastStateChanged = null;
+        private EState m_State = 0;
 
+        
         public EState State
         {
             get => m_State;
             private set
             {
                 m_State = value; 
-                BroadcastStateChanged?.Invoke(value);
+                BroadcastStateChanged?.Invoke(value, m_ActiveDevice);
             }
         }
 
@@ -88,6 +89,7 @@ namespace SnapDotNet.Broadcast
             {
                 m_BroadcastController = new BroadcastController(device);
                 m_BroadcastController.OnConnected += _OnBroadcastControllerConnected;
+                m_BroadcastController.OnCapturingAudio += _OnBroadcastAudioCaptureStateChanged;
                 string address = SnapSettings.Server;
                 int port = settings.Port;
                 await m_BroadcastController.RunAsync(address, port)
@@ -95,16 +97,36 @@ namespace SnapDotNet.Broadcast
             }
         }
 
+        private void _OnBroadcastAudioCaptureStateChanged(bool capturing, string device)
+        {
+            m_ActiveDevice = device;
+            if (capturing)
+            {
+                State |= EState.Capturing;
+            }
+            else
+            {
+                State &= ~EState.Capturing;
+            }
+        }
+
         public void Stop()
         {
             m_BroadcastController?.Stop();
-            State = EState.Stopped;
+            State = 0;
             m_BroadcastController = null;
         }
 
         private void _OnBroadcastControllerConnected(bool connected)
         {
-            State = connected ? EState.Broadcasting : EState.ActiveButNotConnected;
+            if (connected)
+            {
+                State |= EState.Connected;
+            }
+            else
+            {
+                State &= ~EState.Connected;
+            }
         }
 
         public static List<BroadcastDevice> GetDevices()

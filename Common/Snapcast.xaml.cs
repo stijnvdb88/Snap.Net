@@ -98,11 +98,25 @@ namespace SnapDotNet
             }
         }
 
-        private void _OnBroadcastStateChanged(Broadcast.Broadcast.EState state)
+        private void _OnBroadcastStateChanged(Broadcast.Broadcast.EState state, string deviceName)
         {
             Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                string icon = state == SnapDotNet.Broadcast.Broadcast.EState.Broadcasting ? "snapcast_r" : "snapcast";
+                string icon = "snapcast";
+                TaskbarIcon.ToolTipText = $"Snap.Net {Version.Major}.{Version.Minor}.{Version.Build}";
+                if (state.HasFlag(SnapDotNet.Broadcast.Broadcast.EState.Connected))
+                {
+                    bool capturing = state.HasFlag(SnapDotNet.Broadcast.Broadcast.EState.Capturing);
+                    if (capturing)
+                    {
+                        icon = "snapcast_r";
+                        TaskbarIcon.ToolTipText = $"Broadcasting audio from device {deviceName}";
+                    }
+                    else
+                    {
+                        TaskbarIcon.ToolTipText = $"Not broadcasting, waiting for audio from device:\n{deviceName}";
+                    }
+                }
                 TaskbarIcon.IconSource =
                     BitmapFrame.Create(new Uri($"pack://application:,,,/Snap.Net;component/Assets/{icon}.ico"));
             }));

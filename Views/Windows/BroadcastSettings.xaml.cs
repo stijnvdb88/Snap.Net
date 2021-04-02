@@ -29,6 +29,7 @@ namespace SnapDotNet.Windows
         private List<string> m_Devices = new List<string>();
 
         private Broadcast.Broadcast.BroadcastSettings m_Settings;
+        private string m_DeviceName = "";
 
         public BroadcastSettings(Broadcast.Broadcast broadcast)
         {
@@ -37,17 +38,19 @@ namespace SnapDotNet.Windows
             m_Broadcast.BroadcastStateChanged += _OnBroadcastStateChanged;
         }
 
-        private void _OnBroadcastStateChanged(Broadcast.Broadcast.EState state)
+        private void _OnBroadcastStateChanged(Broadcast.Broadcast.EState state, string deviceName)
         {
+            m_DeviceName = deviceName;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 imgIcon.Kind = MahApps.Metro.IconPacks.PackIconBoxIconsKind.RegularBroadcast;
-                if (state == Broadcast.Broadcast.EState.ActiveButNotConnected)
+                bool connected = state.HasFlag(Broadcast.Broadcast.EState.Connected);
+                if (connected == false)
                 {
                     imgIcon.Kind = PackIconBoxIconsKind.RegularBlock;
                 }
 
-                btRecord.IsChecked = state == Broadcast.Broadcast.EState.Broadcasting;
+                btRecord.IsChecked = connected;
             });
             Console.WriteLine(state);
         }
@@ -55,7 +58,7 @@ namespace SnapDotNet.Windows
         private async void BtRecord_OnClick(object sender, RoutedEventArgs e)
         {
             _Save();
-            if (m_Broadcast.State == Broadcast.Broadcast.EState.Stopped)
+            if (m_Broadcast.State.HasFlag(Broadcast.Broadcast.EState.Connected) == false)
             {
                 Task.Run(m_Broadcast.BroadcastAsync).ConfigureAwait(false);
             }
@@ -63,7 +66,7 @@ namespace SnapDotNet.Windows
             {
                 m_Broadcast.Stop();
             }
-            _OnBroadcastStateChanged(m_Broadcast.State);
+            _OnBroadcastStateChanged(m_Broadcast.State, m_DeviceName);
         }
 
         private void BroadcastSettings_OnLoaded(object sender, RoutedEventArgs e)
@@ -71,7 +74,7 @@ namespace SnapDotNet.Windows
             m_Settings = SnapSettings.GetBroadcastSettings();
             tbPort.Text = m_Settings.Port.ToString();
             cbAutoStart.IsChecked = m_Settings.AutoBroadcast;
-            _OnBroadcastStateChanged(m_Broadcast.State);
+            _OnBroadcastStateChanged(m_Broadcast.State, m_DeviceName);
             _ListDevices();
         }
 

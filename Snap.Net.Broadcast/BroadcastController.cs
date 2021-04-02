@@ -17,7 +17,9 @@ namespace Snap.Net.Broadcast
         private readonly MMDevice m_Device = null;
 
         public event Action<bool> OnConnected = null;
+        public event Action<bool, string> OnCapturingAudio = null;
 
+        private bool m_CapturingAudio = false;
         private bool m_Quit = false;
 
         public BroadcastController(MMDevice device)
@@ -34,6 +36,7 @@ namespace Snap.Net.Broadcast
             m_Capture = m_Device.DataFlow == DataFlow.Render ? new WasapiLoopbackCapture(m_Device) : new WasapiCapture(m_Device);
 
             m_Capture.DataAvailable += _CaptureOnDataAvailable;
+            OnCapturingAudio?.Invoke(false, m_Device.FriendlyName);
             m_Capture.StartRecording();
 
             while (m_Quit == false)
@@ -58,6 +61,13 @@ namespace Snap.Net.Broadcast
 
         private void _CaptureOnDataAvailable(object sender, WaveInEventArgs e)
         {
+            bool capturingAudio = e.BytesRecorded > 0;
+            if (capturingAudio != m_CapturingAudio)
+            {
+                OnCapturingAudio?.Invoke(capturingAudio, m_Device.FriendlyName);
+            }
+
+            m_CapturingAudio = capturingAudio;
             byte[] data = _ToPcm16(e.Buffer, e.BytesRecorded, m_Capture.WaveFormat);
             m_Connection.Write(data, data.Length);
         }
