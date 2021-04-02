@@ -2,7 +2,7 @@
 
 ## Overview ##
 
-The purpose of this tool is to make it possible to stream audio from your Windows PC to snapserver. It uses [Wasapi loopback](https://docs.microsoft.com/en-us/windows/win32/coreaudio/loopback-recording) to capture the audio coming through your audio device, and sends it to snapserver for syncronized playback. The delay between the audio being captured on your PC will more or less equal the `buffer` setting in snapserver (plus the network latency between your PC and snapserver, which should be negligible in most cases).  
+The purpose of this tool is to make it possible to stream audio from your Windows PC to snapserver. It uses [Wasapi loopback](https://docs.microsoft.com/en-us/windows/win32/coreaudio/loopback-recording) to capture the audio coming through your audio device, and sends it to snapserver for syncronized playback. The delay between the audio being captured on your PC will more or less equal the `buffer` setting in snapserver which defaults to 1000ms (plus the network latency between your PC and snapserver, which should be negligible in most cases).  
 
 This also works really well with meta streams, as we only send audio to the server when something is actually played (silence is not sent).
 
