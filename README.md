@@ -26,9 +26,9 @@ See the [documentation](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.
 
 A small [tool for broadcasting to snapserver](https://github.com/stijnvdb88/Snap.Net/blob/master/Snap.Net.Broadcast/README.md) is also included. This makes it easy to stream audio from your PC to all snapclients.
 
-### Player ###
+### Player + Broadcast ###
 
-![Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Player.png)
+![Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Player.png) ![Broadcast](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Broadcast.png) 
 
 ### Control ###
 The client/group name and client latency can be set in their menus. These menus are accessible by clicking on client/group name in the overview.
