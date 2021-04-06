@@ -50,8 +50,7 @@
                 <Label x:Name="lbLastSeen" Text="" WidthRequest="150" />
             </StackLayout>
             <Button x:Name="btRemove" Margin="0,10,0,0" Text="REMOVE"
-                    BackgroundColor="#2196F3"
-                    TextColor="White" Clicked="BtRemove_OnClicked" />
+                Clicked="BtRemove_OnClicked" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

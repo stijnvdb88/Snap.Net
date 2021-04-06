@@ -6,7 +6,6 @@
              mc:Ignorable="d"
              x:Class="SnapDotNet.Mobile.Views.SettingsPage"
              Title="Settings">
-
     <Grid>
         <StackLayout Margin="10, 10, 0, 0">
             <StackLayout Orientation="Horizontal">
@@ -24,9 +23,7 @@
                 <Entry x:Name="ePlayerPort" WidthRequest="150" />
             </StackLayout>
 
-            <Button Margin="0,10,0,0" Text="Apply"
-                    BackgroundColor="#2196F3"
-                    TextColor="White" Clicked="Button_OnClicked" />
+            <Button Margin="0,10,0,0" Text="Apply" Clicked="Button_OnClicked" />
         </StackLayout>
         
     </Grid>

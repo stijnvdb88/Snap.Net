@@ -12,9 +12,9 @@
                 <Entry x:Name="eName" HorizontalOptions="End" WidthRequest="150" />
             </StackLayout>
 
-            <Label Text="Stream" TextColor="DeepPink" />
+            <Label Text="Stream" Style="{StaticResource LabelAccentStyle}" />
             <Picker x:Name="pStream"></Picker>
-            <Label Text="Clients" TextColor="DeepPink" />
+            <Label Text="Clients" Style="{StaticResource LabelAccentStyle}" />
             <ScrollView x:Name="ScrollView" Margin="0, 0, 20, 0">
                 <StackLayout Orientation="Vertical" x:Name="slClients">
                 </StackLayout>

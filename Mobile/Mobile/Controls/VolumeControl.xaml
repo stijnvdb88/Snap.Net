@@ -16,8 +16,6 @@
             </Image>
           <Slider x:Name="slVolume" 
                   Minimum="0" Maximum="100"
-                  MinimumTrackColor="DeepPink" 
-                  MaximumTrackColor="Gray"
                   HorizontalOptions="FillAndExpand"
                   ValueChanged="SlVolume_OnValueChanged" DragStarted="SlVolume_OnDragStarted" DragCompleted="SlVolume_OnDragCompleted"/>
           <Image x:Name="imgSettings" Source="ic_settings.png" HeightRequest="20" WidthRequest="20" Margin="0,0,10,5">

@@ -9,11 +9,75 @@
     <Application.Resources>
         <ResourceDictionary>
             <!--Global Styles-->
-            <Color x:Key="NavigationPrimary">#2196F3</Color>
+            <Color x:Key="NavigationLightPrimary">#2196F3</Color>
+            <Color x:Key="NavigationLightText">#FFFFFF</Color>
+            <Color x:Key="PageLightBackground">#FFFFFF</Color>
+            <Color x:Key="PageLightText">#000000</Color>
+            <Color x:Key="ButtonLightText">#FFFFFF</Color>
+            <Color x:Key="ButtonLightBackground">#2196F3</Color>
+            <Color x:Key="AccentLight">DeepPink</Color>
+            <Color x:Key="CheckBoxLight">#2196F3</Color>
+
+            <Color x:Key="NavigationDarkPrimary">#222222</Color>
+            <Color x:Key="NavigationDarkText">#CCCCCC</Color>
+            <Color x:Key="PageDarkBackground">#444444</Color>
+            <Color x:Key="PageDarkText">#CCCCCC</Color>
+            <Color x:Key="ButtonDarkText">#CCCCCC</Color>
+            <Color x:Key="ButtonDarkBackground">#222222</Color>
+            <Color x:Key="AccentDark">Orange</Color>
+            <Color x:Key="CheckBoxDark">#000000</Color>
+
+
             <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{StaticResource NavigationPrimary}" />
-                <Setter Property="BarTextColor" Value="White" />
+                <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource NavigationLightPrimary}, Dark={StaticResource NavigationDarkPrimary}}" />
+                <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource NavigationLightText}, Dark={StaticResource NavigationDarkText}}" />
             </Style>
+
+            <Style ApplyToDerivedTypes="True"
+                   TargetType="ContentPage">
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light={StaticResource PageLightBackground}, Dark={StaticResource PageDarkBackground}}" />
+            </Style>
+
+            <Style TargetType="StackLayout">
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light={StaticResource PageLightBackground}, Dark={StaticResource PageDarkBackground}}" />
+            </Style>
+
+            <Style TargetType="Grid">
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light={StaticResource PageLightBackground}, Dark={StaticResource PageDarkBackground}}" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light={StaticResource PageLightText}, Dark={StaticResource PageDarkText}}" />
+            </Style>
+
+            <Style TargetType="Label"
+                   x:Key="LabelAccentStyle">
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light={StaticResource AccentLight}, Dark={StaticResource AccentDark}}" />
+            </Style>
+
+            <Style TargetType="Slider">
+                <Setter Property="MinimumTrackColor"
+                        Value="{AppThemeBinding Light={StaticResource AccentLight}, Dark={StaticResource AccentDark}}" />
+                <Setter Property="MaximumTrackColor" Value="Gray" />
+            </Style>
+
+            <Style TargetType="CheckBox">
+                <Setter Property="Color"
+                        Value="{AppThemeBinding Light={StaticResource CheckBoxLight}, Dark={StaticResource CheckBoxDark}}" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="TextColor"
+                        Value="{AppThemeBinding Light={StaticResource ButtonLightText}, Dark={StaticResource ButtonDarkText}}" />
+                <Setter Property="BackgroundColor"
+                        Value="{AppThemeBinding Light={StaticResource ButtonLightBackground}, Dark={StaticResource ButtonDarkBackground}}" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
     
