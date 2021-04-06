@@ -34,7 +34,8 @@ namespace SnapDotnet.Mobile.iOS
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
 
             AVAudioSession session = AVAudioSession.SharedInstance();
-            session.SetCategory(AVAudioSessionCategory.Playback, AVAudioSessionCategoryOptions.MixWithOthers);
+            // adding MixWithOthers option here breaks lock screen controls on some devices
+            session.SetCategory(AVAudioSessionCategory.Playback); 
             NSError error;
             session.SetPreferredIOBufferDuration(0.005f, out error);
             session.SetActive(true);
