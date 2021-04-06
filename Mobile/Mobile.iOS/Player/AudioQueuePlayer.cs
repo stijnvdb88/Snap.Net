@@ -19,7 +19,10 @@ namespace SnapDotNet.Mobile.iOS.Player
         private int m_NumBuffers = 3;
         private AudioQueueTimeProvider m_AudioQueueTimeProvider = null;
 
-        public AudioQueuePlayer(int dacLatency, int bufferDurationMs, int offsetToleranceMs) : base(dacLatency, bufferDurationMs, offsetToleranceMs)
+        public AudioQueuePlayer(int bufferDurationMs, int offsetToleranceMs) : base(
+            0, // 0: this Player implementation passes in the latency itself via _PlayNext's offset parameter
+            bufferDurationMs, 
+            offsetToleranceMs)
         {
         }
         
