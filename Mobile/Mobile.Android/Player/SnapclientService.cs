@@ -27,7 +27,7 @@ namespace SnapDotNet.Mobile.Droid.Player
     /// ported SnapclientService.java from badaix/snapdroid :-)
     /// </summary>
     ///
-    [Service]
+    [Service(Exported = true)]
     public class SnapclientService : Service
     {
         public static string EXTRA_HOST = "EXTRA_HOST";
