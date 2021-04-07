@@ -212,6 +212,7 @@ namespace SnapDotNet.Player
                     };
                     string resampleArg = "";
                     string hostIdArg = "";
+                    string instanceArg = $"-i {deviceInstanceId}";
 
                     CommandTask<CommandResult> task = null;
 
@@ -226,10 +227,11 @@ namespace SnapDotNet.Player
                         if (string.IsNullOrWhiteSpace(deviceSettings.HostId) == false)
                         {
                             hostIdArg = $"--hostID \"{deviceSettings.HostId}\"";
+                            instanceArg = ""; // omit instance id if HostID is explicitly set (see https://github.com/stijnvdb88/Snap.Net/issues/19)
                         }
 
                         string command =
-                            $"-h {SnapSettings.Server} -p {SnapSettings.PlayerPort} -s {device.Index} -i {deviceInstanceId} --sharingmode={deviceSettings.ShareMode.ToString().ToLower()} {resampleArg} {hostIdArg}";
+                            $"-h {SnapSettings.Server} -p {SnapSettings.PlayerPort} -s {device.Index} {instanceArg} --sharingmode={deviceSettings.ShareMode.ToString().ToLower()} {resampleArg} {hostIdArg}";
                         Logger.Debug("Snapclient command: {0}", command);
                         task = Cli.Wrap(_SnapClient())
                             .WithArguments(command)
