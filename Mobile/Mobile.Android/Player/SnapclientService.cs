@@ -28,19 +28,12 @@ namespace SnapDotNet.Mobile.Droid.Player
     /// </summary>
     ///
     [Service(Exported = true)]
-    public class SnapclientService : Service
+    public class SnapclientService : ServiceBase
     {
-        public static string EXTRA_HOST = "EXTRA_HOST";
-        public static string EXTRA_PORT = "EXTRA_PORT";
-        public static string ACTION_START = "ACTION_START";
-        public static string ACTION_STOP = "ACTION_STOP";
-        private const string NOTIFICATION_CHANNEL_ID = "com.stijnvdb88.snapdotnet.snapclientservice.defaultchannel";
         private const int NOTIFICATION_CHANNEL = 666;
 
         private IBinder m_Binder;
         private Process m_Process = null;
-        private PowerManager.WakeLock m_WakeLock = null;
-        private WifiManager.WifiLock m_WifiLock = null;
         private Thread m_Reader = null;
 
         private bool m_Running = false;
@@ -49,8 +42,6 @@ namespace SnapDotNet.Mobile.Droid.Player
         private bool m_LogReceived = false;
         private Handler m_RestartHandler = new Handler();
         private Runnable m_RestartRunnable = null;
-        private string m_Host = "";
-        private int m_Port = 1704;
 
         public void Init()
         {
@@ -375,29 +366,33 @@ namespace SnapDotNet.Mobile.Droid.Player
             if (m_SnapclientListener != null)
                 m_SnapclientListener.OnPlayStateChanged(this);
         }
+
+        public class LocalBinder : Binder
+        {
+            private SnapclientService m_Instance = null;
+            public LocalBinder(SnapclientService player)
+            {
+                m_Instance = player;
+            }
+
+            public SnapclientService GetService()
+            {
+                return m_Instance;
+            }
+        }
     }
 
-    public class LocalBinder : Binder
-    {
-        private SnapclientService m_Instance = null;
-        public LocalBinder(SnapclientService player)
-        {
-            m_Instance = player;
-        }
-
-        public SnapclientService GetService() 
-        {
-            return m_Instance;
-        }
-    }
+    
 
     public interface ISnapclientListener
     {
         void OnPlayStateChanged(SnapclientService snapclientService);
+        void OnBroadcastStateChanged(BroadcastService broadcastService);
 
         void OnLog(SnapclientService snapclientService, string timestamp, string logClass, string tag, string msg);
 
         void OnError(SnapclientService snapclientService, string msg, Exception exception);
+        void OnError(BroadcastService broadcastService, string msg, Exception exception);
     }
 
     public class SnapclientServiceConnection : Java.Lang.Object, IServiceConnection
@@ -406,7 +401,7 @@ namespace SnapDotNet.Mobile.Droid.Player
 
         MainActivity m_MainActivity;
         public bool IsConnected { get; set; }
-        public LocalBinder Binder { get; private set; }
+        public SnapclientService.LocalBinder Binder { get; private set; }
         public SnapclientService Player { get; private set; }
 
         public SnapclientServiceConnection(MainActivity activity)
@@ -418,7 +413,7 @@ namespace SnapDotNet.Mobile.Droid.Player
 
         public void OnServiceConnected(ComponentName name, IBinder service)
         {
-            Binder = (LocalBinder) service;
+            Binder = (SnapclientService.LocalBinder) service;
             Player = Binder.GetService();
             Player.Init();
             IsConnected = true;

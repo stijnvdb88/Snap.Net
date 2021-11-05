@@ -23,6 +23,11 @@
                 <Entry x:Name="ePlayerPort" WidthRequest="150" />
             </StackLayout>
 
+            <StackLayout Orientation="Horizontal" x:Name="slBroadcast">
+                <Label Text="Broadcast Port" WidthRequest="80" FontAttributes="Bold" />
+                <Entry x:Name="eBroadcastPort" WidthRequest="150" />
+            </StackLayout>
+
             <Button Margin="0,10,0,0" Text="Apply" Clicked="Button_OnClicked" />
         </StackLayout>
         

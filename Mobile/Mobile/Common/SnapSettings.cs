@@ -45,6 +45,19 @@ namespace SnapDotNet.Mobile.Common
             }
         }
 
+        public static int BroadcastPort
+        {
+            get
+            {
+                return Get<int>("BroadcastPort", 4953);
+            }
+
+            set
+            {
+                Set<int>("BroadcastPort", value);
+            }
+        }
+
         public static void Set<T>(string key, T value)
         {
             if (Xamarin.Forms.Application.Current.Properties.ContainsKey(key) == false)

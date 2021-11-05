@@ -61,6 +61,7 @@ namespace SnapDotNet.Mobile.iOS.Player
             return true;
         }
 
+
         public void Play()
         {
             AudioQueuePlayer audioPlayer = new AudioQueuePlayer(80, 20);
@@ -97,6 +98,30 @@ namespace SnapDotNet.Mobile.iOS.Player
         public bool IsPlaying()
         {
             return m_Controller != null;
+        }
+
+
+
+        public bool SupportsBroadcast()
+        {
+            return false;
+        }
+
+        public void OnBroadcastStateChanged(Action callback)
+        {
+        }
+
+        public void Broadcast(string host, int port)
+        {
+        }
+
+        public void StopBroadcasting()
+        {
+        }
+
+        public bool IsBroadcasting()
+        {
+            return false;
         }
     }
 }

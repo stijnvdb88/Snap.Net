@@ -11,5 +11,11 @@ namespace SnapDotNet.Mobile.Player
         void Play(string host, int port);
         void Stop();
         bool IsPlaying();
+
+        void OnBroadcastStateChanged(Action callback);
+        bool SupportsBroadcast();
+        void Broadcast(string host, int port);
+        void StopBroadcasting();
+        bool IsBroadcasting();
     }
 }

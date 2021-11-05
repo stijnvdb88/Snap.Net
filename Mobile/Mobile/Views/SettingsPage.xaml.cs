@@ -19,6 +19,9 @@ namespace SnapDotNet.Mobile.Views
             eServer.Text = SnapSettings.Server;
             eControlPort.Text = SnapSettings.ControlPort.ToString();
             ePlayerPort.Text = SnapSettings.PlayerPort.ToString();
+            eBroadcastPort.Text = SnapSettings.BroadcastPort.ToString();
+
+            slBroadcast.IsVisible = App.Instance.Player.SupportsBroadcast();
         }
 
         private async void Button_OnClicked(object sender, EventArgs e)
@@ -26,7 +29,7 @@ namespace SnapDotNet.Mobile.Views
             SnapSettings.Server = eServer.Text.Trim();
             SnapSettings.ControlPort = int.Parse(eControlPort.Text.Trim());
             SnapSettings.PlayerPort = int.Parse(ePlayerPort.Text.Trim());
-
+            SnapSettings.BroadcastPort = int.Parse(eBroadcastPort.Text.Trim());
             await App.Instance.ReconnectAsync().ConfigureAwait(false);
         }
     }
