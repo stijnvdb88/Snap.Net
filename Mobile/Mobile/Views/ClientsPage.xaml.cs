@@ -187,7 +187,7 @@ namespace SnapDotNet.Mobile.Views
         {
             if (App.Instance.Player.IsBroadcasting() == false)
             {
-                App.Instance.Player.Broadcast(SnapSettings.Server, SnapSettings.BroadcastPort);
+                App.Instance.Player.Broadcast(SnapSettings.Server, SnapSettings.BroadcastPort, SnapSettings.BroadcastMode);
             }
             else
             {

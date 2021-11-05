@@ -8,6 +8,7 @@ using MediaPlayer;
 using NAudio.Wave;
 using Snap.Net.SnapClient;
 using Snap.Net.SnapClient.Player;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Player;
 using UIKit;
 
@@ -111,7 +112,7 @@ namespace SnapDotNet.Mobile.iOS.Player
         {
         }
 
-        public void Broadcast(string host, int port)
+        public void Broadcast(string host, int port, EBroadcastMode broadcastMode)
         {
         }
 

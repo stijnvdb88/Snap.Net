@@ -11,6 +11,7 @@ using Android.Widget;
 using Android.OS;
 using Android.Support.V4.App;
 using Android.Support.V4.Content;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Droid.Player;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Forms;
@@ -41,6 +42,7 @@ namespace SnapDotNet.Mobile.Droid
 
         private string m_BroadcastHost;
         private int m_BroadcastPort;
+        private EBroadcastMode m_BroadcastMode = EBroadcastMode.Media;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -111,10 +113,11 @@ namespace SnapDotNet.Mobile.Droid
             StartService(i);
         }
 
-        public void Broadcast(string host, int port)
+        public void Broadcast(string host, int port, EBroadcastMode broadcastMode)
         {
             m_BroadcastHost = host;
             m_BroadcastPort = port;
+            m_BroadcastMode = broadcastMode;
 
             if (_HasRecordAudioPermission() == false)
             {
@@ -149,6 +152,7 @@ namespace SnapDotNet.Mobile.Droid
             i.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
             i.PutExtra(ServiceBase.EXTRA_HOST, m_BroadcastHost);
             i.PutExtra(ServiceBase.EXTRA_PORT, m_BroadcastPort);
+            i.PutExtra(BroadcastService.EXTRA_BROADCAST_MODE, (int)m_BroadcastMode);
             i.PutExtra(BroadcastService.EXTRA_RESULT_DATA, data);
             i.SetAction(ServiceBase.ACTION_START);
             StartForegroundService(i);
@@ -185,7 +189,6 @@ namespace SnapDotNet.Mobile.Droid
             {
                 return m_SnapclientServiceConnection.Player.IsPlaying();
             }
-
             return false;
         }
 

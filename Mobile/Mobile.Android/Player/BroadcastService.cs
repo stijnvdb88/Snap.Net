@@ -16,6 +16,7 @@ using Android.Net.Wifi;
 using Android.Support.V4.App;
 using Java.IO;
 using Java.Security;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Forms;
 using Console = System.Console;
@@ -29,6 +30,7 @@ namespace SnapDotNet.Mobile.Droid.Player
     {
         private const int NOTIFICATION_CHANNEL = 667;
         public const string EXTRA_RESULT_DATA = "BROADCAST_SERVICE_EXTRA_RESULT_DATA";
+        public const string EXTRA_BROADCAST_MODE = "BROADCAST_SERVICE_EXTRA_BROADCAST_MODE";
         private IBinder m_Binder;
         private ISnapclientListener m_SnapclientListener = null;
 
@@ -42,6 +44,8 @@ namespace SnapDotNet.Mobile.Droid.Player
 
         private Thread m_RecordThread = null;
         private Thread m_ConnectionThread = null;
+
+        private EBroadcastMode m_BroadcastMode = EBroadcastMode.Media;
 
         public void Init()
         {
@@ -91,6 +95,7 @@ namespace SnapDotNet.Mobile.Droid.Player
             {
                 string host = intent.GetStringExtra(EXTRA_HOST);
                 int port = intent.GetIntExtra(EXTRA_PORT, 1704);
+                EBroadcastMode broadcastMode = (EBroadcastMode) intent.GetIntExtra(EXTRA_BROADCAST_MODE, (int)EBroadcastMode.Media);
 
                 Intent stopIntent = new Intent(this, typeof(SnapclientService));
                 stopIntent.SetAction(ACTION_STOP);
@@ -126,7 +131,7 @@ namespace SnapDotNet.Mobile.Droid.Player
                     m_MediaProjectionManager.GetMediaProjection((int)Result.Ok,
                         intent.GetParcelableExtra(EXTRA_RESULT_DATA) as Intent);
 
-                _Start(host, port);
+                _Start(host, port, broadcastMode);
 
                 return StartCommandResult.Sticky;
             }
@@ -134,7 +139,7 @@ namespace SnapDotNet.Mobile.Droid.Player
             return StartCommandResult.NotSticky;
         }
 
-        private void _Start(string host, int port)
+        private void _Start(string host, int port, EBroadcastMode broadcastMode)
         {
             try
             {
@@ -155,6 +160,7 @@ namespace SnapDotNet.Mobile.Droid.Player
 
                 m_Host = host;
                 m_Port = port;
+                m_BroadcastMode = broadcastMode;
 
                 // actually connect here and start audio loop
                 AudioPlaybackCaptureConfiguration config = new AudioPlaybackCaptureConfiguration.Builder(m_MediaProjection)
@@ -166,11 +172,21 @@ namespace SnapDotNet.Mobile.Droid.Player
                     .SetSampleRate(48000)
                     .SetChannelMask(ChannelOut.Stereo).Build();
 
-                m_AudioRecord = new AudioRecord.Builder()
+                AudioRecord.Builder builder = new AudioRecord.Builder()
                     .SetAudioFormat(audioFormat)
-                    .SetBufferSizeInBytes(2048)
-                    .SetAudioPlaybackCaptureConfig(config)
-                    .Build();
+                    .SetBufferSizeInBytes(2048);
+
+                if (m_BroadcastMode == EBroadcastMode.Media)
+                {
+                    builder.SetAudioPlaybackCaptureConfig(config);
+                }
+
+                if (m_BroadcastMode == EBroadcastMode.Microphone)
+                {
+                    builder.SetAudioSource(AudioSource.Mic);
+                }
+
+                m_AudioRecord = builder.Build();
 
 
                 m_ConnectionThread = new Thread(() =>
@@ -235,6 +251,9 @@ namespace SnapDotNet.Mobile.Droid.Player
 
         private void _Stop()
         {
+            if (m_Running == false)
+                return;
+
             if (m_WakeLock != null && m_WakeLock.IsHeld)
             {
                 m_WakeLock.Release();

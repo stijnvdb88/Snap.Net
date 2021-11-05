@@ -1,4 +1,5 @@
 ﻿using System;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Forms;
 
@@ -17,9 +18,9 @@ namespace SnapDotNet.Mobile.Droid.Player
             MainActivity.Instance.Play(host, port);
         }
 
-        public void Broadcast(string host, int port)
+        public void Broadcast(string host, int port, EBroadcastMode broadcastMode)
         {
-            MainActivity.Instance.Broadcast(host, port);
+            MainActivity.Instance.Broadcast(host, port, broadcastMode);
         }
 
         public void Stop()
