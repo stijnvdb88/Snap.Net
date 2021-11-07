@@ -42,9 +42,9 @@ namespace SnapDotNet.Mobile.Common
 
         public static EBroadcastMode BroadcastMode
         {
-            get => Get<EBroadcastMode>("BroadcastMode", EBroadcastMode.Media);
+            get => (EBroadcastMode)Get<int>("BroadcastMode", (int)EBroadcastMode.Media);
 
-            set => Set<EBroadcastMode>("BroadcastMode", value);
+            set => Set<int>("BroadcastMode", (int)value);
         }
 
         public static void Set<T>(string key, T value)
