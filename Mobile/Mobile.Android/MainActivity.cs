@@ -1,17 +1,22 @@
 ﻿using System;
-
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Media;
+using Android.Media.Projection;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Support.V4.App;
+using Android.Support.V4.Content;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Droid.Player;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Forms;
 using Exception = Java.Lang.Exception;
+using Xamarin.Essentials;
 
 namespace SnapDotNet.Mobile.Droid
 {
@@ -24,9 +29,20 @@ namespace SnapDotNet.Mobile.Droid
         internal static MainActivity Instance { get; private set; }
 
         private SnapclientServiceConnection m_SnapclientServiceConnection = null;
+        private BroadcastServiceConnection m_BroadcastServiceConnection = null;
         private Action m_OnPlayStateChangedCallback = null;
+        private Action m_OnBroadcastStateChangedCallback = null;
 
         private SnapcastBroadcastReceiver m_AudioPlugChangedReceiver = new SnapcastBroadcastReceiver();
+
+        private MediaProjectionManager m_MediaProjectionmanager = null;
+
+        private const int RECORD_AUDIO_PERMISSION_REQUEST_CODE = 42;
+        private const int MEDIA_PROJECTION_REQUEST_CODE = 13;
+
+        private string m_BroadcastHost;
+        private int m_BroadcastPort;
+        private EBroadcastMode m_BroadcastMode = EBroadcastMode.Media;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -53,9 +69,18 @@ namespace SnapDotNet.Mobile.Droid
         {
             base.OnStart();
             m_SnapclientServiceConnection = new SnapclientServiceConnection(this);
-            Intent intent = new Intent(this, typeof(SnapclientService));
-            BindService(intent, m_SnapclientServiceConnection, Bind.AutoCreate);
-            
+
+            Intent playerIntent = new Intent(this, typeof(SnapclientService));
+            BindService(playerIntent, m_SnapclientServiceConnection, Bind.AutoCreate);
+
+            m_BroadcastServiceConnection = new BroadcastServiceConnection(this);
+            Intent broadcastServiceIntent = new Intent(this, typeof(BroadcastService));
+            BindService(broadcastServiceIntent, m_BroadcastServiceConnection, Bind.AutoCreate);
+        }
+
+        private bool _HasRecordAudioPermission()
+        {
+            return ContextCompat.CheckSelfPermission(this, Manifest.Permission.RecordAudio) == Permission.Granted;
         }
 
         protected override void OnStop()
@@ -67,6 +92,13 @@ namespace SnapDotNet.Mobile.Droid
                 m_SnapclientServiceConnection.IsConnected = false;
             }
 
+            if (m_BroadcastServiceConnection != null && m_BroadcastServiceConnection.IsConnected)
+            {
+                UnbindService(m_BroadcastServiceConnection);
+                m_BroadcastServiceConnection.IsConnected = false;
+            }
+
+
             //UnregisterReceiver(m_AudioPlugChangedReceiver);
         }
 
@@ -74,11 +106,56 @@ namespace SnapDotNet.Mobile.Droid
         {
             Intent i = new Intent(this, typeof(Player.SnapclientService));
             i.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
-            i.PutExtra(SnapclientService.EXTRA_HOST, host);
-            i.PutExtra(SnapclientService.EXTRA_PORT, port);
-            i.SetAction(SnapclientService.ACTION_START);
+            i.PutExtra(ServiceBase.EXTRA_HOST, host);
+            i.PutExtra(ServiceBase.EXTRA_PORT, port);
+            i.SetAction(ServiceBase.ACTION_START);
 
             StartService(i);
+        }
+
+        public void Broadcast(string host, int port, EBroadcastMode broadcastMode)
+        {
+            m_BroadcastHost = host;
+            m_BroadcastPort = port;
+            m_BroadcastMode = broadcastMode;
+
+            if (_HasRecordAudioPermission() == false)
+            {
+                ActivityCompat.RequestPermissions(this, new [] { Manifest.Permission.RecordAudio}, RECORD_AUDIO_PERMISSION_REQUEST_CODE);
+            }
+            else
+            {
+                _StartMediaProjectionRequest();
+            }
+
+        }
+
+        private void _StartMediaProjectionRequest()
+        {
+            m_MediaProjectionmanager = Android.App.Application.Context.GetSystemService(Context.MediaProjectionService) as MediaProjectionManager;
+            StartActivityForResult(m_MediaProjectionmanager.CreateScreenCaptureIntent(), MEDIA_PROJECTION_REQUEST_CODE);
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            if (requestCode != MEDIA_PROJECTION_REQUEST_CODE)
+            {
+                return;
+            }
+
+            if (resultCode == Result.Ok)
+            {
+                Toast.MakeText(this, "MediaProjection permission granted. Audio capture starting...", ToastLength.Short)?.Show();
+            }
+
+            Intent i = new Intent(this, typeof(BroadcastService));
+            i.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+            i.PutExtra(ServiceBase.EXTRA_HOST, m_BroadcastHost);
+            i.PutExtra(ServiceBase.EXTRA_PORT, m_BroadcastPort);
+            i.PutExtra(BroadcastService.EXTRA_BROADCAST_MODE, (int)m_BroadcastMode);
+            i.PutExtra(BroadcastService.EXTRA_RESULT_DATA, data);
+            i.SetAction(ServiceBase.ACTION_START);
+            StartForegroundService(i);
         }
 
         public void Restart()
@@ -97,11 +174,29 @@ namespace SnapDotNet.Mobile.Droid
             }
         }
 
+
+        public void StopBroadcast()
+        {
+            if (m_BroadcastServiceConnection != null && m_BroadcastServiceConnection.IsConnected)
+            {
+                m_BroadcastServiceConnection.BroadcastService.Stop();
+            }
+        }
+
         public bool IsPlaying()
         {
             if (m_SnapclientServiceConnection != null && m_SnapclientServiceConnection.IsConnected)
             {
                 return m_SnapclientServiceConnection.Player.IsPlaying();
+            }
+            return false;
+        }
+
+        public bool IsBroadcasting()
+        {
+            if (m_BroadcastServiceConnection != null && m_BroadcastServiceConnection.IsConnected)
+            {
+                return m_BroadcastServiceConnection.BroadcastService.IsBroadcasting();
             }
 
             return false;
@@ -112,16 +207,37 @@ namespace SnapDotNet.Mobile.Droid
             m_OnPlayStateChangedCallback = callback;
         }
 
+        public void OnBroadcastStateChangedCallback(Action callback)
+        {
+            m_OnBroadcastStateChangedCallback = callback;
+        }
+
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
-            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (requestCode == RECORD_AUDIO_PERMISSION_REQUEST_CODE)
+            {
+                if (grantResults[0] == Permission.Granted)
+                {
+                    Toast.MakeText(this, "Permission to capture audio granted. Please tap the Broadcast button again to start broadcasting.", ToastLength.Long)?.Show();
+                }
+                else
+                {
+                    Toast.MakeText(this, "Permission to capture audio denied", ToastLength.Short)?.Show();
+                }
+            }
         }
 
         public void OnPlayStateChanged(SnapclientService service)
         {
             m_OnPlayStateChangedCallback?.Invoke();
+        }
+
+        public void OnBroadcastStateChanged(BroadcastService service)
+        {
+            m_OnBroadcastStateChangedCallback?.Invoke();
         }
 
         public void OnLog(SnapclientService snapclientService, string timestamp, string logClass, string tag,
@@ -140,6 +256,11 @@ namespace SnapDotNet.Mobile.Droid
         public void OnError(SnapclientService snapclientService, string msg, Exception exception)
         {
             m_OnPlayStateChangedCallback?.Invoke();
+        }
+
+        public void OnError(BroadcastService broadcastService, string msg, Exception exception)
+        {
+            m_OnBroadcastStateChangedCallback?.Invoke();
         }
     }
 }

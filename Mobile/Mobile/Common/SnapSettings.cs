@@ -4,45 +4,47 @@ using System.Text;
 
 namespace SnapDotNet.Mobile.Common
 {
+    public enum EBroadcastMode
+    {
+        Media,
+        Microphone
+    }
+
     public static class SnapSettings
     {
         public static string Server
         {
-            get
-            {
-                return Get<string>("Server");
-            }
+            get => Get<string>("Server");
 
-            set
-            {
-                Set("Server", value);
-            }
+            set => Set("Server", value);
         }
 
         public static int ControlPort
         {
-            get
-            {
-                return Get<int>("ControlPort", 1705);
-            }
+            get => Get<int>("ControlPort", 1705);
 
-            set
-            {
-                Set<int>("ControlPort", value);
-            }
+            set => Set<int>("ControlPort", value);
         }
 
         public static int PlayerPort
         {
-            get
-            {
-                return Get<int>("PlayerPort", 1704);
-            }
+            get => Get<int>("PlayerPort", 1704);
 
-            set
-            {
-                Set<int>("PlayerPort", value);
-            }
+            set => Set<int>("PlayerPort", value);
+        }
+
+        public static int BroadcastPort
+        {
+            get => Get<int>("BroadcastPort", 4953);
+
+            set => Set<int>("BroadcastPort", value);
+        }
+
+        public static EBroadcastMode BroadcastMode
+        {
+            get => (EBroadcastMode)Get<int>("BroadcastMode", (int)EBroadcastMode.Media);
+
+            set => Set<int>("BroadcastMode", (int)value);
         }
 
         public static void Set<T>(string key, T value)
