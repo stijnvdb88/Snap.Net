@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Snap.Net.ControlClient.JsonRpcData;
 
 namespace SnapDotNet.ControlClient
 {
@@ -99,7 +100,7 @@ namespace SnapDotNet.ControlClient
             // https://github.com/microsoft/vs-streamjsonrpc/compare/master...AArnott:sampleUnbatchingMessageHandler
             m_JsonRpc = new StreamJsonRpc.JsonRpc(new UnbatchingNewLineDelimitedMessageHandler(m_Stream, m_Stream));
 
-            //m_JsonRpc.TraceSource.Switch.Level = SourceLevels.All; // uncomment if you need detailed json-rpc logs
+            m_JsonRpc.TraceSource.Switch.Level = SourceLevels.All; // uncomment if you need detailed json-rpc logs
 
             // register methods (must be done before listening starts)
             m_JsonRpc.AddLocalRpcMethod("Server.OnUpdate", new Action<JsonRpcData.ServerData>((server) =>
@@ -173,6 +174,11 @@ namespace SnapDotNet.ControlClient
                 _StreamUpdated(id, stream);
             }));
 
+            m_JsonRpc.AddLocalRpcMethod("Stream.OnProperties", new Action<string, Properties>((id, properties) =>
+            {
+                Debug("Received Stream.OnProperties - id {0}, properties {1}", id, properties);
+                _StreamPropertiesUpdated(id, properties);
+            }));
 
             m_JsonRpc.StartListening();
             // call Server.GetStatus to get all metadata
@@ -486,6 +492,22 @@ namespace SnapDotNet.ControlClient
                 if (ServerData.streams[i].id == id)
                 {
                     ServerData.streams[i].SERVER_Update(stream);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when snapserver reports stream properties update
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="properties"></param>
+        private void _StreamPropertiesUpdated(string id, Properties properties)
+        {
+            for (int i = 0; i < ServerData.streams.Length; i++)
+            {
+                if (ServerData.streams[i].id == id)
+                {
+                    ServerData.streams[i].SERVER_PropertiesUpdate(properties);
                 }
             }
         }
