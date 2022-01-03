@@ -79,8 +79,19 @@ namespace SnapDotNet.Mobile.Views
                 }
             }
 
-            tbPlay.IsEnabled = m_Client != null && m_Client.IsConnected() && m_Client.ServerData != null;
+            if (App.Instance.Player.SupportsBroadcast() == false)
+            {
+                if (ToolbarItems.Contains(tbBroadcast))
+                {
+                    ToolbarItems.Remove(tbBroadcast); // remove "Broadcast" button for platforms that don't support it
+                }
+            }
+
+            tbPlay.IsEnabled = m_Client != null && m_Client.IsConnected() && m_Client.ServerData != null && App.Instance.Player.IsBroadcasting() == false;
             tbPlay.Text = App.Instance.Player.IsPlaying() == false ? "Play" : "Stop";
+
+            tbBroadcast.IsEnabled = m_Client != null && m_Client.IsConnected() && m_Client.ServerData != null && App.Instance.Player.IsPlaying() == false;
+            tbBroadcast.Text = App.Instance.Player.IsBroadcasting() == false ? "Broadcast" : "Stop broadcast";
 
             _ClearConnectionFailureLabel();
 
@@ -150,15 +161,17 @@ namespace SnapDotNet.Mobile.Views
             base.OnAppearing();
             _Update();
             App.Instance.OnPlayStateChanged += _Update;
+            App.Instance.OnBroadcastStateChanged += _Update;
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
             App.Instance.OnPlayStateChanged -= _Update;
+            App.Instance.OnBroadcastStateChanged -= _Update;
         }
 
-        private void MenuItem_OnClicked(object sender, EventArgs e)
+        private void _OnPlayClicked(object sender, EventArgs e)
         {
             if (App.Instance.Player.IsPlaying() == false)
             {
@@ -167,6 +180,18 @@ namespace SnapDotNet.Mobile.Views
             else
             {
                 App.Instance.Player.Stop();
+            }
+        }
+
+        private void _OnBroadcastClicked(object sender, EventArgs e)
+        {
+            if (App.Instance.Player.IsBroadcasting() == false)
+            {
+                App.Instance.Player.Broadcast(SnapSettings.Server, SnapSettings.BroadcastPort, SnapSettings.BroadcastMode);
+            }
+            else
+            {
+                App.Instance.Player.StopBroadcasting();
             }
         }
     }

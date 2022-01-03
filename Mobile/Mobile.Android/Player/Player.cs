@@ -1,4 +1,5 @@
 ﻿using System;
+using SnapDotNet.Mobile.Common;
 using SnapDotNet.Mobile.Player;
 using Xamarin.Forms;
 
@@ -17,12 +18,28 @@ namespace SnapDotNet.Mobile.Droid.Player
             MainActivity.Instance.Play(host, port);
         }
 
+        public void Broadcast(string host, int port, EBroadcastMode broadcastMode)
+        {
+            MainActivity.Instance.Broadcast(host, port, broadcastMode);
+        }
+
         public void Stop()
         {
             MainActivity.Instance.Stop();
         }
 
+        public void StopBroadcasting()
+        {
+            MainActivity.Instance.StopBroadcast();
+        }
+
+
         public bool SupportsSnapclient()
+        {
+            return true;
+        }
+
+        public bool SupportsBroadcast()
         {
             return true;
         }
@@ -32,9 +49,19 @@ namespace SnapDotNet.Mobile.Droid.Player
             MainActivity.Instance.OnPlayStateChangedCallback(callback);
         }
 
+        public void OnBroadcastStateChanged(Action callback)
+        {
+            MainActivity.Instance.OnBroadcastStateChangedCallback(callback);
+        }
+
         public bool IsPlaying()
         {
             return MainActivity.Instance.IsPlaying();
+        }
+
+        public bool IsBroadcasting()
+        {
+            return MainActivity.Instance.IsBroadcasting();
         }
     }
 }

@@ -19,6 +19,7 @@ namespace SnapDotNet.Mobile
         public static App Instance { get; private set; } = null;
         public Task m_ConnectTask = null;
         public event Action OnPlayStateChanged = null;
+        public event Action OnBroadcastStateChanged = null;
 
         public IPlayer Player
         {
@@ -77,6 +78,11 @@ namespace SnapDotNet.Mobile
             m_Player.OnPlayStateChanged(() =>
             {
                 OnPlayStateChanged?.Invoke();
+            });
+
+            m_Player.OnBroadcastStateChanged(() =>
+            {
+                OnBroadcastStateChanged?.Invoke();
             });
         }
 

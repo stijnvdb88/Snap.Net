@@ -9,7 +9,8 @@
              x:Name="BrowseItemsPage">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem x:Name="tbPlay" Text="Play" Clicked="MenuItem_OnClicked" />
+        <ToolbarItem x:Name="tbPlay" Text="Play" Clicked="_OnPlayClicked" />
+        <ToolbarItem x:Name="tbBroadcast" Text="Broadcast" Clicked="_OnBroadcastClicked" />
     </ContentPage.ToolbarItems>
 
     <RefreshView x:Name="GroupsRefreshView" IsRefreshing="True">
