@@ -91,13 +91,69 @@ namespace SnapDotNet.SnapControl
             if (m_Stream != null)
             {
                 m_Stream.SERVER_OnStreamUpdated -= _OnStreamUpdated; // unhook event from old m_Stream object
+                m_Stream.SERVER_OnStreamPropertiesUpdated -= _OnStreamPropertiesUpdated;
             }
             m_Stream = m_SnapcastClient.GetStream(m_Group.stream_id);
             if (m_Stream != null)
             {
                 m_Stream.SERVER_OnStreamUpdated += _OnStreamUpdated; // hook up event to new m_Stream object
                 _OnStreamUpdated();
+
+                m_Stream.SERVER_OnStreamPropertiesUpdated += _OnStreamPropertiesUpdated;
+                _OnStreamPropertiesUpdated();
             }
+        }
+
+        private void _OnStreamPropertiesUpdated()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (m_Stream.properties.metadata == null)
+                {
+                    lbStreamNowPlaying.Content = "";
+                    return;
+                }
+                string title = m_Stream.properties.metadata.title;
+                string nowPlaying = "";
+
+                string[] artists = m_Stream.properties.metadata.albumArtist;
+                if (artists == null)
+                {
+                    artists = m_Stream.properties.metadata.artist;
+                }
+
+                string artistText = "";
+                if (artists != null)
+                {
+                    artistText = string.Join(", ", artists);
+                }
+
+                if (string.IsNullOrEmpty(artistText) == false)
+                {
+                    nowPlaying = artistText;
+                }
+
+                if (string.IsNullOrEmpty(title) == false)
+                {
+                    if (string.IsNullOrEmpty(nowPlaying) == false)
+                    {
+                        nowPlaying += $" - {title}";
+                    }
+                    else
+                    {
+                        nowPlaying = title;
+                    }
+                }
+
+                float duration = m_Stream.properties.metadata.duration;
+                if (duration > 0 && string.IsNullOrEmpty(nowPlaying) == false)
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(duration);
+                    nowPlaying += string.Format(" ({0:D2}:{1:D2})", timeSpan.Minutes, timeSpan.Seconds);
+                }
+
+                lbStreamNowPlaying.Content = nowPlaying;
+            });
         }
 
         private void _OnStreamUpdated()

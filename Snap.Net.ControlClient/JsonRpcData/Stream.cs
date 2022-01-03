@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Snap.Net.ControlClient.JsonRpcData;
 
 namespace SnapDotNet.ControlClient.JsonRpcData
 {
@@ -30,10 +31,16 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// </summary>
         public event Action SERVER_OnStreamUpdated;
 
+        /// <summary>
+        /// OnStreamPropertiesUpdated event is used to update UI after server reports property (metadata) changes
+        /// </summary>
+        public event Action SERVER_OnStreamPropertiesUpdated;
+
         public string id { get; set; }
         public Meta meta { get; set; }
         public string status { get; set; }
         public Uri uri { get; set; }
+        public Properties properties { get; set; }
 
         /// <summary>
         /// We use this method to update the stream member my member
@@ -47,6 +54,12 @@ namespace SnapDotNet.ControlClient.JsonRpcData
             this.status = stream.status;
             this.uri = stream.uri;
             SERVER_OnStreamUpdated?.Invoke();
+        }
+
+        public void SERVER_PropertiesUpdate(Properties properties)
+        {
+            this.properties = properties;
+            SERVER_OnStreamPropertiesUpdated?.Invoke();
         }
 
         /// <summary>
