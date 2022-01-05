@@ -173,6 +173,16 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         public string id { get; set; }
     }
 
+    public class SendStreamControlCommand
+    {
+        public string id { get; set; }
+        public string command { get; set; }
+        public Dictionary<string, string> @params {
+            get;
+            set;
+        } = new Dictionary<string, string>();
+    }
+
     public class ClientVolumeCommandResult
     {
         public Volume volume { get; set; }
@@ -198,4 +208,8 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         public ServerData server { get; set; }
     }
 
+    public class SendStreamControlCommandResult
+    {
+        public string result { get; set; }
+    }
 }

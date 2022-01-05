@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SnapDotNet.ControlClient.JsonRpcData;
 
 namespace SnapDotNet.SnapControl
 {
@@ -153,6 +154,18 @@ namespace SnapDotNet.SnapControl
                 }
 
                 lbStreamNowPlaying.Content = nowPlaying;
+
+                spControls.Visibility = m_Stream.properties.canControl ? Visibility.Visible : Visibility.Hidden;
+                Thickness margin = lbStreamNowPlaying.Margin;
+                margin.Top = m_Stream.properties.canControl ? 0 : 15;
+                lbStreamNowPlaying.Margin = margin;
+
+                lbStreamNowPlaying.FontSize = m_Stream.properties.canControl ? 10 : 12;
+
+                btPlay.IsEnabled = m_Stream.properties.canPlay;
+                btPause.IsEnabled = m_Stream.properties.canPause;
+                btPrevious.IsEnabled = m_Stream.properties.canGoPrevious;
+                btNext.IsEnabled = m_Stream.properties.canGoNext;
             });
         }
 
@@ -215,6 +228,26 @@ namespace SnapDotNet.SnapControl
                 }
             }
 
+        }
+
+        private void BtPlay_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.play);
+        }
+
+        private void BtPrevious_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.previous);
+        }
+
+        private void BtPause_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.pause);
+        }
+
+        private void BtNext_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.next);
         }
     }
 }

@@ -21,6 +21,19 @@ namespace SnapDotNet.ControlClient.JsonRpcData
 {
     public class Stream
     {
+        // https://github.com/badaix/snapcast/blob/master/doc/json_rpc_api/stream_plugin.md#pluginstreamplayercontrol
+        public enum EControlCommand
+        {
+            play,
+            pause,
+            playPause,
+            stop,
+            next,
+            previous,
+            seek,
+            setPosition
+        }
+
         /// <summary>
         /// OnInvalidate event is used to update UI when server data is about to be fully refreshed
         /// </summary>
@@ -35,6 +48,11 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// OnStreamPropertiesUpdated event is used to update UI after server reports property (metadata) changes
         /// </summary>
         public event Action SERVER_OnStreamPropertiesUpdated;
+
+        /// <summary>
+        /// OnControlCommand: SnapcastClient listens to this for replicating to server
+        /// </summary>
+        public event Action<EControlCommand> CLIENT_OnControlCommand;
 
         public string id { get; set; }
         public Meta meta { get; set; }
@@ -68,6 +86,15 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         public void SERVER_Invalidate()
         {
             SERVER_OnInvalidate?.Invoke();
+        }
+
+        /// <summary>
+        /// Called by client when sending control command to stream (play/pause/next/previous/etc)
+        /// </summary>
+        /// <param name="command"></param>
+        public void CLIENT_SendControlCommand(EControlCommand command)
+        {
+            CLIENT_OnControlCommand?.Invoke(command);
         }
     }
 }
