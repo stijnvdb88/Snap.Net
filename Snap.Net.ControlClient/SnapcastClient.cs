@@ -100,7 +100,7 @@ namespace SnapDotNet.ControlClient
             // https://github.com/microsoft/vs-streamjsonrpc/compare/master...AArnott:sampleUnbatchingMessageHandler
             m_JsonRpc = new StreamJsonRpc.JsonRpc(new UnbatchingNewLineDelimitedMessageHandler(m_Stream, m_Stream));
 
-            m_JsonRpc.TraceSource.Switch.Level = SourceLevels.All; // uncomment if you need detailed json-rpc logs
+            //m_JsonRpc.TraceSource.Switch.Level = SourceLevels.All; // uncomment if you need detailed json-rpc logs
 
             // register methods (must be done before listening starts)
             m_JsonRpc.AddLocalRpcMethod("Server.OnUpdate", new Action<JsonRpcData.ServerData>((server) =>
@@ -395,6 +395,11 @@ namespace SnapDotNet.ControlClient
                 };
             }
 
+            foreach (Stream stream in ServerData.streams)
+            {
+                stream.CLIENT_OnControlCommand += command => { _OnStreamControlCommandSent(stream, command); };
+            }
+
             OnServerUpdated?.Invoke();
         }
 
@@ -622,6 +627,15 @@ namespace SnapDotNet.ControlClient
             Task t = Task.Run(async () => { await _RemoveClientAsync(client.id).ConfigureAwait(false); });
         }
 
+        /// <summary>
+        /// Called when we locally send a control command to the stream (play/pause/next/prev/etc)
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="command"></param>
+        private void _OnStreamControlCommandSent(JsonRpcData.Stream stream, Stream.EControlCommand command)
+        {
+            Task t = Task.Run(async () => { await _SendStreamControlCommandAsync(stream.id, command.ToString()).ConfigureAwait(false); });
+        }
 
         /// <summary>
         /// Called when we want to update a client's volume on snapserver
@@ -735,6 +749,13 @@ namespace SnapDotNet.ControlClient
             _ServerUpdated(result.server); // update our local data
         }
 
+        private async Task _SendStreamControlCommandAsync(string stream, string command)
+        {
+            Debug("Sending Stream.Control - stream {0}, command {1}", stream, command);
+            SendStreamControlCommandResult result =
+                await m_JsonRpc.InvokeWithParameterObjectAsync<SendStreamControlCommandResult>("Stream.Control",
+                    new SendStreamControlCommand() {id = stream, command = command});
+        }
 
         private static void Debug(string message, params object[] args)
         {

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SnapDotNet.ControlClient.JsonRpcData;
 
 namespace SnapDotNet.SnapControl
 {
@@ -100,17 +101,19 @@ namespace SnapDotNet.SnapControl
                 _OnStreamUpdated();
 
                 m_Stream.SERVER_OnStreamPropertiesUpdated += _OnStreamPropertiesUpdated;
-                _OnStreamPropertiesUpdated();
             }
+
+            _OnStreamPropertiesUpdated();
         }
 
         private void _OnStreamPropertiesUpdated()
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (m_Stream.properties.metadata == null)
+                if (m_Stream == null || m_Stream.properties.metadata == null)
                 {
                     lbStreamNowPlaying.Content = "";
+                    spControls.Visibility = Visibility.Hidden;
                     return;
                 }
                 string title = m_Stream.properties.metadata.title;
@@ -153,6 +156,18 @@ namespace SnapDotNet.SnapControl
                 }
 
                 lbStreamNowPlaying.Content = nowPlaying;
+
+                spControls.Visibility = m_Stream.properties.canControl ? Visibility.Visible : Visibility.Hidden;
+                Thickness margin = lbStreamNowPlaying.Margin;
+                margin.Top = m_Stream.properties.canControl ? 0 : 15;
+                lbStreamNowPlaying.Margin = margin;
+
+                lbStreamNowPlaying.FontSize = m_Stream.properties.canControl ? 10 : 12;
+
+                btPlay.IsEnabled = m_Stream.properties.canPlay;
+                btPause.IsEnabled = m_Stream.properties.canPause;
+                btPrevious.IsEnabled = m_Stream.properties.canGoPrevious;
+                btNext.IsEnabled = m_Stream.properties.canGoNext;
             });
         }
 
@@ -162,6 +177,12 @@ namespace SnapDotNet.SnapControl
             {
                 lbStreamName.Content = m_Stream.id;
                 btStream.Style = (Style)FindResource(m_Stream.status == "playing" ? "AccentedSquareButtonStyle" : "SquareButtonStyle");
+                bool showControls = false;
+                if (m_Stream.properties != null)
+                {
+                    showControls = m_Stream.properties.canControl;
+                }
+                spControls.Visibility = showControls ? Visibility.Visible : Visibility.Hidden;
             });
         }
 
@@ -215,6 +236,26 @@ namespace SnapDotNet.SnapControl
                 }
             }
 
+        }
+
+        private void BtPlay_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.play);
+        }
+
+        private void BtPrevious_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.previous);
+        }
+
+        private void BtPause_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.pause);
+        }
+
+        private void BtNext_OnClick(object sender, RoutedEventArgs e)
+        {
+            m_Stream.CLIENT_SendControlCommand(Stream.EControlCommand.next);
         }
     }
 }
