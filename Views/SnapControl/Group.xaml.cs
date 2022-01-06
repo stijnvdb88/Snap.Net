@@ -101,17 +101,19 @@ namespace SnapDotNet.SnapControl
                 _OnStreamUpdated();
 
                 m_Stream.SERVER_OnStreamPropertiesUpdated += _OnStreamPropertiesUpdated;
-                _OnStreamPropertiesUpdated();
             }
+
+            _OnStreamPropertiesUpdated();
         }
 
         private void _OnStreamPropertiesUpdated()
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (m_Stream.properties.metadata == null)
+                if (m_Stream == null || m_Stream.properties.metadata == null)
                 {
                     lbStreamNowPlaying.Content = "";
+                    spControls.Visibility = Visibility.Hidden;
                     return;
                 }
                 string title = m_Stream.properties.metadata.title;
@@ -175,6 +177,12 @@ namespace SnapDotNet.SnapControl
             {
                 lbStreamName.Content = m_Stream.id;
                 btStream.Style = (Style)FindResource(m_Stream.status == "playing" ? "AccentedSquareButtonStyle" : "SquareButtonStyle");
+                bool showControls = false;
+                if (m_Stream.properties != null)
+                {
+                    showControls = m_Stream.properties.canControl;
+                }
+                spControls.Visibility = showControls ? Visibility.Visible : Visibility.Hidden;
             });
         }
 
