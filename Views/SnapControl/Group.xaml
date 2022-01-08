@@ -11,7 +11,7 @@
     <Grid Height="342" Margin="0 0 10 0" HorizontalAlignment="Center">
         <local:VolumeControl x:Name="vcGroup" HorizontalAlignment="Left" Margin="10,108,0,10" Width="47" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Image x:Name="imgAlbumArt" VerticalAlignment="Top" Width="75" Height="75" Margin="0,17,10,0" Source="/Snap.Net;component/Assets/snapcast.ico"></Image>
+            <Image x:Name="imgAlbumArt" VerticalAlignment="Top" Width="70" Height="70" Margin="0,17,10,0" Source="/Snap.Net;component/Assets/snapcast.ico"></Image>
             <StackPanel Orientation="Vertical" Margin="0,0,0,0">
                 <StackPanel Orientation="Horizontal" 
                             HorizontalAlignment="Center" 

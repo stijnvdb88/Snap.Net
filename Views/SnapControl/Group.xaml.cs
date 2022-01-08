@@ -14,11 +14,15 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Svg;
+using Svg.Transforms;
 using Stream = SnapDotNet.ControlClient.JsonRpcData.Stream;
 
 namespace SnapDotNet.SnapControl
@@ -168,7 +172,35 @@ namespace SnapDotNet.SnapControl
 
                 lbStreamNowPlaying.FontSize = m_Stream.properties.canControl ? 10 : 12;
 
-                if (string.IsNullOrEmpty(m_Stream.properties.metadata.artUrl) == false)
+                if (m_Stream.properties.metadata.artData != null)
+                {
+                    byte[] data = Convert.FromBase64String(m_Stream.properties.metadata.artData.data);
+                    if (m_Stream.properties.metadata.artData.extension == "svg")
+                    {
+                        using (MemoryStream stream = new MemoryStream(data))
+                        {
+                            SvgDocument doc = SvgDocument.Open<SvgDocument>(stream);
+                            Bitmap bitmap = doc.Draw();
+                            MemoryStream bsStream = new MemoryStream();
+                            bitmap.Save(bsStream, ImageFormat.Png);
+                            bsStream.Position = 0;
+                            BitmapImage bi = new BitmapImage();
+                            bi.BeginInit();
+                            bi.StreamSource = bsStream;
+                            bi.EndInit();
+                            imgAlbumArt.Source = bi;
+                        }
+                    }
+                    else
+                    {
+                        BitmapImage bi = new BitmapImage();
+                        bi.BeginInit();
+                        bi.StreamSource = new MemoryStream(data);
+                        bi.EndInit();
+                        imgAlbumArt.Source = bi;
+                    }
+                }
+                else if (string.IsNullOrEmpty(m_Stream.properties.metadata.artUrl) == false)
                 {
                     imgAlbumArt.Visibility = Visibility.Visible;
                     BitmapImage bitmapImage = new BitmapImage();
