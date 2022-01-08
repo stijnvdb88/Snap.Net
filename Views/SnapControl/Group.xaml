@@ -8,69 +8,71 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" Width="Auto" Height="Auto" AllowDrop="True"
              Drop="Group_OnDrop" Background="Transparent">
-    <Grid Height="342">
+    <Grid Height="342" Margin="0 0 10 0" HorizontalAlignment="Center">
         <local:VolumeControl x:Name="vcGroup" HorizontalAlignment="Left" Margin="10,108,0,10" Width="47" />
-        <StackPanel Orientation="Vertical">
-            <StackPanel Orientation="Horizontal" 
-                        HorizontalAlignment="Center" 
-                        Margin="50,5,0,0" 
-                        Height="30"                    
-                        VerticalAlignment="Top">
-                <Button x:Name="btGroup"                                                 
-                        BorderThickness="0.9"
-                        Style="{DynamicResource AccentedSquareButtonStyle}"
-                        BorderBrush="{DynamicResource AccentColorBrush}"        
-                        VerticalContentAlignment="Center"
-                        FontWeight="Thin"                     
-                        HorizontalContentAlignment="Center" Click="btGroup_Click">
-                    <Label x:Name="lbGroupName" Content="Label" FontWeight="Bold" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
-                </Button>
-                <Button x:Name="btStream"                                                 
-                        BorderThickness="0.9"
-                        Style="{DynamicResource AccentedSquareButtonStyle}"
-                        BorderBrush="{DynamicResource AccentColorBrush}"      
-                        VerticalContentAlignment="Center"
-                        FontWeight="Thin"                     
-                        HorizontalContentAlignment="Center" Click="btStream_Click">
-                    <Label x:Name="lbStreamName" Content="Label" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
-                </Button>
-            </StackPanel>
-            <Label x:Name="lbStreamNowPlaying" Margin="50,0,0,0"  Content="Now playing" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="10"></Label>
-            <StackPanel Orientation="Horizontal" x:Name="spControls" 
-                        HorizontalAlignment="Center" 
-                        Margin="50,5,0,0" 
-                        Height="30"  >
-                <Button x:Name="btPrevious" 
-                              Width="30" Height="30" 
-                              Click="BtPrevious_OnClick" 
-                              Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
-                              BorderThickness="1" >
-                    <iconPacks:PackIconZondicons Kind="StepBackward" x:Name="imgPrevious" />
-                </Button>
-                <Button x:Name="btPlay" 
-                              Width="30" Height="30" 
-                              Click="BtPlay_OnClick" 
-                              Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
-                              BorderThickness="1" >
-                    <iconPacks:PackIconZondicons Kind="Play" x:Name="imgPlayIcon" />
-                </Button>
-                <Button x:Name="btPause" 
-                              Width="30" Height="30" 
-                              Click="BtPause_OnClick" 
-                              Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
-                              BorderThickness="1" >
-                    <iconPacks:PackIconZondicons Kind="Pause" x:Name="ingPauseIcon" />
-                </Button>
-                <Button x:Name="btNext" 
-                              Width="30" Height="30" 
-                              Click="BtNext_OnClick" 
-                              Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
-                              BorderThickness="1" >
-                    <iconPacks:PackIconZondicons Kind="StepForward" x:Name="imgNextIcon" />
-                </Button>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Image x:Name="imgAlbumArt" VerticalAlignment="Top" Width="75" Height="75" Margin="0,17,10,0" Source="/Snap.Net;component/Assets/snapcast.ico"></Image>
+            <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,5,0,0" 
+                            Height="30"                    
+                            VerticalAlignment="Top">
+                    <Button x:Name="btGroup"                                                 
+                            BorderThickness="0.9"
+                            Style="{DynamicResource AccentedSquareButtonStyle}"
+                            BorderBrush="{DynamicResource AccentColorBrush}"        
+                            VerticalContentAlignment="Center"
+                            FontWeight="Thin"                     
+                            HorizontalContentAlignment="Center" Click="btGroup_Click">
+                        <Label x:Name="lbGroupName" Content="Label" FontWeight="Bold" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
+                    </Button>
+                    <Button x:Name="btStream"                                                 
+                            BorderThickness="0.9"
+                            Style="{DynamicResource AccentedSquareButtonStyle}"
+                            BorderBrush="{DynamicResource AccentColorBrush}"      
+                            VerticalContentAlignment="Center"
+                            FontWeight="Thin"                     
+                            HorizontalContentAlignment="Center" Click="btStream_Click">
+                        <Label x:Name="lbStreamName" Content="Label" HorizontalAlignment="Stretch" Padding="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontSize="15" />
+                    </Button>
+                </StackPanel>
+                <Label x:Name="lbStreamNowPlaying" Margin="0,0,0,0"  Content="Now playing" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="10"></Label>
+                <StackPanel Orientation="Horizontal" x:Name="spControls" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,5,0,0" 
+                            Height="30"  >
+                    <Button x:Name="btPrevious" 
+                                  Width="30" Height="30" 
+                                  Click="BtPrevious_OnClick" 
+                                  Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                                  BorderThickness="1" >
+                        <iconPacks:PackIconZondicons Kind="StepBackward" x:Name="imgPrevious" />
+                    </Button>
+                    <Button x:Name="btPlay" 
+                                  Width="30" Height="30" 
+                                  Click="BtPlay_OnClick" 
+                                  Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                                  BorderThickness="1" >
+                        <iconPacks:PackIconZondicons Kind="Play" x:Name="imgPlayIcon" />
+                    </Button>
+                    <Button x:Name="btPause" 
+                                  Width="30" Height="30" 
+                                  Click="BtPause_OnClick" 
+                                  Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                                  BorderThickness="1" >
+                        <iconPacks:PackIconZondicons Kind="Pause" x:Name="ingPauseIcon" />
+                    </Button>
+                    <Button x:Name="btNext" 
+                                  Width="30" Height="30" 
+                                  Click="BtNext_OnClick" 
+                                  Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                                  BorderThickness="1" >
+                        <iconPacks:PackIconZondicons Kind="StepForward" x:Name="imgNextIcon" />
+                    </Button>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
-
         <Border Margin="55,96,10,10" x:Name="bdGroup"
             BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1,1,1,1" CornerRadius="1">
             <StackPanel HorizontalAlignment="Center" Height="Auto" Margin="0,0,0,10" VerticalAlignment="Top" Width="Auto" Orientation="Horizontal" x:Name="spClients">

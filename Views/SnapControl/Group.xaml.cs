@@ -14,10 +14,12 @@
 */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using SnapDotNet.ControlClient.JsonRpcData;
+using System.Windows.Media.Imaging;
+using Stream = SnapDotNet.ControlClient.JsonRpcData.Stream;
 
 namespace SnapDotNet.SnapControl
 {
@@ -113,7 +115,9 @@ namespace SnapDotNet.SnapControl
                 if (m_Stream == null || m_Stream.properties.metadata == null)
                 {
                     lbStreamNowPlaying.Content = "";
+                    imgAlbumArt.Visibility = Visibility.Hidden;
                     spControls.Visibility = Visibility.Hidden;
+
                     return;
                 }
                 string title = m_Stream.properties.metadata.title;
@@ -163,6 +167,16 @@ namespace SnapDotNet.SnapControl
                 lbStreamNowPlaying.Margin = margin;
 
                 lbStreamNowPlaying.FontSize = m_Stream.properties.canControl ? 10 : 12;
+
+                if (string.IsNullOrEmpty(m_Stream.properties.metadata.artUrl) == false)
+                {
+                    imgAlbumArt.Visibility = Visibility.Visible;
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.UriSource = new Uri(m_Stream.properties.metadata.artUrl, UriKind.Absolute);
+                    bitmapImage.EndInit();
+                    imgAlbumArt.Source = bitmapImage;
+                }
 
                 btPlay.IsEnabled = m_Stream.properties.canPlay;
                 btPause.IsEnabled = m_Stream.properties.canPause;
