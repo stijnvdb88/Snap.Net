@@ -116,7 +116,7 @@ namespace SnapDotNet.SnapControl
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (m_Stream == null || m_Stream.properties.metadata == null)
+                if (m_Stream == null || m_Stream.properties == null || m_Stream.properties.metadata == null)
                 {
                     lbStreamNowPlaying.Content = "";
                     imgAlbumArt.Visibility = Visibility.Hidden;
