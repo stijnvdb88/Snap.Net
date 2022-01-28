@@ -25,6 +25,8 @@ To make this work, you first need to set up a stream on snapserver which listens
 
 `stream = tcp://<snapserver-ip>?port=4953&name=snapbroadcast`
 
+*Note: If Snap.Net.Broadcast is unable to connect to your server even though the above config is added correctly, try using "0.0.0.0" as ip instead (see [#29](https://github.com/stijnvdb88/Snap.Net/issues/29) )*
+
 Next, you need to choose an audio device from your PC to use for capturing loopback from. In most cases you won't want to use your main output device, because you can't use it for loopback and playback at the same time. E.g. audio being captured from your main speakers would just echo back ~1000ms after being broadcast. Volume and mute of your audio device is also applied to loopback, so you can't mute one without also muting the other.
 
 There are 2 ways to work around this: either use an audio device which is not connected to any speakers (in my case I have a Digital Audio interface on my motherboard which isn't hooked up):
