@@ -28,7 +28,7 @@
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>true</MtouchDebug>
     <CodesignProvision>Snapcast AppStore</CodesignProvision>
-    <CodesignKey>iPhone Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
+    <CodesignKey>Apple Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
@@ -66,9 +66,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>iPhone Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
+    <CodesignKey>Apple Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>Snapcast Ad Hoc</CodesignProvision>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <MtouchLink>SdkOnly</MtouchLink>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Submission|iPhone' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchArch>ARM64</MtouchArch>
+    <CodesignKey>Apple Distribution: Stijn Van der Borght (5DWHDZ37X4)</CodesignKey>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <CodesignProvision>Snapcast AppStore</CodesignProvision>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
