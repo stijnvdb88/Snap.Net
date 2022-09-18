@@ -69,6 +69,7 @@ namespace Snap.Net.SnapClient
             // register the available decoders
             m_Decoders.Add("flac", new FlacDecoder());
             m_Decoders.Add("pcm", new PcmDecoder());
+            m_Decoders.Add("opus", new OpusDecoder());
 
 
             // start our periodic diff calculation (each second we ping-pong with the server to figure out the latency between us)
