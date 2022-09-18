@@ -45,5 +45,9 @@
 		<string>fetch</string>
 		<string>processing</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+	    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	</array>	
 </dict>
 </plist>
