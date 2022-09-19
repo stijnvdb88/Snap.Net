@@ -63,6 +63,7 @@ If you don't like the colors, change them!
 * [StreamJsonRpc](https://github.com/microsoft/vs-streamjsonrpc)
 * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 * [WPF NotifyIcon](https://github.com/hardcodet/wpf-notifyicon)
+* [Concentus](https://github.com/lostromb/concentus)
 * [CliWrap](https://github.com/Tyrrrz/CliWrap)
 * [NLog](https://nlog-project.org/)
 * [MouseKeyHook](https://github.com/gmamaladze/globalmousekeyhook)
