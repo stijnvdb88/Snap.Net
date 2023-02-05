@@ -34,7 +34,7 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.26.0</string>
+	<string>0.27.0</string>
 	<key>CFBundleVersion</key>
 	<string>0</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -47,7 +47,7 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-	    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	</array>	
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	</array>
 </dict>
 </plist>
