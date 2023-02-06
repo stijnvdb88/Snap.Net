@@ -14,7 +14,6 @@ namespace Snap.Net.SnapClient.Decoder
         
         private Concentus.Structs.OpusDecoder m_OpusDecoder = null;
         private SampleFormat m_SampleFormat = null;
-        private OpusOggReadStream m_OpusStreamReader = null;
 
         public override SampleFormat SetHeader(byte[] buffer)
         {
