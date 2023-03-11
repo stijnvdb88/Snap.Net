@@ -20,6 +20,7 @@ namespace SnapDotNet.Mobile.Droid.Player
         public static string EXTRA_HOST = "EXTRA_HOST";
         public static string EXTRA_PORT = "EXTRA_PORT";
         protected const string NOTIFICATION_CHANNEL_ID = "com.stijnvdb88.snapdotnet.snapclientservice.defaultchannel";
+        protected const string DEVICE_ID_PREF = "DEVICE_ID_PREF";
         protected string m_Host = "";
         protected int m_Port = 1704;
 
