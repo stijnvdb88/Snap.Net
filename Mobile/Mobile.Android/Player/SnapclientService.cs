@@ -176,6 +176,21 @@ namespace SnapDotNet.Mobile.Droid.Player
             mNotificationManager.Cancel(NOTIFICATION_CHANNEL);
         }
 
+        private static string _GetUniqueId()
+        {
+            ISharedPreferences prefs = Application.Context.GetSharedPreferences(DEVICE_ID_PREF, FileCreationMode.Private);
+            string id = prefs.GetString(DEVICE_ID_PREF, null);
+            if(string.IsNullOrEmpty(id))
+            {
+                // no id set yet, generate one and store
+                id = System.Guid.NewGuid().ToString();
+                ISharedPreferencesEditor editor = prefs.Edit();
+                editor.PutString(DEVICE_ID_PREF, id);
+                editor.Commit();
+            }
+            return id;
+        }
+
         private void _StartProcess()
         {
             string sampleformat = "*:16:*";
@@ -199,6 +214,7 @@ namespace SnapDotNet.Mobile.Droid.Player
                 .Command(
                     Path.Combine(Android.App.Application.Context.ApplicationInfo.NativeLibraryDir, "libsnapclient.so"),
                     "-h", m_Host,
+                    "--hostID", _GetUniqueId(),
                     "-p", Integer.ToString(m_Port), "--player", player, "--sampleformat", sampleformat)
                 .RedirectErrorStream(true);
 
