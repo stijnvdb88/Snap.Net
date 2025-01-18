@@ -40,13 +40,14 @@ namespace Snap.Net.SnapClient
             ID = Instance == 0 ? MAC : $"{MAC}#{Instance}";
         }
 
-        public HelloMessage(string id, string os, string architecture)
+        public HelloMessage(string id, string os, string architecture, string version = "0.30.0")
         {
             MAC = "00:00:00:00:00:00";
             ID = id;
             OS = os;
             Arch = architecture;
             HostName = Environment.MachineName;
+            Version = version;
         }
     }
 }

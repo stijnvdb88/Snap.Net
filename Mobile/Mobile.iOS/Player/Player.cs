@@ -68,8 +68,8 @@ namespace SnapDotNet.Mobile.iOS.Player
             AudioQueuePlayer audioPlayer = new AudioQueuePlayer(80, 20);
             string architecture = ObjCRuntime.Runtime.IsARM64CallingConvention ? "arm64" : "armv7"; // https://github.com/xamarin/xamarin-macios/issues/4907
             m_Controller = new Controller(audioPlayer, new HelloMessage(UIDevice.CurrentDevice.IdentifierForVendor.AsString(),
-                $"iOS {UIDevice.CurrentDevice.SystemVersion}", architecture));
-            m_Controller.StartAsync(m_Host, m_Port);
+                $"iOS {UIDevice.CurrentDevice.SystemVersion}", architecture, "0.30.0"));
+            m_Controller.StartAsync(m_Host, m_Port).ConfigureAwait(false);
             m_OnPlayStateCallback?.Invoke();
             _UpdateInfoCenter();
         }
