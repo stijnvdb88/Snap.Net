@@ -189,7 +189,7 @@ namespace SnapDotNet
                 return;
             }
 
-            if (m_SnapcastClient.ServerData == null)
+            if (m_SnapcastClient.ServerData == null && SnapSettings.ControlPort != 0)
             {
                 ShowNotification("Connection error", string.Format("Unable to connect to snapserver at {0}:{1}", SnapSettings.Server, SnapSettings.ControlPort));
                 return;

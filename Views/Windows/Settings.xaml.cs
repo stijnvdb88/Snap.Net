@@ -116,8 +116,9 @@ namespace SnapDotNet.Windows
         private void btClose_Click(object sender, RoutedEventArgs e)
         {
             // todo: actually restart socket connection here
-            int controlPort = int.Parse(tbControlPort.Text, CultureInfo.CurrentCulture);
-            int playerPort = int.Parse(tbPlayerPort.Text, CultureInfo.CurrentCulture);
+            bool validControlPort = int.TryParse(tbControlPort.Text, NumberStyles.None, CultureInfo.CurrentCulture, out int controlPort);
+            bool validPlayerPort = int.TryParse(tbPlayerPort.Text, NumberStyles.None, CultureInfo.CurrentCulture, out int playerPort);
+
             bool modified = SnapSettings.Server != tbHost.Text || SnapSettings.ControlPort != controlPort || SnapSettings.PlayerPort != playerPort;
             SnapSettings.Server = tbHost.Text.Trim();
             SnapSettings.ControlPort = controlPort;
