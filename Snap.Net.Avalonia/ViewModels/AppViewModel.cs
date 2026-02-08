@@ -23,7 +23,7 @@ public partial class AppViewModel : ViewModelBase
     private SettingsWindow? m_SettingsWindow = null;
     
     [ObservableProperty]
-    private bool m_AddOpenFlyoutEntry = OperatingSystem.IsMacOS();
+    private bool m_AddOpenFlyoutEntry = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
 
     [ObservableProperty]
     private string m_OpenFlyoutEntryLabel = "Open";
