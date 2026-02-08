@@ -14,6 +14,10 @@ build_script:
     msbuild -p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
 
     dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%
+
+    dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r linux-x64 -p:PublishSingleFile=true  --self-contained true -c Release --nologo -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%"
+
+    dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r osx-x64 -c Release -p:UseAppHost=true --self-contained true -p:PublishSingleFile=true -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%"
 clone_script:
   - cmd: >-
       git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
