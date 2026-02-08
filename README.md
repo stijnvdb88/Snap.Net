@@ -58,17 +58,16 @@ If you don't like the colors, change them!
 
 ## Build instructions ##
 
-### Windows ###
-Main Snap.Net application:
+### Control + player + broadcast client (Windows only) ###
 ```
 msbuild /t:restore
 msbuild /p:Configuration=Release;VersionAssembly=0.34.0
 ```
-Control client only (same one Linux/macOS use):
+### Control client ###
 
 **Requirements**:  
 - .NET 10: https://dotnet.microsoft.com/en-us/download/dotnet/10.0
-
+### Windows ###
 ```
 dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r win-x64 -p:PublishSingleFile=true --self-contained true -c Release --nologo
 ```
