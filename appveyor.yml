@@ -10,7 +10,8 @@ environment:
 build_script:
 - cmd: >-
     msbuild /t:restore
-    msbuild /p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
+    msbuild -p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
+
     dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%
 clone_script:
   - cmd: >-
