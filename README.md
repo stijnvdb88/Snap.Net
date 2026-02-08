@@ -82,6 +82,7 @@ dotnet publish Snap.Net.Avalonia//Snap.Net.Avalonia.csproj -r osx-x64 -p:Publish
 ```
 
 ## Acknowledgements
+* [Avalonia](https://avaloniaui.net/)
 * [NAudio](https://github.com/naudio/NAudio)
 * [StreamJsonRpc](https://github.com/microsoft/vs-streamjsonrpc)
 * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
