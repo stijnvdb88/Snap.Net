@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	<UseAppHost>true</UseAppHost>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE,THEMING_SUPPORT</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE,THEMING_SUPPORT</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Models\" />
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.11" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.11" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.11" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.11">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.11" />
+        <PackageReference Include="Classic.Avalonia.Theme" Version="11.3.0.3" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
+        <PackageReference Include="Material.Avalonia" Version="3.13.4" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+        <PackageReference Include="Semi.Avalonia" Version="11.3.7.2" />
+        <PackageReference Include="Svg.Skia" Version="3.4.1" />
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.23.0" />
+        <PackageReference Include="Xaml.Behaviors.Avalonia" Version="11.3.9.3" />
+        <PackageReference Include="Zafiro.Avalonia" Version="48.1.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\FlyoutWindow.axaml.cs">
+        <DependentUpon>FlyoutWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ControlClient\GroupView.axaml.cs">
+        <DependentUpon>GroupView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ControlClient\ControlClientView.axaml.cs">
+        <DependentUpon>ControlClientView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ControlClient\EditGroupWindow.axaml.cs">
+        <DependentUpon>EditGroupWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ControlClient\EditControlClientWindow.axaml.cs">
+        <DependentUpon>EditControlClientWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ControlClient\StreamWindow.axaml.cs">
+        <DependentUpon>SettingsWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\SettingsWindow.axaml.cs">
+        <DependentUpon>StreamWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Snap.Net.ControlClient\Snap.Net.ControlClient.csproj" />
+    </ItemGroup>
+</Project>

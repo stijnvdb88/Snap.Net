@@ -1,0 +1,87 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Snap.Net.Avalonia.Views.EditControlClientWindow"
+        x:DataType="viewModels:EditControlClientWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        Title="Edit client" 
+        CanResize="False"
+        SizeToContent="WidthAndHeight">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:EditControlClientWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+            <DockPanel>
+                <TextBlock Text="Name" Width="90" FontWeight="Bold" />
+                <TextBox Text="{Binding ClientViewModel.Name}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Latency" Width="90" FontWeight="Bold" />
+                <TextBox Text="{Binding ClientViewModel.Latency}">
+                    <Interaction.Behaviors>
+                        <NumberBoxBehavior />
+                    </Interaction.Behaviors>
+                </TextBox>
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="MAC" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Mac}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="ID" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Id}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="IP" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Ip}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Host" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Host}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="OS" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.OS}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Architecture" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Architecture}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Version" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.Version}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Last seen" Width="90" FontWeight="Bold" />
+                <TextBlock Text="{Binding ClientViewModel.LastSeen}" />
+            </DockPanel>
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="80"
+                    Height="30"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{Binding SaveCommand}"
+                    Content="Save" />
+                <Button
+                    Width="80"
+                    Height="30"
+                    IsEnabled="{Binding DeleteAvailable}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{Binding RemoveCommand}"
+                    Content="Remove" />
+            </StackPanel>
+            
+        </StackPanel>
+    </Grid>
+</Window>

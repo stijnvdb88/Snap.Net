@@ -1,0 +1,69 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style Selector="ToggleButton:unchecked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <!-- <Setter Property="Foreground" Value="White" /> -->
+        <!-- <Setter Property="BorderBrush" Value="Transparent" /> -->
+    </Style>
+    <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <!-- <Setter Property="Foreground" Value="White" /> -->
+        <!-- <Setter Property="BorderBrush" Value="Transparent" /> -->
+    </Style>
+    <Style Selector="ToggleButton PathIcon.audio-on">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+    <Style Selector="ToggleButton:checked PathIcon.audio-on">
+        <Setter Property="IsVisible" Value="True"/>
+    </Style>
+    <Style Selector="ToggleButton PathIcon.audio-mute">
+        <Setter Property="IsVisible" Value="True"/>
+    </Style>
+    <Style Selector="ToggleButton:checked PathIcon.audio-mute">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+    
+    <Style Selector="HeaderedContentControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+        
+                    <!-- Header -->
+                    <Border 
+                        ZIndex="1" 
+                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}" 
+                        Padding="5,0,5,0" 
+                        Margin="5,0,0,0">
+                        <TextBlock 
+                            Text="{TemplateBinding Header}" 
+                            FontWeight="Bold"/>
+                    </Border>
+        
+                    <!-- Content Area -->
+                    <Border 
+                        Grid.RowSpan="2" 
+                        Padding="0,5,0,0"
+                        Grid.ColumnSpan="2"
+                        CornerRadius="4"
+                        Margin="0,10,0,0"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                        BorderThickness="1">
+                        <ContentPresenter 
+                            Name="PART_ContentPresenter"
+                            Padding="8"
+                            Content="{TemplateBinding Content}"/>
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Snap.Net
+Comment=Snap.Net, a desktop tray control client for Snapcast
+Icon=snapdotnet
+Exec=snapdotnet
+StartupWMClass=snapdotnet
+Terminal=false
+Type=Application
+Categories=Development
+GenericName=Snap.Net
+Keywords=snapclient; snapcast; control client; snap.net; snapdotnet

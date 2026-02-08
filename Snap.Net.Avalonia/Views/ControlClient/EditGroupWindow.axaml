@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Snap.Net.Avalonia.Views.EditGroupWindow"
+        x:DataType="viewModels:EditGroupWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        Title="Edit Group" 
+        CanResize="False"
+        SizeToContent="WidthAndHeight">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:EditGroupWindowViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+            <DockPanel>
+                <TextBlock Text="Name" Width="90" FontWeight="Bold" />
+                <TextBox Text="{Binding GroupView.Name}" />
+            </DockPanel>
+
+            <DockPanel>
+                <TextBlock Text="Stream" Width="90"  FontWeight="Bold" />
+                <ComboBox
+                    HorizontalAlignment="Stretch"
+                    SelectedItem="{Binding SelectedStreamView}"
+                    ItemsSource="{Binding Streams}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="viewModels:StreamViewModel">
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </DockPanel>
+            
+            <HeaderedContentControl Header="Clients">
+                <ItemsControl ItemsSource="{Binding ControlClients }">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:GroupControlClientViewModel}" >
+                            <CheckBox IsChecked="{Binding InGroup, Mode=TwoWay}" Content="{Binding Name}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </HeaderedContentControl>
+            <Button
+                Width="60"
+                Height="30"
+                HorizontalAlignment="Center"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                Command="{Binding SaveCommand}"
+                Content="Save" />
+        </StackPanel>
+    </Grid>
+</Window>

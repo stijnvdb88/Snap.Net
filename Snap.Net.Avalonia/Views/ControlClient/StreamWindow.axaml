@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Snap.Net.Avalonia.Views.StreamWindow"
+        x:DataType="viewModels:StreamWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        Title="Stream" 
+        CanResize="False"
+        SizeToContent="WidthAndHeight">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:StreamWindowViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+            <DockPanel>
+                <TextBlock Text="Name" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding StreamViewModel.Name}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Status" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding Status}" />
+            </DockPanel>
+
+            <DockPanel>
+                <TextBlock Text="Uri" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding Uri}" Width="350" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="ChunkMs" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding ChunkMs}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Codec" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding Codec}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Sample format" Width="120" FontWeight="Bold" />
+                <TextBlock Text="{Binding SampleFormat}" />
+            </DockPanel>
+            
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="80"
+                    Height="30"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{Binding CloseCommand}"
+                    Content="Close" />
+            </StackPanel>
+            
+        </StackPanel>
+    </Grid>
+</Window>

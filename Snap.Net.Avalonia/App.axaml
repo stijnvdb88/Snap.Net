@@ -1,0 +1,64 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels"
+             x:DataType="viewModels:AppViewModel"
+             x:Class="Snap.Net.Avalonia.App"
+             xmlns:local="using:Snap.Net.Avalonia"
+             xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+             xmlns:semi="https://irihi.tech/semi"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <Application.DataTemplates>
+         <local:ViewLocator/>
+     </Application.DataTemplates>
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/snapcast.ico" 
+                      ToolTipText="Snap.Net" 
+                      Command="{Binding ShowFlyoutCommand}">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="{Binding OpenFlyoutEntryLabel}" Command="{Binding ShowFlyoutCommand}" IsVisible="{Binding AddOpenFlyoutEntry}" />
+                        <NativeMenuItem Header="Settings" Command="{Binding ShowSettingsCommand}" />
+                        <NativeMenuItem Header="Quit" Command="{Binding QuitCommand}" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+             
+    <Application.Resources>
+        <ResourceDictionary>
+            <FluentTheme x:Key="FluentTheme">
+                <FluentTheme.Palettes>
+                    <!-- Palette for Light theme variant -->
+                    <ColorPaletteResources x:Key="Light" Accent="#F3B53B" RegionColor="White" ErrorText="Red" />
+                    <!-- Palette for Dark theme variant -->
+                    <ColorPaletteResources x:Key="Dark" Accent="#C7890F" RegionColor="Black" ErrorText="Red" />
+                </FluentTheme.Palettes>
+            </FluentTheme>
+            <SimpleTheme x:Key="SimpleTheme" />
+            <ClassicTheme x:Key="ClassicTheme" />
+            <themes:MaterialTheme x:Key="MaterialTheme" />
+            <semi:SemiTheme x:Key="SemiTheme" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key='Light'>
+                    <SolidColorBrush x:Key='BackgroundBrush'>#EEEEEE</SolidColorBrush>
+                    <SolidColorBrush x:Key='ForegroundBrush'>#252525</SolidColorBrush>
+                    <SolidColorBrush x:Key='SystemControlFocusVisualPrimaryBrush'>#EEEEEE</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key='Dark'>
+                    <SolidColorBrush x:Key='BackgroundBrush'>#252525</SolidColorBrush>
+                    <SolidColorBrush x:Key='ForegroundBrush'>#BBBBBB</SolidColorBrush>
+                    <SolidColorBrush x:Key='AccentBrush'>Orange</SolidColorBrush>
+                    <SolidColorBrush x:Key='SystemControlFocusVisualPrimaryBrush'>#252525</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    <Application.Styles>
+        
+        <StyleInclude Source="avares://Snap.Net.Avalonia/Assets/Icons.axaml" />
+        <StyleInclude Source="Styles/SnapNetStyles.axaml" />
+    </Application.Styles>
+</Application>

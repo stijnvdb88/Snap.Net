@@ -10,7 +10,7 @@ AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br
 
   <p align="center">
     A control client and player for <a href="https://github.com/badaix/snapcast">Snapcast</a>
-    <br /><b>Windows &middot; <a href="https://apps.apple.com/us/app/snapcast-control/id1552559653">iOS</a> &middot; Android</b>
+    <br /><b>Windows &middot; Linux &middot; macOS &middot; <a href="https://apps.apple.com/us/app/snapcast-control/id1552559653">iOS</a> &middot; Android</b>
     <br />
     <br />
     <img src="https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Control.png?raw=true">
@@ -39,7 +39,10 @@ The client/group name and client latency can be set in their menus. These menus 
 ### Customizable ###
 If you don't like the colors, change them!  
 
-![Settings](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Settings.png)
+![Settings](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Settings.png?raw=true)
+
+## Linux / macOS ##
+![LinuxMacOS](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/LinuxMacOS.png?raw=true)
 
 ## iOS ##
 
@@ -53,9 +56,33 @@ If you don't like the colors, change them!
 ![Android_Client](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Android_Client.png?raw=true)
 ![Android_Group](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Android_Group.png?raw=true)
 
+## Build instructions ##
 
-### Todo ###
-* Cross-platform support: ~Android, iOS~, OSX, Linux
+### Windows ###
+Main Snap.Net application:
+```
+msbuild /t:restore
+msbuild /p:Configuration=Release;VersionAssembly=0.34.0
+```
+Control client only (same one Linux/macOS use):
+
+**Requirements**:  
+- .NET 10: https://dotnet.microsoft.com/en-us/download/dotnet/10.0
+
+```
+dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r win-x64 -p:PublishSingleFile=true --self-contained true -c Release --nologo
+```
+### Linux ###
+```
+dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r linux-x64 -p:PublishSingleFile=true --self-contained true -c Release --nologo
+```
+### macOS ###
+```
+dotnet publish Snap.Net.Avalonia//Snap.Net.Avalonia.csproj -r osx-x64 -p:PublishSingleFile=true --self-contained true  -c Release -p:UseAppHost=true
+```
+
+## Todo ##
+* Cross-platform support: ~~Android, iOS, OSX, Linux~~
 * ~~Player settings (sampleformat, shared/exclusive mode)~~
 
 ## Acknowledgements

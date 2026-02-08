@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm-cc="using:Snap.Net.Avalonia.ViewModels.ControlClient"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="320"
+        x:Class="Snap.Net.Avalonia.Views.FlyoutWindow"
+        x:DataType="viewModels:FlyoutWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        SizeToContent="Width"
+        Name="Flyout"
+        Title="Snap.Net.Avalonia">
+    <Interaction.Behaviors>
+        <RightTappedGestureTrigger>
+            <InvokeCommandAction
+                CommandParameter="{Binding #Flyout}"
+                Command="{Binding FlyoutRightClickedCommand}" />
+        </RightTappedGestureTrigger>
+    </Interaction.Behaviors>
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:FlyoutWindowViewModel />
+    </Design.DataContext>
+
+    <Border 
+        Background="{DynamicResource BackgroundBrush}"
+        BorderBrush="{DynamicResource SystemAccentColor}"
+        BorderThickness="1"
+        CornerRadius="0"
+        Padding="0" Margin="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <ItemsControl ItemsSource="{Binding Groups}" VerticalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm-cc:GroupViewModel}" >
+                        <views:GroupView VerticalAlignment="Stretch" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <StackPanel 
+                Margin="20"
+                Orientation="Horizontal"
+                VerticalAlignment="Center" 
+                Spacing="10"
+                IsVisible="{Binding ConnectionFailed}"
+                HorizontalAlignment="Center">
+                <Image 
+                    Source="avares://Snap.Net.Avalonia/Assets/snapcast.ico" 
+                    Height="80" 
+                    VerticalAlignment="Center"
+                    Width="80" />
+                <TextBlock 
+                    VerticalAlignment="Center"
+                    Height="40"
+                    FontSize="17"
+                    Text="{Binding ConnectionFailureMessage}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
