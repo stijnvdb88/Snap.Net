@@ -81,10 +81,6 @@ dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r linux-x64 -p:Publis
 dotnet publish Snap.Net.Avalonia//Snap.Net.Avalonia.csproj -r osx-x64 -p:PublishSingleFile=true --self-contained true  -c Release -p:UseAppHost=true
 ```
 
-## Todo ##
-* Cross-platform support: ~~Android, iOS, OSX, Linux~~
-* ~~Player settings (sampleformat, shared/exclusive mode)~~
-
 ## Acknowledgements
 * [NAudio](https://github.com/naudio/NAudio)
 * [StreamJsonRpc](https://github.com/microsoft/vs-streamjsonrpc)
