@@ -214,7 +214,7 @@ namespace SnapDotNet.ControlClient
                     Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
                     _ServerUpdated(result.server);
                 }
-                catch(StreamJsonRpc.ConnectionLostException connectionLostException)
+                catch(StreamJsonRpc.ConnectionLostException _)
                 {
                     Debug("got connectionLostException, retrying connect...");
                     ConnectAsync(m_Ip, m_Port);
