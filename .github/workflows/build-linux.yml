@@ -1,9 +1,7 @@
 name: Build Snap.Net.Avalonia Linux
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
 
