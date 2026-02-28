@@ -15,4 +15,4 @@ do
     mkdir -p "$SCRIPT_DIR/dpkg-deb/usr/share/icons/hicolor/${i}x${i}/apps"
     inkscape -o "$SCRIPT_DIR/dpkg-deb/usr/share/icons/hicolor/${i}x${i}/apps/snapdotnet.png" -C -w $i -h $i "$SCRIPT_DIR/dpkg-deb/usr/share/icons/hicolor/scalable/apps/snapdotnet.svg"
 done
-dpkg-deb --root-owner-group --build "$SCRIPT_DIR/dpkg-deb" "${SCRIPT_DIR}/snapdotnet_${VERSION}_amd64.deb"
+dpkg-deb --root-owner-group --build "$SCRIPT_DIR/dpkg-deb" "${SCRIPT_DIR}/Snap.Net-${VERSION}-Linux-amd64.deb"

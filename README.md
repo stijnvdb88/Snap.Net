@@ -28,7 +28,7 @@ A small [tool for broadcasting to snapserver](https://github.com/stijnvdb88/Snap
 
 ### Player + Broadcast ###
 
-![Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Player.png) ![Broadcast](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Broadcast.png) 
+![Player](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Player.png?raw=true) ![Broadcast](https://github.com/stijnvdb88/Snap.Net/blob/master/Doc/Broadcast.png?raw=true) 
 
 ### Control ###
 The client/group name and client latency can be set in their menus. These menus are accessible by clicking on client/group name in the overview.

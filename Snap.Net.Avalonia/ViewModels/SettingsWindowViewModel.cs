@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
+using Avalonia;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,6 +29,9 @@ public partial class SettingsWindowViewModel : ViewModelBase
     [ObservableProperty]
     private EPanelPosition m_PanelPosition;
 
+    [ObservableProperty]
+    private string m_ApplicationVersion;
+
     public EPanelPosition[] AvailablePanelPositions => Enum.GetValues<EPanelPosition>();
     
 #if DEBUG
@@ -33,6 +39,7 @@ public partial class SettingsWindowViewModel : ViewModelBase
     {
         Host = "192.168.1.111";
         Port = 1705;
+        ApplicationVersion = "0.34.0.1";
     }
 #endif    
     
@@ -44,6 +51,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
         Port = m_SettingsService.Get<int>(SettingsKeys.PORT, 1705);
         ShowDisconnectedClients = m_SettingsService.Get<bool>(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, false);
         PanelPosition = m_SettingsService.Get<EPanelPosition>(SettingsKeys.PANEL_POSITION);
+        AssemblyInformationalVersionAttribute? infoVersion = (AssemblyInformationalVersionAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault()!;
+        ApplicationVersion = infoVersion?.InformationalVersion.Split('+')[0] ?? "Unknown";
     }
 
     [RelayCommand]

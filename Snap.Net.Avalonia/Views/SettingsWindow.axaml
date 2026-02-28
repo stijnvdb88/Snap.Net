@@ -46,6 +46,7 @@
                     HorizontalAlignment="Center" 
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     Command="{Binding SaveCommand}" />
+            <TextBlock TextAlignment="Right" Text="{Binding ApplicationVersion}" FontSize="10" />
         </StackPanel>
     </Grid>
 </Window>
