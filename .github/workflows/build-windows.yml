@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish Windows Package
         run: >
-          dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version=${{ env.VERSION }} -p:InformationalVersion=${{ env.VERSION }}
+          dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version=${{ env.SNAP_VERSION }} -p:InformationalVersion=${{ env.SNAP_VERSION }}
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
