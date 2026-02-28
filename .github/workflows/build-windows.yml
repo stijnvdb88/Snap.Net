@@ -1,0 +1,44 @@
+name: Build Snap.Net.Avalonia Windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SNAP_VERSION: 0.34.0.4
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Publish Windows Package
+        run: >
+          dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version=${{ env.VERSION }} -p:InformationalVersion=${{ env.VERSION }}
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapdotnet_${{ env.SNAP_VERSION }}_windows_x64
+          path: Snap.Net.Avalonia/bin/Release/net10.0/win-x64/publish/
