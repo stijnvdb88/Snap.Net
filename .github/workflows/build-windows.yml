@@ -10,8 +10,8 @@ env:
 
 jobs:
 
-  build-linux:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout (with submodules)
