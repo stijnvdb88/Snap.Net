@@ -1,0 +1,49 @@
+name: Build Snap.Net
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SNAP_VERSION: 0.34.0.2
+
+jobs:
+
+  build-windows-legacy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore
+        run: msbuild /t:restore
+
+      - name: Build Release
+        run: >
+          msbuild
+          /p:Configuration=Release;
+          VersionAssembly=${{ env.VERSION }};
+          AssemblyVersion=${{ env.VERSION }};
+          Version=${{ env.VERSION }}
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes
+
+      - name: Build Installer
+        run: >
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          InnoSetup\SnapSetup.iss
+
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap.Net-${{ env.VERSION }}-Setup.exe
+          path: bin\*.exe
