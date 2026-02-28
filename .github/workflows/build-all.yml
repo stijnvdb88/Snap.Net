@@ -1,0 +1,58 @@
+name: Build Snap.Net
+
+on:  
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  legacy:
+    uses: ./.github/workflows/build-legacy.yml
+    with:     
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
+    secrets: inherit
+
+  windows:
+    uses: ./.github/workflows/build-windows.yml
+    with:     
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
+    secrets: inherit
+
+  linux:
+    uses: ./.github/workflows/build-linux.yml
+    with:     
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
+    secrets: inherit
+
+  macos:
+    uses: ./.github/workflows/build-macos.yml
+    with:     
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
+    secrets: inherit
+
+  package:
+    if: github.event_name == 'workflow_dispatch'
+    needs:
+      - legacy
+      - windows
+      - linux
+      - macos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create unified zip
+        run: |
+          cd artifacts
+          zip -r Snap.Net-${{ vars.SNAP_VERSION }}.zip .
+
+      - name: Upload final bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap.Net
+          path: artifacts/Snap.Net-${{ vars.SNAP_VERSION }}.zip

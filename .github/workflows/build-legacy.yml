@@ -1,0 +1,45 @@
+name: Build Snap.Net
+
+on:
+  workflow_call:
+    inputs:
+      upload_artifacts:
+        required: true
+        type: boolean
+env:
+  SNAP_VERSION: ${{ vars.SNAP_VERSION }}
+
+jobs:
+
+  build-windows-legacy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore
+        run: msbuild /t:restore
+
+      - name: Build Release
+        run: >
+          msbuild "/p:Configuration=Release;VersionAssembly=${{ vars.SNAP_VERSION }};AssemblyVersion=${{ vars.SNAP_VERSION }};Version=${{ vars.SNAP_VERSION }}"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes
+
+      - name: Build Installer
+        run: ISCC.exe "InnoSetup\SnapSetup.iss"
+
+      - name: Upload Windows Installer
+        if: inputs.upload_artifacts == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-legacy
+          path: bin\*.exe
