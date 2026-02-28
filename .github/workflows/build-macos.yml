@@ -1,0 +1,89 @@
+name: Build Snap.Net.Avalonia MacOS
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  build-linux:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+     
+      - name: Import Code Signing Certificate
+        run: |
+          echo "$MAC_CERT_BASE64" | base64 --decode > cert.p12
+          security create-keychain -p temp build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p temp build.keychain
+          security import cert.p12 -k build.keychain -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k temp build.keychain
+        env:
+          MAC_CERT_BASE64: ${{ secrets.MAC_CERT_BASE64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+
+      - name: Write Notary API Key
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.APPLE_API_KEY_P8 }}" > ~/private_keys/AuthKey.p8
+
+      - name: Build macOS Package
+        run: |
+          cd Snap.Net.Avalonia/Distribution/MacOS
+          chmod +x package.sh
+          ./package.sh $VERSION
+
+          cd App
+          codesign --deep --force --verify --timestamp \
+            --options runtime \
+            --entitlements SnapDotNet.entitlements \
+            --sign "Developer ID Application: Stijn Van der Borght (5DWHDZ37X4)" \
+            SnapDotNet.app
+
+          ditto -c -k --sequesterRsrc --keepParent SnapDotNet.app SnapDotNet.zip
+
+          xcrun notarytool submit SnapDotNet.zip \
+            --wait \
+            --key ~/private_keys/AuthKey.p8 \
+            --key-id ${{ secrets.APPLE_KEY_ID }} \
+            --issuer ${{ secrets.APPLE_ISSUER_ID }}
+
+          stapler staple SnapDotNet.app
+
+          mkdir dmg
+          mv SnapDotNet.app dmg
+
+          brew install create-dmg
+
+          create-dmg \
+            --volname "SnapDotNet Installer" \
+            --volicon dmg/SnapDotNet.app/Contents/Resources/SnapDotNet.icns \
+            --icon-size 100 \
+            --icon "SnapDotNet.app" 200 190 \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --hide-extension "SnapDotNet.app" \
+            --app-drop-link 600 185 \
+            "SnapDotNet_${VERSION}_macOS.dmg" \
+            dmg
+
+      - name: Upload macOS DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap.Net-${{ vars.SNAP_VERSION }}-macOS.dmg
+          path: Snap.Net.Avalonia/Distribution/MacOS/*.dmg
