@@ -1,0 +1,51 @@
+name: Build Snap.Net.Avalonia Linux
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SNAP_VERSION: 0.34.0.2
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install Packaging Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y dpkg-dev inkscape
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Build Linux Package
+        run: |
+          cd Snap.Net.Avalonia/Distribution/Linux
+          chmod +x package.sh
+          ./package.sh $SNAP_VERSION
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapdotnet_$SNAP_VERSION_amd64.deb
+          path: Snap.Net.Avalonia/Distribution/Linux/*.deb
