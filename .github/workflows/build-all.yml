@@ -5,37 +5,34 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  IS_RELEASE: ${{ github.event_name == 'workflow_dispatch' }}
-
 jobs:
 
   legacy:
     uses: ./.github/workflows/build-legacy.yml
     with:     
-      upload_artifacts: ${{ env.IS_RELEASE }}
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
     secrets: inherit
 
   windows:
     uses: ./.github/workflows/build-windows.yml
     with:     
-      upload_artifacts: ${{ env.IS_RELEASE }}
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
     secrets: inherit
 
   linux:
     uses: ./.github/workflows/build-linux.yml
     with:     
-      upload_artifacts: ${{ env.IS_RELEASE }}
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
     secrets: inherit
 
   macos:
     uses: ./.github/workflows/build-macos.yml
     with:     
-      upload_artifacts: ${{ env.IS_RELEASE }}
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
     secrets: inherit
 
   package:
-    if: env.IS_RELEASE == 'true'
+    if: github.event_name == 'workflow_dispatch'
     needs:
       - legacy
       - windows
