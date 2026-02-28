@@ -47,5 +47,5 @@ jobs:
         if: inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
-          name: snapdotnet_${{ vars.SNAP_VERSION }}_amd64.deb
+          name: Linux
           path: Snap.Net.Avalonia/Distribution/Linux/*.deb

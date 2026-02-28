@@ -80,12 +80,12 @@ jobs:
             --window-size 800 400 \
             --hide-extension "SnapDotNet.app" \
             --app-drop-link 600 185 \
-            "SnapDotNet_${{vars.SNAP_VERSION }}_macOS.dmg" \
+            "Snap.Net-${{vars.SNAP_VERSION }}-macOS.dmg" \
             dmg
 
       - name: Upload macOS DMG
         if: inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
-          name: Snap.Net-${{ vars.SNAP_VERSION }}-macOS.dmg
+          name: macOS
           path: Snap.Net.Avalonia/Distribution/MacOS/App/*.dmg

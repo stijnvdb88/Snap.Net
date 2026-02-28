@@ -41,5 +41,5 @@ jobs:
         if: inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
-          name: Snap.Net-${{ vars.SNAP_VERSION }}-Setup.exe
+          name: Windows-legacy
           path: bin\*.exe
