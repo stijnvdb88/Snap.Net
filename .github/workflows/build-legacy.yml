@@ -2,6 +2,7 @@ name: Build Snap.Net
 
 on:
   workflow_call:
+    inputs:
       upload_artifacts:
         required: true
         type: boolean
