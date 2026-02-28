@@ -46,7 +46,7 @@ jobs:
         run: |
           cd Snap.Net.Avalonia/Distribution/MacOS
           chmod +x package.sh
-          ./package.sh $VERSION
+          ./package.sh ${{ vars.SNAP_VERSION }}
 
           cd App
           codesign --deep --force --verify --timestamp \
@@ -79,7 +79,7 @@ jobs:
             --window-size 800 400 \
             --hide-extension "SnapDotNet.app" \
             --app-drop-link 600 185 \
-            "SnapDotNet_${VERSION}_macOS.dmg" \
+            "SnapDotNet_${{vars.SNAP_VERSION }}_macOS.dmg" \
             dmg
 
       - name: Upload macOS DMG
