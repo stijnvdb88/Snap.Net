@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Release
         run: >
-          msbuild "/p:Configuration=Release;VersionAssembly=${{ env.SNAP_VERSION }};AssemblyVersion=${{ env.SNAP_VERSION }};Version=${{ env.SNAP_VERSION }}"
+          msbuild "/p:Configuration=Release;VersionAssembly=${{ vars.SNAP_VERSION }};AssemblyVersion=${{ vars.SNAP_VERSION }};Version=${{ vars.SNAP_VERSION }}"
 
       - name: Install Inno Setup
         run: choco install innosetup --yes
@@ -36,5 +36,5 @@ jobs:
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Snap.Net-${{ env.SNAP_VERSION }}-Setup.exe
+          name: Snap.Net-${{ vars.SNAP_VERSION }}-Setup.exe
           path: bin\*.exe
