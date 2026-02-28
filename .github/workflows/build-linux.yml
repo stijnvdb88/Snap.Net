@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  SNAP_VERSION: 0.34.0.2
+  SNAP_VERSION: 0.34.0.4
 
 jobs:
 
@@ -47,5 +47,5 @@ jobs:
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: snapdotnet_$SNAP_VERSION_amd64.deb
+          name: snapdotnet_${{ SNAP_VERSION }}_amd64.deb
           path: Snap.Net.Avalonia/Distribution/Linux/*.deb

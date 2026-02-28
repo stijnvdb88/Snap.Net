@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  SNAP_VERSION: 0.34.0.2
+  SNAP_VERSION: 0.34.0.4
 
 jobs:
 
