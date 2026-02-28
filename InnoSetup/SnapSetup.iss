@@ -26,6 +26,7 @@ Source: ..\bin\Release\MahApps.*.dll; DestDir: {app}; Flags: overwritereadonly i
 Source: ..\bin\Release\MessagePack.Annotations.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\MessagePack.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\Microsoft.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Nerdbank.MessagePack.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\Nerdbank.Streams.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\NLog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
