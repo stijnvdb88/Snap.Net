@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build-linux:
+  build-macos:
     runs-on: macos-latest
 
     steps:
@@ -86,4 +86,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Snap.Net-${{ vars.SNAP_VERSION }}-macOS.dmg
-          path: Snap.Net.Avalonia/Distribution/MacOS/*.dmg
+          path: Snap.Net.Avalonia/Distribution/MacOS/App/*.dmg
