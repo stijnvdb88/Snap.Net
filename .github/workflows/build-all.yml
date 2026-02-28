@@ -1,27 +1,41 @@
 name: Build Snap.Net
 
 on:  
+  push:
+  pull_request:
   workflow_dispatch:
+
+env:
+  IS_RELEASE: ${{ github.event_name == 'workflow_dispatch' }}
 
 jobs:
 
   legacy:
     uses: ./.github/workflows/build-legacy.yml
+    with:     
+      upload_artifacts: ${{ env.IS_RELEASE }}
     secrets: inherit
 
   windows:
     uses: ./.github/workflows/build-windows.yml
+    with:     
+      upload_artifacts: ${{ env.IS_RELEASE }}
     secrets: inherit
 
   linux:
     uses: ./.github/workflows/build-linux.yml
+    with:     
+      upload_artifacts: ${{ env.IS_RELEASE }}
     secrets: inherit
 
   macos:
     uses: ./.github/workflows/build-macos.yml
+    with:     
+      upload_artifacts: ${{ env.IS_RELEASE }}
     secrets: inherit
 
   package:
+    if: env.IS_RELEASE == 'true'
     needs:
       - legacy
       - windows

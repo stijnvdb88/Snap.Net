@@ -2,7 +2,9 @@ name: Build Snap.Net.Avalonia MacOS
 
 on:
   workflow_call:
-
+      upload_artifacts:
+        required: true
+        type: boolean
 jobs:
 
   build-macos:
@@ -81,6 +83,7 @@ jobs:
             dmg
 
       - name: Upload macOS DMG
+        if: inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
           name: Snap.Net-${{ vars.SNAP_VERSION }}-macOS.dmg
