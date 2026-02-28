@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Snap.Net.Avalonia.ViewModels.ControlClient"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:controlClient="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="250"
+        x:Class="Snap.Net.Avalonia.Views.ControlClientView"
+        x:DataType="controlClient:ControlClientViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ControlClientViewModel />
+    </Design.DataContext>
+    
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Button 
+                   FontSize="10"
+                   Margin="2"
+                   Command="{Binding ClientClickedCommand}"
+                   HorizontalAlignment="Center">
+            <TextBlock
+                TextDecorations="{Binding ClientNameTextDecorations}"
+                Text="{Binding Name}" />
+        </Button>
+        <Slider Grid.Row="1" 
+                Orientation="Vertical"
+                VerticalAlignment="Stretch" 
+                HorizontalAlignment="Center"
+                Value="{Binding Volume, Mode=TwoWay}" 
+                Maximum="100" />
+        <ToggleButton Grid.Row="2"
+                      HorizontalAlignment="Center"
+                      IsChecked="{Binding Muted}">
+            <Interaction.Behaviors>
+                <EventTriggerBehavior EventName="Unchecked">
+                    <InvokeCommandAction
+                        Command="{Binding MuteToggledCommand}" />
+                </EventTriggerBehavior>
+                <EventTriggerBehavior EventName="Checked">
+                    <InvokeCommandAction
+                        Command="{Binding MuteToggledCommand}" />
+                </EventTriggerBehavior>
+            </Interaction.Behaviors>
+            <Panel>
+                <PathIcon Classes="audio-on"
+                          Data="{StaticResource SpeakerRegular}" />
+                <PathIcon Classes="audio-mute"
+                          Data="{StaticResource SpeakerOffRegular}" />
+            </Panel>
+        </ToggleButton>
+
+    </Grid>
+
+</UserControl>

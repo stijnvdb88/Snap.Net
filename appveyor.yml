@@ -1,11 +1,23 @@
 version: 1.0.{build}
+install:
+- ps: |
+    Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+    & $env:temp\dotnet-install.ps1 -Architecture x64 -Version '10.0.100' -InstallDir "$env:ProgramFiles\dotnet"
+before_build:
+- cmd: dotnet --version
 environment:
   SNAP_VERSION: 0.19.0.2
 build_script:
 - cmd: >-
     msbuild /t:restore
 
-    msbuild /p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
+    msbuild -p:Configuration=Release;VersionAssembly=%SNAP_VERSION%
+
+    dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r win-x64 -p:PublishSingleFile=true --self-contained true -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%
+
+    dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r linux-x64 -p:PublishSingleFile=true  --self-contained true -c Release --nologo -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%"
+
+    dotnet publish Snap.Net.Avalonia/Snap.Net.Avalonia.csproj -r osx-x64 -c Release -p:UseAppHost=true --self-contained true -p:PublishSingleFile=true -p:Version="%SNAP_VERSION%" -p:InformationalVersion="%SNAP_VERSION%"
 clone_script:
   - cmd: >-
       git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%

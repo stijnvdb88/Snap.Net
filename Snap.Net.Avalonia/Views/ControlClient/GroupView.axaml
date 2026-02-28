@@ -1,0 +1,163 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Snap.Net.Avalonia.ViewModels.ControlClient"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:controlClient="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="320"
+        x:Class="Snap.Net.Avalonia.Views.GroupView"
+        BorderThickness="0"
+        x:DataType="controlClient:GroupViewModel">
+    
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:GroupViewModel />
+    </Design.DataContext>
+    <Border 
+        Background="{DynamicResource SystemControlFocusVisualPrimaryBrush}"
+        BorderBrush="{DynamicResource BackgroundBrush}"
+        BorderThickness="0"
+        CornerRadius="0"
+        Padding="0" Margin="0">
+        
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            
+            <Grid Grid.Row="1">
+                <Grid>
+                    <StackPanel
+                        Height="60"
+                        Orientation="Vertical">
+                        <TextBlock
+                            Height="20"
+                            Margin="0 10 0 0"
+                            VerticalAlignment="Center"
+                            FontSize="13"
+                            Text="{Binding  StreamView.NowPlaying}"
+                            HorizontalAlignment="Center"/>
+                        <StackPanel
+                            IsVisible="{Binding StreamView.CanControl}"
+                            HorizontalAlignment="Center"
+                            Spacing="5"
+                            Orientation="Horizontal">
+                            <Button Width="30" Height="30" IsVisible="{Binding StreamView.CanGoPrevious}" Command="{Binding StreamView.PreviousClickedCommand}">
+                                <PathIcon Data="{StaticResource PreviousRegular}" />
+                            </Button>
+                            <Button Width="60" Height="30" IsVisible="{Binding StreamView.CanPlayPause}" Command="{Binding StreamView.PlayPauseClickedCommand}">
+                                <PathIcon Data="{StaticResource VideoPlayPauseRegular}" />
+                            </Button>
+                            <Button Width="30" Height="30" IsVisible="{Binding StreamView.CanPlay}" Command="{Binding StreamView.PlayClickedCommand}">
+                                <PathIcon Data="{StaticResource PlayRegular}" />
+                            </Button>
+                            <Button Width="30" Height="30" IsVisible="{Binding StreamView.CanPause}" Command="{Binding StreamView.PauseClickedCommand}">
+                                <PathIcon Data="{StaticResource PauseRegular}" />
+                            </Button>
+                            <Button Width="30" Height="30" IsVisible="{Binding StreamView.CanGoNext}" Command="{Binding StreamView.NextClickedCommand}">
+                                <PathIcon Data="{StaticResource ArrowNextRegular}" />
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Slider
+                        Orientation="Vertical" 
+                        VerticalAlignment="Stretch" 
+                        Value="{Binding Volume, Mode=TwoWay}" 
+                        Maximum="100" />
+                    <ToggleButton Grid.Row="1" IsChecked="{Binding Muted}">
+                        <Interaction.Behaviors>
+                            <EventTriggerBehavior EventName="Unchecked">
+                                <InvokeCommandAction
+                                    Command="{Binding MuteToggledCommand}" />
+                            </EventTriggerBehavior>
+                            <EventTriggerBehavior EventName="Checked">
+                                <InvokeCommandAction
+                                    Command="{Binding MuteToggledCommand}" />
+                            </EventTriggerBehavior>
+                        </Interaction.Behaviors>
+                        <Panel>
+                            <PathIcon Classes="audio-on"
+                                      Data="{StaticResource SpeakerRegular}" />
+                            <PathIcon Classes="audio-mute"
+                                      Data="{StaticResource SpeakerOffRegular}" />
+                        </Panel>
+                    </ToggleButton>
+                </Grid>
+                <Border Grid.Column="1" 
+                        Background="{DynamicResource BackgroundBrush}"
+                        BorderBrush="{DynamicResource SystemAccentColor}"
+                        BorderThickness="1"
+                        CornerRadius="0"
+                        Padding="1" Margin="1">
+                    <ItemsControl ItemsSource="{Binding ControlClients}" VerticalAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:ControlClientViewModel}" >
+                                <views:ControlClientView VerticalAlignment="Stretch" Width="83" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </Grid>
+            <StackPanel Grid.Row="0">
+                <Canvas Margin="10 0 0 0">
+                    <Image 
+                        Source="{Binding StreamView.AlbumArt}" 
+                        Height="70" 
+                        Width="70" />
+                </Canvas>
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <StackPanel.Styles>
+                        <Style Selector="Button.StreamActive">
+                            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+                        </Style>
+                        <Style Selector="Button.StreamInactive">
+                            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+                        </Style>
+                    </StackPanel.Styles>
+                    <Button 
+                        CornerRadius="0"
+                        Background="{DynamicResource SystemAccentColor}"
+                        BorderBrush="{DynamicResource SystemAccentColor}"
+                        Content="{Binding Name}" 
+                        Command="{Binding GroupClickedCommand}"
+                        FontWeight="Bold"
+                        FontSize="16" />
+                    <!-- Classes.StreamActive="{Binding StreamView.NowPlaying}" -->
+                    <Button 
+                        CornerRadius="0"
+                        BorderBrush="{DynamicResource SystemAccentColor}"
+                        Classes.StreamActive="{Binding StreamView.StreamActive}"
+                        Classes.StreamInactive="{Binding !StreamView.StreamActive}"
+                        Content="{Binding StreamView.Name}" 
+                        Command="{Binding StreamClickedCommand}"
+                        FontSize="16" />
+                </StackPanel>
+                
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

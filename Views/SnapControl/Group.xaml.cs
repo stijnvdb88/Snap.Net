@@ -124,44 +124,8 @@ namespace SnapDotNet.SnapControl
 
                     return;
                 }
-                string title = m_Stream.properties.metadata.title;
-                string nowPlaying = "";
+                string nowPlaying = m_Stream.properties.metadata.GetNowPlaying();
 
-                string[] artists = m_Stream.properties.metadata.albumArtist;
-                if (artists == null)
-                {
-                    artists = m_Stream.properties.metadata.artist;
-                }
-
-                string artistText = "";
-                if (artists != null)
-                {
-                    artistText = string.Join(", ", artists);
-                }
-
-                if (string.IsNullOrEmpty(artistText) == false)
-                {
-                    nowPlaying = artistText;
-                }
-
-                if (string.IsNullOrEmpty(title) == false)
-                {
-                    if (string.IsNullOrEmpty(nowPlaying) == false)
-                    {
-                        nowPlaying += $" - {title}";
-                    }
-                    else
-                    {
-                        nowPlaying = title;
-                    }
-                }
-
-                float duration = m_Stream.properties.metadata.duration;
-                if (duration > 0 && string.IsNullOrEmpty(nowPlaying) == false)
-                {
-                    TimeSpan timeSpan = TimeSpan.FromSeconds(duration);
-                    nowPlaying += string.Format(" ({0:D2}:{1:D2})", timeSpan.Minutes, timeSpan.Seconds);
-                }
 
                 lbStreamNowPlaying.Content = nowPlaying;
 

@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        xmlns:viewModels1="clr-namespace:Snap.Net.Avalonia.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Snap.Net.Avalonia.Views.SettingsWindow"
+        x:DataType="viewModels1:SettingsWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        Title="Settings"
+        CanResize="False"
+        SizeToContent="WidthAndHeight">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels1:SettingsWindowViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+            <DockPanel>
+                <TextBlock Text="Host" Width="110" FontWeight="Bold" />
+                <TextBox Text="{Binding Host}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Port" Width="110" FontWeight="Bold" />
+                <TextBox Text="{Binding Port}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Panel position" Width="110" FontWeight="Bold" />
+                <ComboBox
+                    SelectedItem="{Binding PanelPosition}"
+                    ItemsSource="{Binding AvailablePanelPositions}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <CheckBox Content="Show disconnected clients?" IsChecked="{Binding ShowDisconnectedClients}" />
+            </DockPanel>
+            
+            <Button Content="Save"
+                    HorizontalAlignment="Center" 
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{Binding SaveCommand}" />
+            <TextBlock TextAlignment="Right" Text="{Binding ApplicationVersion}" FontSize="10" />
+        </StackPanel>
+    </Grid>
+</Window>
