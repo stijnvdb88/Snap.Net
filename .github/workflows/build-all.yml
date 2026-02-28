@@ -1,4 +1,4 @@
-name: Build Snap.Net
+name: Snap.Net
 
 on:  
   push:

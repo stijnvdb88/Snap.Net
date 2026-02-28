@@ -1,4 +1,6 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/dpv9jhmife5m628r?svg=true)](https://ci.appveyor.com/project/stijnvdb88/snap-net) [![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
+[![Builds](https://github.com/stijnvdb88/Snap.Net/actions/workflows/build-all.yml/badge.svg)](https://github.com/stijnvdb88/Snap.Net/actions/workflows/build-all.yml)
+[![Github Releases](https://img.shields.io/github/release/stijnvdb88/Snap.Net.svg)](https://github.com/stijnvdb88/Snap.Net/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/stijnvdb88/Snap.Net/total)](https://github.com/stijnvdb88/Snap.Net/releases)
 <br />
 AppStore release: https://apps.apple.com/us/app/snapcast-control/id1552559653<br />
 <p align="center">
