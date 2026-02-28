@@ -6,6 +6,9 @@ on:
       upload_artifacts:
         required: true
         type: boolean
+env:
+  SNAP_VERSION: ${{ vars.SNAP_VERSION }}
+
 jobs:
 
   build-windows-legacy:
