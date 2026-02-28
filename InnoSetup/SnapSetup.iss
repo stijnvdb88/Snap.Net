@@ -29,6 +29,7 @@ Source: ..\bin\Release\Microsoft.*.dll; DestDir: {app}; Flags: overwritereadonly
 Source: ..\bin\Release\Nerdbank.Streams.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\NLog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\PolyType.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\StreamJsonRpc.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\NAudio.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\Fizzler.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
