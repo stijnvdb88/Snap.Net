@@ -1,7 +1,6 @@
 name: Build Snap.Net
 
-on:
-  push:
+on:  
   workflow_dispatch:
 
 jobs:
