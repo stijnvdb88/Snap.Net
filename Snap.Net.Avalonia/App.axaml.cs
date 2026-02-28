@@ -55,7 +55,7 @@ public partial class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
-        string? appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+        string? appLocation = Path.GetDirectoryName(System.AppContext.BaseDirectory);
         m_Host = Host.CreateDefaultBuilder()
             .ConfigureHostConfiguration(c =>
             {
