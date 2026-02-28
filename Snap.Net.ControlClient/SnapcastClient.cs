@@ -217,9 +217,8 @@ namespace SnapDotNet.ControlClient
                 catch(StreamJsonRpc.ConnectionLostException)
                 {
                     Debug("got connectionLostException, retrying connect...");
-                    ConnectAsync(m_Ip, m_Port).ConfigureAwait(false);
+                    await ConnectAsync(m_Ip, m_Port);
                 }
-                
             }
         }
 
