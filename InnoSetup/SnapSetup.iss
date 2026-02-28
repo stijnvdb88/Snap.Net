@@ -14,26 +14,26 @@
 
 
 [Files]
-Source: ..\bin\Release\Snap.Net.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Snap.Net.exe.config; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Snap.Net.ControlClient.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\bin\Release\Snap.Net.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Snap.Net.exe.config; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Snap.Net.ControlClient.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\bin\Release\SnapClient\*; DestDir: "{app}/SnapClient"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: ..\bin\Release\CliWrap.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\ControlzEx.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Gma.System.MouseKeyHook.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Hardcodet.Wpf.TaskbarNotification.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\MahApps.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\MessagePack.Annotations.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\MessagePack.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Microsoft.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Nerdbank.Streams.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\NLog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\StreamJsonRpc.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\NAudio.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Fizzler.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\Svg.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\bin\Release\System.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\bin\Release\CliWrap.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\ControlzEx.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Gma.System.MouseKeyHook.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Hardcodet.Wpf.TaskbarNotification.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\MahApps.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\MessagePack.Annotations.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\MessagePack.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Microsoft.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Nerdbank.Streams.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\NLog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\StreamJsonRpc.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\NAudio.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Fizzler.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\Svg.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\bin\Release\System.*.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SnapClient.Net\bin\Release\*.dll; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ..\SnapClient.Net\bin\Release\*.exe; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ..\Snap.Net.Broadcast\bin\Release\*.dll; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
