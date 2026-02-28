@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Release
         run: >
-          msbuild /p:Configuration=Release;VersionAssembly=${{ env.SNAP_VERSION }};AssemblyVersion=${{ env.SNAP_VERSION }};Version=${{ env.SNAP_VERSION }}
+          msbuild "/p:Configuration=Release;VersionAssembly=${{ env.SNAP_VERSION }};AssemblyVersion=${{ env.SNAP_VERSION }};Version=${{ env.SNAP_VERSION }}"
 
       - name: Install Inno Setup
         run: choco install innosetup --yes
