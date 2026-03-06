@@ -31,6 +31,12 @@ jobs:
       upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
     secrets: inherit
 
+  mobile:
+    uses: ./.github/workflows/build-mobile.yml
+    with:     
+      upload_artifacts: ${{ github.event_name == 'workflow_dispatch' }}
+    secrets: inherit
+
   package:
     if: github.event_name == 'workflow_dispatch'
     needs:
@@ -38,6 +44,7 @@ jobs:
       - windows
       - linux
       - macos
+      - mobile
     runs-on: ubuntu-latest
 
     steps:
