@@ -23,6 +23,9 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
+      - name: Install Mono (MSBuild)
+        run: brew install mono
+
       - name: Add Mono tools to PATH
         run: echo "/Library/Frameworks/Mono.framework/Versions/Current/Commands" >> $GITHUB_PATH
 
