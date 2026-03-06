@@ -23,24 +23,18 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
-      - name: Install Mono (MSBuild)
-        run: brew install mono
-
-      - name: Add Mono tools to PATH
-        run: echo "/Library/Frameworks/Mono.framework/Versions/Current/Commands" >> $GITHUB_PATH
-
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
      
       - name: Build Android
         run: |
-          msbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
+          dotnet msbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          msbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
+          dotnet msbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
             /t:Build
