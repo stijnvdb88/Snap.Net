@@ -9,7 +9,7 @@ on:
 jobs:
 
   build-macos:
-    runs-on: macos-13
+    runs-on: macos-latest
 
     steps:
       - name: Checkout (with submodules)
@@ -23,21 +23,23 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
-      - name: Add Mono MSBuild to PATH
-        run: echo "/Library/Frameworks/Mono.framework/Versions/Current/Commands" >> $GITHUB_PATH
+      - name: Install Xamarin workloads
+        run: |
+          dotnet workload install android
+          dotnet workload install ios
 
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
      
       - name: Build Android
         run: |
-          msbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
+          dotnet msbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          msbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
+          dotnet msbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
             /t:Build
