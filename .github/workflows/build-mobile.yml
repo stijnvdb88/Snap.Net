@@ -23,10 +23,6 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
-      - name: Select Xamarin SDK
-        run: |
-          $VM_ASSETS/select-xamarin-sdk-v2.sh --mono=6.12
-
       - name: Restore NuGet
         run: nuget restore Snap.Net.sln
      
