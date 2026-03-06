@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '7.0.x'
 
       - name: Restore NuGet
-        run: nuget restore Snap.Net.sln
+        run: dotnet restore Snap.Net.sln
      
       - name: Build Android
         run: |
