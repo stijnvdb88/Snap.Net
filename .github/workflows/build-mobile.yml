@@ -31,11 +31,6 @@ jobs:
           # brew install --cask xamarin-android
           # brew install --cask xamarin-ios
 
-      - name: Find msbuild
-        run: |
-          find /Library/Frameworks -name msbuild
-          ls /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild/
-
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
      
