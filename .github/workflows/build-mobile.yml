@@ -32,20 +32,21 @@ jobs:
       - name: Find msbuild
         run: |
           find /Library/Frameworks -name msbuild
+          ls /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild/
 
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
      
       - name: Build Android
         run: |
-          /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild \
+          dotnet /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild/MSBuild.dll \
             Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild \
+          dotnet /Library/Frameworks/Xamarin.iOS.framework/Versions/16.4.0.23/lib/msbuild/MSBuild.dll \
             Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
