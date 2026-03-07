@@ -33,27 +33,25 @@ jobs:
           brew install --cask xamarin-android
           brew install --cask xamarin-ios
 
-      - name: Check Xamarin MSBuild path
-        run: |
-          ls /Library/Frameworks/Mono.framework/External/xbuild/Xamarin/Android
-
       - name: Restore NuGet
-        run: dotnet restore Snap.Net.sln
+        run: |
+          /Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild \
+          Snap.Net.sln \
+          /t:Restore
      
       - name: Build Android
         run: |
-          dotnet build Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
+          /Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild \
+            Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
-            /p:Configuration=Release \
-            /p:MSBuildExtensionsPath=/Library/Frameworks/Mono.framework/External/xbuild
+            /p:Configuration=Release
 
       - name: Build iOS
         run: |
           dotnet build Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
-            /t:Build \
-            /p:MSBuildExtensionsPath=/Library/Frameworks/Mono.framework/External/xbuild
+            /t:Build 
 
       - name: Upload Android APK
         if: inputs.upload_artifacts == true
