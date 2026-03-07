@@ -18,7 +18,15 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup .NET 10
+      - name: Uninstall existing .NET 10
+        run: |
+          wget https://github.com/dotnet/cli-lab/releases/download/1.7.661902/dotnet-core-uninstall-osx-arm64.tar.gz
+          mkdir -p dotnet-core-uninstall
+          tar -zxf dotnet-core-uninstall.tar.gz -C ./dotnet-core-uninstall
+          cd dotnet-core-uninstall                    
+          ./dotnet-core-uninstall remove --all --sdk
+
+      - name: Setup .NET 7
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '7.0.x'
