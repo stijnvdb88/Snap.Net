@@ -18,18 +18,14 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Uninstall existing .NET 10
-        run: |
-          wget https://github.com/dotnet/cli-lab/releases/download/1.7.661902/dotnet-core-uninstall-osx-x64.tar.gz
-          mkdir -p dotnet-core-uninstall
-          tar -zxf dotnet-core-uninstall-osx-x64.tar.gz -C ./dotnet-core-uninstall
-          cd dotnet-core-uninstall                    
-          sudo ./dotnet-core-uninstall remove --all --sdk
-
       - name: Setup .NET 7
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '7.0.410'
+
+      - name: Force .NET 7
+        run: |
+          dotnet new globaljson --sdk-version 7.0.410
 
       - name: Install Xamarin toolchain
         run: |
