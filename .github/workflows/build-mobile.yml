@@ -20,9 +20,9 @@ jobs:
 
       - name: Uninstall existing .NET 10
         run: |
-          wget https://github.com/dotnet/cli-lab/releases/download/1.7.661902/dotnet-core-uninstall-osx-arm64.tar.gz
+          wget https://github.com/dotnet/cli-lab/releases/download/1.7.661902/dotnet-core-uninstall-osx-x64.tar.gz
           mkdir -p dotnet-core-uninstall
-          tar -zxf dotnet-core-uninstall.tar.gz -C ./dotnet-core-uninstall
+          tar -zxf dotnet-core-uninstall-osx-x64.tar.gz -C ./dotnet-core-uninstall
           cd dotnet-core-uninstall                    
           ./dotnet-core-uninstall remove --all --sdk
 
