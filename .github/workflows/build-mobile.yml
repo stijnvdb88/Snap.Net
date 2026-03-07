@@ -24,7 +24,7 @@ jobs:
           mkdir -p dotnet-core-uninstall
           tar -zxf dotnet-core-uninstall-osx-x64.tar.gz -C ./dotnet-core-uninstall
           cd dotnet-core-uninstall                    
-          ./dotnet-core-uninstall remove --all --sdk
+          sudo ./dotnet-core-uninstall remove --all --sdk
 
       - name: Setup .NET 7
         uses: actions/setup-dotnet@v4
