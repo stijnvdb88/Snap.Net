@@ -37,13 +37,13 @@ jobs:
      
       - name: Build Android
         run: |
-          msbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
+          xbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          msbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
+          xbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
             /t:Build
