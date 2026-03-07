@@ -38,14 +38,14 @@ jobs:
      
       - name: Build Android
         run: |
-          /Library/Frameworks/Mono.framework/Commands/msbuild \
+          dotnet /Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/msbuild/msbuild.dll \
             Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          /Library/Frameworks/Mono.framework/Commands/msbuild \
+          dotnet /Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/msbuild/msbuild.dll \
             Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
