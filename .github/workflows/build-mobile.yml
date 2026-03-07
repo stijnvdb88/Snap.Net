@@ -29,21 +29,24 @@ jobs:
           brew install --cask xamarin-android
           brew install --cask xamarin-ios
 
-      - name: Add Mono MSBuild
-        run: echo "/Library/Frameworks/Mono.framework/Versions/Current/Commands" >> $GITHUB_PATH
+      - name: Find msbuild
+        run: |
+          find /Library/Frameworks -name msbuild
 
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
      
       - name: Build Android
         run: |
-          xbuild Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
+          /Library/Frameworks/Mono.framework/Commands/msbuild \
+            Mobile/Mobile.Android/Snap.Net.Mobile.Android.csproj \
             /t:PackageForAndroid \
             /p:Configuration=Release
 
       - name: Build iOS
         run: |
-          xbuild Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
+          /Library/Frameworks/Mono.framework/Commands/msbuild \
+            Mobile/Mobile.iOS/Snap.Net.Mobile.iOS.csproj \
             /p:Configuration=Release \
             /p:Platform=iPhoneSimulator \
             /t:Build
