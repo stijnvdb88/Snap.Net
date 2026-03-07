@@ -25,11 +25,13 @@ jobs:
 
       - name: Install Xamarin toolchain
         run: |
-          dotnet workload install android
-          dotnet workload install ios
-          # brew install mono
-          # brew install --cask xamarin-android
-          # brew install --cask xamarin-ios
+          brew install mono
+          brew install --cask xamarin-android
+          brew install --cask xamarin-ios
+
+      - name: Configure Xamarin MSBuild path
+        run: |
+          echo "MSBuildExtensionsPath=/Library/Frameworks/Mono.framework/External/xbuild" >> $GITHUB_ENV
 
       - name: Restore NuGet
         run: dotnet restore Snap.Net.sln
