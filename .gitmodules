@@ -1,3 +1,6 @@
 [submodule "Snap.Net.SnapClient/NAudio.Flac"]
 	path = Snap.Net.SnapClient/NAudio.Flac
 	url = https://github.com/stijnvdb88/NAudio.Flac.git
+[submodule "snapcast"]
+	path = snapcast
+	url = https://github.com/snapcast/snapcast.git
