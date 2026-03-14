@@ -21,6 +21,37 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            vcpkg/installed
+            vcpkg/downloads
+          key: vcpkg-${{ runner.os }}-x64-windows-release-v1
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+      
+      - name: Setup vcpkg
+        id: vcpkg
+        uses: johnwason/vcpkg-action@v7
+        with:
+          pkgs: libflac libvorbis soxr opus boost-asio boost-beast
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+
+      - name: build snapcast
+        run: |
+          cd SnapClient/snapcast
+          mkdir build -Force
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-release
+          cmake --build . --config Release
+          cd ../..
+          Remove-Item snapclient.exe -ErrorAction Ignore
+          Copy-Item "snapcast/bin/Release/*" . -Recurse -Force
+          .\snapclient.exe --version
+
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
