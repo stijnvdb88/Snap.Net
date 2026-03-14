@@ -53,13 +53,13 @@ jobs:
         with:
           path: artifacts
 
-      - name: Create unified zip
-        run: |
-          cd artifacts
-          zip -r Snap.Net-${{ vars.SNAP_VERSION }}.zip .
+      # - name: Create unified zip
+      #   run: |
+      #     cd artifacts
+      #     zip -r Snap.Net-${{ vars.SNAP_VERSION }}.zip .
 
       - name: Upload final bundle
         uses: actions/upload-artifact@v4
         with:
-          name: Snap.Net
-          path: artifacts/Snap.Net-${{ vars.SNAP_VERSION }}.zip
+          name: Snap.Net-${{ vars.SNAP_VERSION }}
+          path: artifacts/
