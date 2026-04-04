@@ -38,7 +38,6 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
         <PackageReference Include="Semi.Avalonia" Version="11.3.7.3" />
         <PackageReference Include="Svg.Skia" Version="3.4.1" />
-        <PackageReference Include="Tmds.DBus.Protocol" Version="0.23.0" />
         <PackageReference Include="Xaml.Behaviors.Avalonia" Version="11.3.9.3" />
         <PackageReference Include="Zafiro.Avalonia" Version="48.1.6" />
     </ItemGroup>
