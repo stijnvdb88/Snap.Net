@@ -6,7 +6,8 @@ namespace Snap.Net.Avalonia.Broadcast
     public enum EDeviceType
     {
         Output,
-        Input
+        Input,
+        All
     }
     
     class Options

@@ -71,9 +71,14 @@
         <DependentUpon>StreamWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="Views\BroadcastWindow.axaml.cs">
+        <DependentUpon>BroadcastWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Snap.Net.Avalonia.Broadcast\Snap.Net.Avalonia.Broadcast.csproj" />
       <ProjectReference Include="..\Snap.Net.ControlClient\Snap.Net.ControlClient.csproj" />
     </ItemGroup>
 </Project>

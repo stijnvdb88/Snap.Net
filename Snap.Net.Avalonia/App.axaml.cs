@@ -21,6 +21,7 @@ using Semi.Avalonia;
 using Snap.Net.Avalonia.Contracts.Services;
 using Snap.Net.Avalonia.Enums;
 using Snap.Net.Avalonia.Services;
+using Snap.Net.Avalonia.ViewModels.Broadcast;
 using Snap.Net.Avalonia.ViewModels.ControlClient;
 
 namespace Snap.Net.Avalonia;
@@ -77,12 +78,15 @@ public partial class App : Application
         
         // Core services
         services.AddSingleton<IControlClientService, ControlClientService>();
+        services.AddSingleton<IBroadcastService, BroadcastService>();
         
         services.AddTransient<AppViewModel>();
 
         services.AddTransient<GroupViewModel>();
         services.AddTransient<GroupViewModel>();
 
+        services.AddTransient<AudioDeviceViewModel>();
+        
         services.AddTransient<FlyoutWindow>();
         services.AddTransient<FlyoutWindowViewModel>();
 
@@ -97,6 +101,9 @@ public partial class App : Application
 
         services.AddTransient<SettingsWindow>();
         services.AddTransient<SettingsWindowViewModel>();
+        
+        services.AddTransient<BroadcastWindow>();
+        services.AddTransient<BroadcastWindowViewModel>();
         
         services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<ISettingsService, SettingsService>();

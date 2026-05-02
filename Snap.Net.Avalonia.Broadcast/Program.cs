@@ -39,8 +39,8 @@ class Program
 
     private static void _PrintDevices(EDeviceType type)
     {
-        List<IAudioDevice> devices = Device.GetDevices(type);
-        for (int i = 0; i < devices.Count; i++)
+        IAudioDevice[] devices = Device.GetDevices(type).ToArray();
+        for (int i = 0; i < devices.Length; i++)
         {
             Console.WriteLine($"{i}: {devices[i].FriendlyName}");
         }

@@ -4,7 +4,7 @@ namespace Snap.Net.Avalonia.Broadcast;
 
 public class Device
 {
-    public static List<IAudioDevice> GetDevices(EDeviceType deviceType = EDeviceType.Output)
+    public static IEnumerable<IAudioDevice> GetDevices(EDeviceType deviceType = EDeviceType.All)
     {
         if (OperatingSystem.IsWindows())
         {
@@ -14,9 +14,9 @@ public class Device
         return new List<IAudioDevice>();
     }
     
-    public static IAudioDevice? GetDevice(int index, EDeviceType deviceType = EDeviceType.Output)
+    public static IAudioDevice? GetDevice(int index, EDeviceType deviceType = EDeviceType.All)
     {
-        List<IAudioDevice> devices = GetDevices(deviceType);
+        List<IAudioDevice> devices = GetDevices(deviceType).ToList();
         if (index < devices.Count)
         {
             return devices[index];
@@ -26,14 +26,7 @@ public class Device
     
     public static IAudioDevice? GetDevice(string id)
     {
-        List<IAudioDevice> devices = GetDevices();
-        for (int i = 0; i < devices.Count; i++)
-        {
-            if (devices[i].Id == id)
-            {
-                return devices[i];
-            }
-        }
-        return null;
+        IEnumerable<IAudioDevice> devices = GetDevices();
+        return devices.SingleOrDefault(x => x.Id == id);
     }
 }

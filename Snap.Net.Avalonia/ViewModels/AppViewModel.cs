@@ -21,6 +21,7 @@ public partial class AppViewModel : ViewModelBase
     private ISettingsService m_SettingsService;
     private FlyoutWindow? m_FlyoutWindow = null;
     private SettingsWindow? m_SettingsWindow = null;
+    private BroadcastWindow? m_BroadcastWindow = null;
     
     [ObservableProperty]
     private bool m_AddOpenFlyoutEntry = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
@@ -71,6 +72,15 @@ public partial class AppViewModel : ViewModelBase
         m_SettingsWindow.DataContext = m_ServiceProvider.GetService(typeof(SettingsWindowViewModel));
         m_SettingsWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         m_SettingsWindow.Show();
+    }
+    
+    [RelayCommand]
+    private void ShowBroadcastWindow()
+    {
+        m_BroadcastWindow = new BroadcastWindow();
+        m_BroadcastWindow.DataContext = m_ServiceProvider.GetService(typeof(BroadcastWindowViewModel));
+        m_BroadcastWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        m_BroadcastWindow.Show();
     }
     
     [RelayCommand]

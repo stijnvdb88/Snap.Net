@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
+        xmlns:viewModels1="clr-namespace:Snap.Net.Avalonia.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Snap.Net.Avalonia.Views.BroadcastWindow"
+        x:DataType="viewModels1:BroadcastWindowViewModel"
+        Icon="/Assets/snapcast.ico"
+        Title="Settings"
+        CanResize="False"
+        SizeToContent="WidthAndHeight">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels1:BroadcastWindowViewModel />
+    </Design.DataContext>
+    <DockPanel Margin="10">
+
+        <!-- Header + settings in one Grid so columns are shared -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,10">
+        
+            <!-- Header row -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Auto-start" Margin="0,0,5,5"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Device" Margin="5,0,5,5"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Port" Margin="5,0,5,5" Grid.ColumnSpan="2"/>
+
+            <!-- Settings row -->
+            <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
+                      Width="300"
+                      ItemsSource="{Binding AudioDeviceViewModels}"
+                      HorizontalAlignment="Stretch"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Text="4953" Width="60" Margin="5,0,5,0"/>
+            <Button Grid.Row="1" Grid.Column="3" Margin="5,0,0,0" Width="32" Height="32"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        </Grid>
+
+        <!-- Close button -->
+        <Button DockPanel.Dock="Bottom" Content="Close"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                Command="{Binding SaveCommand}"
+                HorizontalAlignment="Right"/>
+
+    </DockPanel>
+</Window>

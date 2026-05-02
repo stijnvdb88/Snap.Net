@@ -19,10 +19,23 @@ public class WindowsDevice : IAudioDevice
     public WindowsDevice(MMDevice device)
     {
         m_Device = device;
-        m_Capture = m_Device.DataFlow == DataFlow.Render ? new WasapiLoopbackCapture(m_Device) : new WasapiCapture(m_Device);
-        m_Capture.DataAvailable += _OnDataAvailable;
     }
 
+    private static DataFlow TodDataFlow(EDeviceType deviceType)
+    {
+        switch (deviceType)
+        {
+            case EDeviceType.Output:
+                return DataFlow.Render;
+            case EDeviceType.Input:
+                return DataFlow.Capture;
+            case EDeviceType.All:
+                return DataFlow.All;
+            default:
+                return DataFlow.Render;
+        }
+    }
+    
     private void _OnDataAvailable(object? sender, WaveInEventArgs e)
     {
         byte[] data = _ToPcm16(e.Buffer, e.BytesRecorded, m_Capture.WaveFormat);
@@ -73,6 +86,8 @@ public class WindowsDevice : IAudioDevice
     
     public void Start()
     {
+        m_Capture = m_Device.DataFlow == DataFlow.Render ? new WasapiLoopbackCapture(m_Device) : new WasapiCapture(m_Device);
+        m_Capture.DataAvailable += _OnDataAvailable;
         m_Capture.StartRecording();
     }
 
@@ -84,11 +99,14 @@ public class WindowsDevice : IAudioDevice
     
     public static List<IAudioDevice> GetWasapiDevices(EDeviceType deviceType = EDeviceType.Output)
     {
-        DataFlow dataFlow = deviceType == EDeviceType.Output ? DataFlow.Render : DataFlow.Capture;
+        DataFlow dataFlow = TodDataFlow(deviceType);
         List<IAudioDevice> list = new List<IAudioDevice>();
         MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
 
-        list.Add(new WindowsDevice(enumerator.GetDefaultAudioEndpoint(dataFlow, Role.Multimedia)));
+        DataFlow defaultDeviceDataFlow = deviceType ==  EDeviceType.Input ? DataFlow.Capture : DataFlow.Render;
+        int x = 0;
+        
+        list.Add(new WindowsDevice(enumerator.GetDefaultAudioEndpoint(defaultDeviceDataFlow, Role.Multimedia)));
 
         foreach (MMDevice device in enumerator.EnumerateAudioEndPoints(dataFlow, DeviceState.Active))
         {
