@@ -302,6 +302,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Snap.Net.Broadcast.Core\Snap.Net.Broadcast.Core.csproj">
+      <Project>{6f3ced26-cdba-4db3-a318-2b987348586c}</Project>
+      <Name>Snap.Net.Broadcast.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="Snap.Net.Broadcast\Snap.Net.Broadcast.csproj">
       <Project>{cdf033f6-712c-4762-b28a-cd0a365e651d}</Project>
       <Name>Snap.Net.Broadcast</Name>

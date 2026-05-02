@@ -87,7 +87,7 @@ namespace SnapDotNet.Broadcast
             MMDevice device = Device.GetDevice(settings.DeviceUniqueId);
             if (device != null)
             {
-                m_BroadcastController = new BroadcastController(device);
+                m_BroadcastController = new BroadcastController(new Device(device));
                 m_BroadcastController.OnConnected += _OnBroadcastControllerConnected;
                 m_BroadcastController.OnCapturingAudio += _OnBroadcastAudioCaptureStateChanged;
                 string address = SnapSettings.Server;

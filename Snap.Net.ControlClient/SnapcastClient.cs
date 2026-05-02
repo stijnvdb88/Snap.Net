@@ -71,7 +71,7 @@ namespace SnapDotNet.ControlClient
             try
             {
                 //if (m_TcpClient.ConnectAsync(ip, port).Wait(timeout) == false)
-                var connectAsync = m_TcpClient.ConnectAsync(ip, port);
+                Task connectAsync = m_TcpClient.ConnectAsync(ip, port);
                 //await (m_TcpClient.ConnectAsync(ip, port)).
                 if((await Task.WhenAny(connectAsync, Task.Delay(timeout)) != connectAsync) || string.IsNullOrEmpty(ip))
                 {
