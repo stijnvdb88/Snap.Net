@@ -14,14 +14,12 @@ namespace Snap.Net.Broadcast
     {
         private MMDevice m_Device;
         private WasapiCapture m_Capture = null;
-        private ISampleFormat m_SampleFormat;
         
         public Device(MMDevice device)
         {
             m_Device = device;
             m_Capture = m_Device.DataFlow == DataFlow.Render ? new WasapiLoopbackCapture(m_Device) : new WasapiCapture(m_Device);
             m_Capture.DataAvailable += _OnDataAvailable;
-            m_SampleFormat = new SampleFormat(m_Capture.WaveFormat);
         }
 
         private void _OnDataAvailable(object sender, WaveInEventArgs e)
@@ -120,7 +118,6 @@ namespace Snap.Net.Broadcast
             }
         }
 
-        public ISampleFormat SampleFormat => m_SampleFormat;
         public string FriendlyName => m_Device.FriendlyName;
         public event EventHandler<byte[]> OnPcm16DataAvailable;
         public void Start()
