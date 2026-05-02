@@ -15,6 +15,10 @@ namespace Snap.Net.Broadcast
         private MMDevice m_Device;
         private WasapiCapture m_Capture = null;
         
+        public string Id => m_Device.ID;
+        public string FriendlyName => m_Device.FriendlyName;
+        public event EventHandler<byte[]> OnPcm16DataAvailable;
+        
         public Device(MMDevice device)
         {
             m_Device = device;
@@ -118,8 +122,7 @@ namespace Snap.Net.Broadcast
             }
         }
 
-        public string FriendlyName => m_Device.FriendlyName;
-        public event EventHandler<byte[]> OnPcm16DataAvailable;
+        
         public void Start()
         {
             m_Capture.StartRecording();
