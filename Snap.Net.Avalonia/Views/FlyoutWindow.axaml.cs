@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using Avalonia.Styling;
 using Snap.Net.Avalonia.Enums;
 using Snap.Net.Avalonia.Helpers;
@@ -59,12 +60,23 @@ public partial class FlyoutWindow : Window, ICloseable
 
     private void _Reposition(int newWindowWidth = 0)
     {
+        Screen screen = Screens.Primary!;
+        double scaling = screen.Scaling; 
+
         if (newWindowWidth == 0)
         {
             newWindowWidth = (int)Bounds.Width;
         }
-        PixelPoint panelPosition = m_PanelPosition == EPanelPosition.BottomRight ? Screens.Primary!.WorkingArea.BottomRight : Screens.Primary!.WorkingArea.TopRight;
-        int minY = m_PanelPosition == EPanelPosition.BottomRight ? (int)Height : 0;
-        Position = panelPosition - new PixelVector(newWindowWidth, minY);
+
+        int physicalWidth  = (int)(newWindowWidth * scaling);
+        int physicalHeight = (int)(Height * scaling);
+
+        PixelPoint panelPosition = m_PanelPosition == EPanelPosition.BottomRight
+            ? screen.WorkingArea.BottomRight
+            : screen.WorkingArea.TopRight;
+
+        int minY = m_PanelPosition == EPanelPosition.BottomRight ? physicalHeight : 0;
+
+        Position = panelPosition - new PixelVector(physicalWidth, minY);
     }
 }
