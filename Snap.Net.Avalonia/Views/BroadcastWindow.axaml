@@ -29,14 +29,33 @@
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Port" Margin="5,0,5,5" Grid.ColumnSpan="2"/>
 
             <!-- Settings row -->
-            <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"/>
+            <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" IsChecked="{Binding AutoStart}" />
             <ComboBox Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
                       Width="300"
+                      SelectedItem="{Binding SelectedAudioDeviceViewModel}"
                       ItemsSource="{Binding AudioDeviceViewModels}"
                       HorizontalAlignment="Stretch"/>
             <TextBox Grid.Row="1" Grid.Column="2" Text="4953" Width="60" Margin="5,0,5,0"/>
-            <Button Grid.Row="1" Grid.Column="3" Margin="5,0,0,0" Width="32" Height="32"
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <ToggleButton Grid.Row="1" Grid.Column="3" Margin="0,0,0,0" Width="32" Height="32"
+                          VerticalAlignment="Center"
+                          Padding="0"
+                          IsChecked="{Binding IsBroadcasting}">
+                <Panel>
+                    <!-- Off state: circle with diagonal line through it -->
+                    <Path IsVisible="{Binding !IsBroadcasting}"
+                          Stroke="Gray" StrokeThickness="3"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Data="M 12,0 A 12,12 0 1 1 12,24 A 12,12 0 1 1 12,0 M 3.5,3.5 L 20.5,20.5"/>
+
+                    <!-- On state: broadcast/wifi-style radiating waves icon -->
+                    <Path IsVisible="{Binding IsBroadcasting}"
+                          Stroke="Orange" StrokeThickness="3" Fill="Transparent"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Data="M 12,18 A 2,2 0 1 1 12,22 A 2,2 0 1 1 12,18
+                    M 7,14 A 7,7 0 0 1 17,14
+                    M 3,10 A 12,12 0 0 1 21,10"/>
+                </Panel>
+            </ToggleButton>
         </Grid>
 
         <!-- Close button -->

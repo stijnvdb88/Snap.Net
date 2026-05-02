@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Snap.Net.Broadcast
@@ -17,35 +18,39 @@ namespace Snap.Net.Broadcast
         public event Action<bool, string> OnCapturingAudio = null;
 
         private bool m_CapturingAudio = false;
-        private bool m_Quit = false;
+        
+        private CancellationTokenSource m_Cts = new CancellationTokenSource();
 
         public BroadcastController(IAudioDevice device)
         {
             m_Device = device;
         }
 
-        public async Task RunAsync(string address, int port)
+        public async Task RunAsync(string address, int port, CancellationToken cancellationToken = default)
         {
             m_Connection = new ClientConnection(address, port);
             m_Connection.OnConnected += _OnConnected;
             await m_Connection.ConnectAsync();
-
+            m_Cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             
             OnCapturingAudio?.Invoke(false, m_Device.FriendlyName);
             m_Device.Start();
             m_Device.OnPcm16DataAvailable += _CaptureOnDataAvailable;
-            while (m_Quit == false)
+            try
             {
-                await Task.Delay(100);
+                await Task.Delay(Timeout.Infinite, m_Cts.Token);
             }
-
-            m_Connection.Dispose();
-            m_Device.Stop();
+            catch (OperationCanceledException) { }
+            finally
+            {
+                m_Connection.Dispose();
+                m_Device.Stop();
+            }
         }
 
         public void Stop()
         {
-            m_Quit = true;
+            m_Cts?.Cancel();
             m_Connection.Stop();
         }
 

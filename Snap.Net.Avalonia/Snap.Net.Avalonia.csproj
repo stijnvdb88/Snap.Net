@@ -81,4 +81,8 @@
       <ProjectReference Include="..\Snap.Net.Avalonia.Broadcast\Snap.Net.Avalonia.Broadcast.csproj" />
       <ProjectReference Include="..\Snap.Net.ControlClient\Snap.Net.ControlClient.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Assets\snapcast_r.ico" />
+    </ItemGroup>
 </Project>

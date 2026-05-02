@@ -13,7 +13,7 @@
      </Application.DataTemplates>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/snapcast.ico" 
+            <TrayIcon Icon="{Binding TrayIcon}"
                       ToolTipText="Snap.Net" 
                       Command="{Binding ShowFlyoutCommand}">
                 <TrayIcon.Menu>

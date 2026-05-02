@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,9 +20,11 @@ public partial class AppViewModel : ViewModelBase
     private IServiceProvider m_ServiceProvider;
     private IControlClientService m_ControlClientService;
     private ISettingsService m_SettingsService;
+    private IBroadcastService m_BroadcastService;
     private FlyoutWindow? m_FlyoutWindow = null;
     private SettingsWindow? m_SettingsWindow = null;
     private BroadcastWindow? m_BroadcastWindow = null;
+    
     
     [ObservableProperty]
     private bool m_AddOpenFlyoutEntry = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
@@ -29,14 +32,29 @@ public partial class AppViewModel : ViewModelBase
     [ObservableProperty]
     private string m_OpenFlyoutEntryLabel = "Open";
     
+    [ObservableProperty]
+    private WindowIcon m_TrayIcon = new WindowIcon(
+        AssetLoader.Open(new System.Uri("avares://Snap.Net.Avalonia/Assets/snapcast.ico")));
+
+    
     public AppViewModel(
         IServiceProvider serviceProvider
         , IControlClientService controlClientService
+        , IBroadcastService broadcastService
         , ISettingsService settingsService)
     {
         m_ServiceProvider = serviceProvider;
         m_ControlClientService = controlClientService;
         m_SettingsService = settingsService;
+        m_BroadcastService = broadcastService;
+        m_BroadcastService.OnIsBroadcastingChanged += _OnBroadcastingChanged;
+    }
+
+    private void _OnBroadcastingChanged(bool broadcasting)
+    {
+        string iconPath = broadcasting ? "snapcast_r.ico" : "snapcast.ico";
+        TrayIcon = new WindowIcon(
+            AssetLoader.Open(new System.Uri($"avares://Snap.Net.Avalonia/Assets/{iconPath}")));
     }
 
     [RelayCommand]

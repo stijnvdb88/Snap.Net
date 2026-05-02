@@ -9,11 +9,15 @@ public partial class AudioDeviceViewModel : ObservableObject
 
     [ObservableProperty]
     private string m_FriendlyName;
+
+    [ObservableProperty]
+    private string m_Id;
     
     public AudioDeviceViewModel(IAudioDevice audioDevice)
     {
         m_AudioDevice = audioDevice;
         FriendlyName = m_AudioDevice.FriendlyName;
+        Id = m_AudioDevice.Id;
     }
 
     public override string ToString()

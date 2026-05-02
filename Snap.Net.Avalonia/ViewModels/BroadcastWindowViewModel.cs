@@ -27,11 +27,17 @@ public partial class BroadcastWindowViewModel : ViewModelBase
     [ObservableProperty]
     private int? m_Port;
 
-    public ObservableCollection<AudioDeviceViewModel> AudioDeviceViewModels { get; } =
-        new ObservableCollection<AudioDeviceViewModel>();
+    [ObservableProperty]
+    private bool m_AutoStart;
+
+    [ObservableProperty] 
+    private bool m_IsBroadcasting;
     
     [ObservableProperty]
     private AudioDeviceViewModel? m_SelectedAudioDeviceViewModel;
+    
+    public ObservableCollection<AudioDeviceViewModel> AudioDeviceViewModels { get; } =
+        new ObservableCollection<AudioDeviceViewModel>();
 
 #if DEBUG
     public BroadcastWindowViewModel()
@@ -46,25 +52,28 @@ public partial class BroadcastWindowViewModel : ViewModelBase
         m_SettingsService = settingsService;
         m_BroadcastService = broadcastService;
         Port = m_SettingsService.Get<int>(SettingsKeys.BROADCAST_PORT, 4953);
+        AutoStart = m_SettingsService.Get<bool>(SettingsKeys.BROADCAST_AUTO_START, false);
+        string? selectedId = m_SettingsService.Get<string>(SettingsKeys.BROADCAST_DEVICE_ID, string.Empty);
 
         IEnumerable<IAudioDevice> audioDevices = m_BroadcastService.GetAudioDevices(EDeviceType.All);
         foreach (IAudioDevice audioDevice in audioDevices)
         {
-            AudioDeviceViewModels.Add(ActivatorUtilities.CreateInstance<AudioDeviceViewModel>(m_ServiceProvider, audioDevice));
+            AudioDeviceViewModel audioDeviceViewModel =
+                ActivatorUtilities.CreateInstance<AudioDeviceViewModel>(m_ServiceProvider, audioDevice);
+            AudioDeviceViewModels.Add(audioDeviceViewModel);
+            if (audioDevice.Id == selectedId)
+            {
+                SelectedAudioDeviceViewModel = audioDeviceViewModel;
+            }
         }
     }
 
     [RelayCommand]
     public void Save(ICloseable closeable)
     {
-        // m_SettingsService.Set(SettingsKeys.HOST, Host);
+        m_SettingsService.Set(SettingsKeys.BROADCAST_DEVICE_ID, SelectedAudioDeviceViewModel?.Id);
         m_SettingsService.Set(SettingsKeys.BROADCAST_PORT, Port);
-        // m_SettingsService.Set(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, ShowDisconnectedClients);
-        // m_SettingsService.Set(SettingsKeys.PANEL_POSITION, PanelPosition);
-        // if (string.IsNullOrEmpty(Host) == false && Port != null)
-        // {
-        //     m_ControlClientService.InitializeAsync(Host, (int)Port).ConfigureAwait(false);    
-        // }
+        m_SettingsService.Set(SettingsKeys.BROADCAST_AUTO_START, AutoStart);
         closeable.Close();
     }
 }

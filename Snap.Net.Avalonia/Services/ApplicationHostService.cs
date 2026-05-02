@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Snap.Net.Avalonia.Consts;
 using Snap.Net.Avalonia.Contracts.Services;
 using Snap.Net.Avalonia.ViewModels;
+using Snap.Net.Broadcast;
 
 namespace Snap.Net.Avalonia.Services;
 
@@ -17,16 +18,19 @@ public class ApplicationHostService : IHostedService
 {
     private readonly IServiceProvider m_ServiceProvider;
     private readonly IControlClientService m_ControlClientService;
+    private readonly IBroadcastService m_BroadcastService;
     private readonly ISettingsService m_SettingsService;
     
     public ApplicationHostService(
         IServiceProvider serviceProvider,
         IControlClientService controlClientService,
+        IBroadcastService broadcastService,
         ISettingsService settingsService
         )
     {
         m_ServiceProvider = serviceProvider;
         m_ControlClientService = controlClientService;
+        m_BroadcastService = broadcastService;
         m_SettingsService = settingsService;
     }
     
@@ -48,7 +52,21 @@ public class ApplicationHostService : IHostedService
         {
             await m_ControlClientService.InitializeAsync(
                 host, 
-                m_SettingsService.Get<int>(SettingsKeys.PORT, 1705));    
+                m_SettingsService.Get<int>(SettingsKeys.PORT, 1705));
+
+            if (m_SettingsService.Get<bool>(SettingsKeys.BROADCAST_AUTO_START))
+            {
+                string? broadcastDeviceId = m_SettingsService.Get<string>(SettingsKeys.BROADCAST_DEVICE_ID);
+                if (string.IsNullOrEmpty(broadcastDeviceId) == false)
+                {
+                    IAudioDevice? audioDevice =
+                        m_BroadcastService.GetAudioDevice(broadcastDeviceId);
+                    if (audioDevice != null)
+                    {
+                        await m_BroadcastService.StartBroadcast(host, m_SettingsService.Get<int>(SettingsKeys.BROADCAST_PORT), audioDevice).ConfigureAwait(false);
+                    }
+                }
+            }
         }
     }
 
