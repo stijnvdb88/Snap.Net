@@ -92,3 +92,9 @@ public partial class AppViewModel : ViewModelBase
         }
     }
 }
+
+
+        - name: Restore
+          run: |
+            dotnet restore Snap.Net.SnapClient/Snap.Net.SnapClient.csproj
+            dotnet restore Mobile/Mobile/Snap.Net.Mobile.csproj

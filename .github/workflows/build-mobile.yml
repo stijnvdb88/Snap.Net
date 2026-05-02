@@ -81,7 +81,9 @@ jobs:
           sudo installer -pkg xamarin.pkg -target /
 
       - name: Restore
-        run: dotnet restore Snap.Net.sln
+        run: |
+          dotnet restore Snap.Net.SnapClient/Snap.Net.SnapClient.csproj
+          dotnet restore Mobile/Mobile/Snap.Net.Mobile.csproj
 
       - name: Restore iOS project
         run: |
