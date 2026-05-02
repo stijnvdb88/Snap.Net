@@ -15,9 +15,13 @@
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
     </ItemGroup>
     
-    <!-- Windows-only packages -->
-    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win' Or $([MSBuild]::IsOSPlatform('Windows'))">
+    <!-- Windows-only  -->
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
         <PackageReference Include="NAudio" Version="2.2.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
+        <Compile Remove="WindowsDevice.cs" />
     </ItemGroup>
 
 </Project>
