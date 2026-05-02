@@ -6,11 +6,12 @@ public class Device
 {
     public static IEnumerable<IAudioDevice> GetDevices(EDeviceType deviceType = EDeviceType.All)
     {
+#if WINDOWS
         if (OperatingSystem.IsWindows())
         {
             return WindowsDevice.GetWasapiDevices(deviceType);
         }
-
+#endif
         return new List<IAudioDevice>();
     }
     
