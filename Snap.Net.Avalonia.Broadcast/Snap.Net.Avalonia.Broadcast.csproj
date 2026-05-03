@@ -28,4 +28,5 @@
         <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
     </PropertyGroup>
 
+    <!-- Not excluding Linux-only classes the same way as they don't actually use any Linux-only apis like Windows does -->
 </Project>
