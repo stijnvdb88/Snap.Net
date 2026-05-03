@@ -14,7 +14,9 @@ public interface IBroadcastService
     IAudioDevice? GetAudioDevice(string id);
     event Action<bool> OnIsBroadcastingChanged;
     event Action<bool> OnIsConnectedChanged;
-    Task StartBroadcast(string host, int port, IAudioDevice audioDevice);
+    Task StartBroadcast(string host, int port, string deviceId);
     
     void StopBroadcast();
+    
+    bool IsConnected { get; }
 }

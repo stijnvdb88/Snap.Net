@@ -55,6 +55,8 @@ namespace Snap.Net.Broadcast
         public void Stop()
         {
             m_Quit = true;
+            m_Socket.Close();
+            m_Stream?.Close();
         }
 
         public void Write(byte[] data, int length)
@@ -65,9 +67,12 @@ namespace Snap.Net.Broadcast
             }
             catch (Exception e)
             {
-                Console.WriteLine($"ClientConnection.Write exception: {e.Message}, starting reconnect loop");
-                Task.Run(ConnectAsync).ConfigureAwait(false);
-                OnConnected?.Invoke(false);
+                if (!m_Quit)
+                {
+                    Console.WriteLine($"ClientConnection.Write exception: {e.Message}, starting reconnect loop");
+                    Task.Run(ConnectAsync).ConfigureAwait(false);
+                    OnConnected?.Invoke(false);
+                }
             }
         }
 

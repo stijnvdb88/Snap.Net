@@ -25,6 +25,12 @@ public partial class AppViewModel : ViewModelBase
     private SettingsWindow? m_SettingsWindow = null;
     private BroadcastWindow? m_BroadcastWindow = null;
     
+    private static readonly WindowIcon s_DefaultIcon = new WindowIcon(
+        AssetLoader.Open(new System.Uri("avares://Snap.Net.Avalonia/Assets/snapcast.ico")));
+    private static readonly WindowIcon s_BroadcastingIcon = new WindowIcon(
+        AssetLoader.Open(new System.Uri("avares://Snap.Net.Avalonia/Assets/snapcast_r.ico")));
+
+    
     
     [ObservableProperty]
     private bool m_AddOpenFlyoutEntry = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
@@ -32,10 +38,7 @@ public partial class AppViewModel : ViewModelBase
     [ObservableProperty]
     private string m_OpenFlyoutEntryLabel = "Open";
     
-    [ObservableProperty]
-    private WindowIcon m_TrayIcon = new WindowIcon(
-        AssetLoader.Open(new System.Uri("avares://Snap.Net.Avalonia/Assets/snapcast.ico")));
-
+    public event Action<bool>? OnTrayIconChanged;
     
     public AppViewModel(
         IServiceProvider serviceProvider
@@ -48,13 +51,20 @@ public partial class AppViewModel : ViewModelBase
         m_SettingsService = settingsService;
         m_BroadcastService = broadcastService;
         m_BroadcastService.OnIsBroadcastingChanged += _OnBroadcastingChanged;
+        m_BroadcastService.OnIsConnectedChanged += OnBroadcastConnectedChanged;
+    }
+
+    private void OnBroadcastConnectedChanged(bool connected)
+    {
+        if (connected == false)
+        {
+            OnTrayIconChanged?.Invoke(false);
+        }
     }
 
     private void _OnBroadcastingChanged(bool broadcasting)
     {
-        string iconPath = broadcasting ? "snapcast_r.ico" : "snapcast.ico";
-        TrayIcon = new WindowIcon(
-            AssetLoader.Open(new System.Uri($"avares://Snap.Net.Avalonia/Assets/{iconPath}")));
+        OnTrayIconChanged?.Invoke(broadcasting);
     }
 
     [RelayCommand]

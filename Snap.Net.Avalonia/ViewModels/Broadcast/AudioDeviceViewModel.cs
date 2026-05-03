@@ -12,6 +12,8 @@ public partial class AudioDeviceViewModel : ObservableObject
 
     [ObservableProperty]
     private string m_Id;
+
+    public IAudioDevice AudioDevice => m_AudioDevice;
     
     public AudioDeviceViewModel(IAudioDevice audioDevice)
     {

@@ -59,12 +59,7 @@ public class ApplicationHostService : IHostedService
                 string? broadcastDeviceId = m_SettingsService.Get<string>(SettingsKeys.BROADCAST_DEVICE_ID);
                 if (string.IsNullOrEmpty(broadcastDeviceId) == false)
                 {
-                    IAudioDevice? audioDevice =
-                        m_BroadcastService.GetAudioDevice(broadcastDeviceId);
-                    if (audioDevice != null)
-                    {
-                        await m_BroadcastService.StartBroadcast(host, m_SettingsService.Get<int>(SettingsKeys.BROADCAST_PORT), audioDevice).ConfigureAwait(false);
-                    }
+                    await m_BroadcastService.StartBroadcast(host, m_SettingsService.Get<int>(SettingsKeys.BROADCAST_PORT), broadcastDeviceId).ConfigureAwait(false);
                 }
             }
         }

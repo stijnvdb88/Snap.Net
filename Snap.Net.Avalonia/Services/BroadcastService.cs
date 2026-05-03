@@ -17,6 +17,8 @@ public class BroadcastService : IBroadcastService
     public event Action<bool> OnIsBroadcastingChanged = null;
     public event Action<bool> OnIsConnectedChanged = null;
     
+    public bool IsConnected { get; private set; }
+    
     public IAudioDevice? GetAudioDevice(string id)
     {
         return Device.GetDevice(id);
@@ -26,28 +28,32 @@ public class BroadcastService : IBroadcastService
         return Device.GetDevices(deviceType);
     }
 
-    public async Task StartBroadcast(string host, int port, IAudioDevice audioDevice)
+    public async Task StartBroadcast(string host, int port, string deviceId)
     {
         await _StopBroadcast();
         m_BroadcastCancellationTokenSource = new CancellationTokenSource();
-        m_BroadcastTask = _RunBroadcast(host, port, audioDevice);
+        m_BroadcastTask = Task.Run(() => _RunBroadcast(host, port, deviceId));
         _ = m_BroadcastTask.ContinueWith(t =>
         {
+            IsConnected = false;
             OnIsConnectedChanged?.Invoke(false);
         }, TaskScheduler.Default);
     }
 
-    private async Task _RunBroadcast(string host, int port, IAudioDevice audioDevice)
+    private async Task _RunBroadcast(string host, int port, string deviceId)
     {
         try
         {
+            IAudioDevice? device =  Device.GetDevice(deviceId);
+            IsConnected = true;
             OnIsConnectedChanged?.Invoke(true);
-            m_BroadcastController = new BroadcastController(audioDevice);
+            m_BroadcastController = new BroadcastController(device);
             m_BroadcastController.OnCapturingAudio += _OnCapturingAudio;
             await m_BroadcastController.RunAsync(host, port);
         }
         finally
         {
+            IsConnected = false;
             OnIsConnectedChanged?.Invoke(false);
         }
     }

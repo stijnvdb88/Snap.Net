@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +33,7 @@ public partial class BroadcastWindowViewModel : ViewModelBase
     private bool m_AutoStart;
 
     [ObservableProperty] 
-    private bool m_IsBroadcasting;
+    private bool m_IsBroadcastConnected;
     
     [ObservableProperty]
     private AudioDeviceViewModel? m_SelectedAudioDeviceViewModel;
@@ -54,6 +56,8 @@ public partial class BroadcastWindowViewModel : ViewModelBase
         Port = m_SettingsService.Get<int>(SettingsKeys.BROADCAST_PORT, 4953);
         AutoStart = m_SettingsService.Get<bool>(SettingsKeys.BROADCAST_AUTO_START, false);
         string? selectedId = m_SettingsService.Get<string>(SettingsKeys.BROADCAST_DEVICE_ID, string.Empty);
+        IsBroadcastConnected = m_BroadcastService.IsConnected;
+        m_BroadcastService.OnIsConnectedChanged += OnBroadcastConnectionStateChanged;
 
         IEnumerable<IAudioDevice> audioDevices = m_BroadcastService.GetAudioDevices(EDeviceType.All);
         foreach (IAudioDevice audioDevice in audioDevices)
@@ -66,6 +70,30 @@ public partial class BroadcastWindowViewModel : ViewModelBase
                 SelectedAudioDeviceViewModel = audioDeviceViewModel;
             }
         }
+    }
+
+    [RelayCommand]
+    private async Task ToggleBroadcastAsync()
+    {
+        if (IsBroadcastConnected)
+        {
+            m_BroadcastService.StopBroadcast();
+        }
+        else
+        {
+            string? host = m_SettingsService.Get<string>(SettingsKeys.HOST);
+            if (string.IsNullOrEmpty(host) == false && Port != null && SelectedAudioDeviceViewModel != null)
+            {
+                int port = (int)Port;
+                await m_BroadcastService.StartBroadcast(host, port, SelectedAudioDeviceViewModel.Id);
+            }
+        }
+    }
+
+    private void OnBroadcastConnectionStateChanged(bool connected)
+    {
+        Dispatcher.UIThread.Post(() => IsBroadcastConnected = connected);
+        
     }
 
     [RelayCommand]

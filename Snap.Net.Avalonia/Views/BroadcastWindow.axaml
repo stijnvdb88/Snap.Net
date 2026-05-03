@@ -39,16 +39,17 @@
             <ToggleButton Grid.Row="1" Grid.Column="3" Margin="0,0,0,0" Width="32" Height="32"
                           VerticalAlignment="Center"
                           Padding="0"
-                          IsChecked="{Binding IsBroadcasting}">
+                          Command="{Binding ToggleBroadcastCommand}"
+                          IsChecked="{Binding IsBroadcastConnected, Mode=OneWay}">
                 <Panel>
                     <!-- Off state: circle with diagonal line through it -->
-                    <Path IsVisible="{Binding !IsBroadcasting}"
+                    <Path IsVisible="{Binding !IsBroadcastConnected}"
                           Stroke="Gray" StrokeThickness="3"
                           HorizontalAlignment="Center" VerticalAlignment="Center"
                           Data="M 12,0 A 12,12 0 1 1 12,24 A 12,12 0 1 1 12,0 M 3.5,3.5 L 20.5,20.5"/>
 
                     <!-- On state: broadcast/wifi-style radiating waves icon -->
-                    <Path IsVisible="{Binding IsBroadcasting}"
+                    <Path IsVisible="{Binding IsBroadcastConnected}"
                           Stroke="Orange" StrokeThickness="3" Fill="Transparent"
                           HorizontalAlignment="Center" VerticalAlignment="Center"
                           Data="M 12,18 A 2,2 0 1 1 12,22 A 2,2 0 1 1 12,18

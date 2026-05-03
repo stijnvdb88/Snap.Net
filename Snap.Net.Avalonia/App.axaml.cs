@@ -6,10 +6,13 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using System.Reflection;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
 using Avalonia.Themes.Simple;
+using Avalonia.Threading;
 using Classic.Avalonia.Theme;
 using Material.Styles.Themes;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +39,8 @@ public partial class App : Application
     private MaterialTheme? m_MaterialTheme;
     private SemiTheme? m_SemiTheme;
     
+    private TrayIcon? m_TrayIcon;
+    
     private EAppTheme m_PreviousTheme = EAppTheme.Fluent;
     public EAppTheme PreviousTheme => m_PreviousTheme;
     public static EAppTheme CurrentTheme => ((App)Current!).m_PreviousTheme; 
@@ -56,6 +61,20 @@ public partial class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
+        // The below check prevents the Avalonia previewer from booting up the rest of the software,
+        // particularly the auto-broadcast feature.
+        // During development of this feature I had it configured to auto-broadcast my microphone to a set of speakers
+        // in the room I'm in. It would start broadcasting "out of nowhere" even while the app wasn't running.
+        // Rebooted my machine, opened Rider, and before I even ran the app again I could hear it broadcasting again.
+        // I'd try a fix, then hear sounds of me typing still come out the speakers, mutter curse words
+        // under my breath, only to hear them echo right back at me.
+        // 10/10 the funniest bug I've ever had the pleasure of troubleshooting
+        if (Design.IsDesignMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+        
         string? appLocation = Path.GetDirectoryName(System.AppContext.BaseDirectory);
         m_Host = Host.CreateDefaultBuilder()
             .ConfigureHostConfiguration(c =>
@@ -69,7 +88,19 @@ public partial class App : Application
             .Build();
         
         await m_Host.StartAsync();
+        m_TrayIcon = TrayIcon.GetIcons(this)?.FirstOrDefault();
+        AppViewModel appViewModel = m_Host.Services.GetRequiredService<AppViewModel>();  
+        appViewModel.OnTrayIconChanged += _OnTrayIconChanged;
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private void _OnTrayIconChanged(bool broadcasting)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            m_TrayIcon!.Icon = new WindowIcon(
+                AssetLoader.Open(new Uri($"avares://Snap.Net.Avalonia/Assets/{(broadcasting ? "snapcast_r.ico" : "snapcast.ico")}")));
+        });
     }
 
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
@@ -80,7 +111,7 @@ public partial class App : Application
         services.AddSingleton<IControlClientService, ControlClientService>();
         services.AddSingleton<IBroadcastService, BroadcastService>();
         
-        services.AddTransient<AppViewModel>();
+        services.AddSingleton<AppViewModel>();
 
         services.AddTransient<GroupViewModel>();
         services.AddTransient<GroupViewModel>();

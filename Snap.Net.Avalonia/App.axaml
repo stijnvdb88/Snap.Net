@@ -12,10 +12,15 @@
          <local:ViewLocator/>
      </Application.DataTemplates>
     <TrayIcon.Icons>
-        <TrayIcons>
-            <TrayIcon Icon="{Binding TrayIcon}"
-                      ToolTipText="Snap.Net" 
-                      Command="{Binding ShowFlyoutCommand}">
+        <TrayIcons> <!-- Icon="{Binding TrayIcon}" -->
+            <TrayIcon
+                Icon="/Assets/snapcast.ico"
+                ToolTipText="Snap.Net"
+                Command="{Binding ShowFlyoutCommand}">
+            <!-- <TrayIcon -->
+            <!--     Icon="{Binding TrayIcon}" -->
+            <!--     ToolTipText="Snap.Net" -->
+            <!--     Command="{Binding ShowFlyoutCommand}"> -->
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="{Binding OpenFlyoutEntryLabel}" Command="{Binding ShowFlyoutCommand}" IsVisible="{Binding AddOpenFlyoutEntry}" />
