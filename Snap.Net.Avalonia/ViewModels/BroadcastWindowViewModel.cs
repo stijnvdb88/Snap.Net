@@ -81,6 +81,7 @@ public partial class BroadcastWindowViewModel : ViewModelBase
         }
         else
         {
+            _Save();
             string? host = m_SettingsService.Get<string>(SettingsKeys.HOST);
             if (string.IsNullOrEmpty(host) == false && Port != null && SelectedAudioDeviceViewModel != null)
             {
@@ -93,15 +94,19 @@ public partial class BroadcastWindowViewModel : ViewModelBase
     private void OnBroadcastConnectionStateChanged(bool connected)
     {
         Dispatcher.UIThread.Post(() => IsBroadcastConnected = connected);
-        
     }
 
     [RelayCommand]
     public void Save(ICloseable closeable)
     {
+        _Save();
+        closeable.Close();
+    }
+
+    private void _Save()
+    {
         m_SettingsService.Set(SettingsKeys.BROADCAST_DEVICE_ID, SelectedAudioDeviceViewModel?.Id);
         m_SettingsService.Set(SettingsKeys.BROADCAST_PORT, Port);
         m_SettingsService.Set(SettingsKeys.BROADCAST_AUTO_START, AutoStart);
-        closeable.Close();
     }
 }
