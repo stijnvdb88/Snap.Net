@@ -24,6 +24,7 @@ public partial class AppViewModel : ViewModelBase
     private FlyoutWindow? m_FlyoutWindow = null;
     private SettingsWindow? m_SettingsWindow = null;
     private BroadcastWindow? m_BroadcastWindow = null;
+    private PlayerWindow? m_PlayerWindow = null;
     
     private static readonly WindowIcon s_DefaultIcon = new WindowIcon(
         AssetLoader.Open(new System.Uri("avares://Snap.Net.Avalonia/Assets/snapcast.ico")));
@@ -100,6 +101,15 @@ public partial class AppViewModel : ViewModelBase
         m_SettingsWindow.DataContext = m_ServiceProvider.GetService(typeof(SettingsWindowViewModel));
         m_SettingsWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         m_SettingsWindow.Show();
+    }
+    
+    [RelayCommand]
+    private void ShowPlayer()
+    {
+        m_PlayerWindow = new PlayerWindow();
+        m_PlayerWindow.DataContext = m_ServiceProvider.GetService(typeof(BroadcastWindowViewModel));
+        m_PlayerWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        m_PlayerWindow.Show();
     }
     
     [RelayCommand]

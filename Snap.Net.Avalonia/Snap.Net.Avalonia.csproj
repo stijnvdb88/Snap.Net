@@ -31,6 +31,7 @@
         </PackageReference>
         <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.12" />
         <PackageReference Include="Classic.Avalonia.Theme" Version="11.3.0.3" />
+        <PackageReference Include="CliWrap" Version="3.10.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
         <PackageReference Include="Material.Avalonia" Version="3.13.4" />
@@ -73,6 +74,10 @@
       </Compile>
       <Compile Update="Views\BroadcastWindow.axaml.cs">
         <DependentUpon>BroadcastWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\PlayerWindow.axaml.cs">
+        <DependentUpon>PlayerWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
