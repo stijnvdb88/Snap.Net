@@ -90,4 +90,9 @@
     <ItemGroup>
       <Resource Include="Assets\snapcast_r.ico" />
     </ItemGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+    </PropertyGroup>
+    
 </Project>

@@ -3,7 +3,7 @@ using Snap.Net.Broadcast;
 
 namespace Snap.Net.Avalonia.ViewModels.Broadcast;
 
-public partial class AudioDeviceViewModel : ObservableObject
+public partial class BroadcastAudioDeviceViewModel : ObservableObject
 {
     private IAudioDevice m_AudioDevice;
 
@@ -15,7 +15,7 @@ public partial class AudioDeviceViewModel : ObservableObject
 
     public IAudioDevice AudioDevice => m_AudioDevice;
     
-    public AudioDeviceViewModel(IAudioDevice audioDevice)
+    public BroadcastAudioDeviceViewModel(IAudioDevice audioDevice)
     {
         m_AudioDevice = audioDevice;
         FriendlyName = m_AudioDevice.FriendlyName;

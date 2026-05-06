@@ -110,13 +110,14 @@ public partial class App : Application
         // Core services
         services.AddSingleton<IControlClientService, ControlClientService>();
         services.AddSingleton<IBroadcastService, BroadcastService>();
+        services.AddSingleton<IPlayerService, PlayerService>();
         
         services.AddSingleton<AppViewModel>();
 
         services.AddTransient<GroupViewModel>();
         services.AddTransient<GroupViewModel>();
 
-        services.AddTransient<AudioDeviceViewModel>();
+        services.AddTransient<BroadcastAudioDeviceViewModel>();
         
         services.AddTransient<FlyoutWindow>();
         services.AddTransient<FlyoutWindowViewModel>();
@@ -132,6 +133,9 @@ public partial class App : Application
 
         services.AddTransient<SettingsWindow>();
         services.AddTransient<SettingsWindowViewModel>();
+        
+        services.AddTransient<PlayerWindow>();
+        services.AddTransient<PlayerWindowViewModel>();
         
         services.AddTransient<BroadcastWindow>();
         services.AddTransient<BroadcastWindowViewModel>();

@@ -107,7 +107,7 @@ public partial class AppViewModel : ViewModelBase
     private void ShowPlayer()
     {
         m_PlayerWindow = new PlayerWindow();
-        m_PlayerWindow.DataContext = m_ServiceProvider.GetService(typeof(BroadcastWindowViewModel));
+        m_PlayerWindow.DataContext = m_ServiceProvider.GetService(typeof(PlayerWindowViewModel));
         m_PlayerWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         m_PlayerWindow.Show();
     }

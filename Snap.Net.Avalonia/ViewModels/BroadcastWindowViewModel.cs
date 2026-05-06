@@ -36,10 +36,10 @@ public partial class BroadcastWindowViewModel : ViewModelBase
     private bool m_IsBroadcastConnected;
     
     [ObservableProperty]
-    private AudioDeviceViewModel? m_SelectedAudioDeviceViewModel;
+    private BroadcastAudioDeviceViewModel? m_SelectedAudioDeviceViewModel;
     
-    public ObservableCollection<AudioDeviceViewModel> AudioDeviceViewModels { get; } =
-        new ObservableCollection<AudioDeviceViewModel>();
+    public ObservableCollection<BroadcastAudioDeviceViewModel> AudioDeviceViewModels { get; } =
+        new ObservableCollection<BroadcastAudioDeviceViewModel>();
 
 #if DEBUG
     public BroadcastWindowViewModel()
@@ -62,12 +62,12 @@ public partial class BroadcastWindowViewModel : ViewModelBase
         IEnumerable<IAudioDevice> audioDevices = m_BroadcastService.GetAudioDevices(EDeviceType.All);
         foreach (IAudioDevice audioDevice in audioDevices)
         {
-            AudioDeviceViewModel audioDeviceViewModel =
-                ActivatorUtilities.CreateInstance<AudioDeviceViewModel>(m_ServiceProvider, audioDevice);
-            AudioDeviceViewModels.Add(audioDeviceViewModel);
+            BroadcastAudioDeviceViewModel broadcastAudioDeviceViewModel =
+                ActivatorUtilities.CreateInstance<BroadcastAudioDeviceViewModel>(m_ServiceProvider, audioDevice);
+            AudioDeviceViewModels.Add(broadcastAudioDeviceViewModel);
             if (audioDevice.Id == selectedId)
             {
-                SelectedAudioDeviceViewModel = audioDeviceViewModel;
+                SelectedAudioDeviceViewModel = broadcastAudioDeviceViewModel;
             }
         }
     }

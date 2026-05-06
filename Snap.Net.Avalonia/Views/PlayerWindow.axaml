@@ -19,6 +19,9 @@
         <viewModels1:PlayerWindowViewModel />
     </Design.DataContext>
     <DockPanel Margin="10">
-
+        <ComboBox Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
+                  Width="300"
+                  ItemsSource="{Binding PlayerDevices}"
+                  HorizontalAlignment="Stretch"/>
     </DockPanel>
 </Window>
