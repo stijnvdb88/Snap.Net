@@ -24,9 +24,9 @@
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="{Binding OpenFlyoutEntryLabel}" Command="{Binding ShowFlyoutCommand}" IsVisible="{Binding AddOpenFlyoutEntry}" />
+                        <NativeMenuItem Header="Settings" Command="{Binding ShowSettingsCommand}" />
                         <NativeMenuItem Header="Player" Command="{Binding ShowPlayerCommand}" />
                         <NativeMenuItem Header="Broadcast" Command="{Binding ShowBroadcastWindowCommand}" />
-                        <NativeMenuItem Header="Settings" Command="{Binding ShowSettingsCommand}" />
                         <NativeMenuItem Header="Quit" Command="{Binding QuitCommand}" />
                     </NativeMenu>
                 </TrayIcon.Menu>
