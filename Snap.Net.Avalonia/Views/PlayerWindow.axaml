@@ -14,14 +14,107 @@
         SizeToContent="WidthAndHeight">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels1:PlayerWindowViewModel />
     </Design.DataContext>
-    <DockPanel Margin="10">
-        <ComboBox Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
-                  Width="300"
-                  ItemsSource="{Binding PlayerDevices}"
-                  HorizontalAlignment="Stretch"/>
-    </DockPanel>
+    <StackPanel Margin="10" MinWidth="420">
+
+        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <TextBlock Grid.Column="0"
+                       Text="Available audio devices"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="14" FontWeight="SemiBold"/>
+            <Button Grid.Column="1"
+                    Command="{Binding RefreshCommand}"
+                    Width="32" Height="32"
+                    Padding="0">
+                <Path Fill="Gray" Width="14" Height="14"
+                      Stretch="Uniform"
+                      Data="{StaticResource RefreshRegular}"/>
+            </Button>
+        </Grid>
+
+        <!-- Column header -->
+        <Grid ColumnDefinitions="44,Auto,*,36,36" Margin="4,0,4,4">
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="Auto-play"
+                       VerticalAlignment="Center"
+                       FontSize="11"
+                       Foreground="Gray"/>
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding PlayerDevices}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="4,6,4,6"
+                            CornerRadius="4"
+                            Margin="0,1,0,1">
+                        <Border.Styles>
+                            <Style Selector="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Style>
+                            <Style Selector="Border:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+                            </Style>
+                        </Border.Styles>
+                        <Grid ColumnDefinitions="44,Auto,*,36,36">
+
+                            <CheckBox Grid.Column="0"
+                                      IsChecked="{Binding AutoPlay}"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Index}"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"
+                                       FontSize="12"
+                                       Margin="0,0,10,0"/>
+
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding FriendlyName}"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       FontWeight="{Binding NameFontWeight}"
+                                       Foreground="{Binding NameForeground}"/>
+
+                            <ToggleButton Grid.Column="3"
+                                          Width="28" Height="28"
+                                          Padding="0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          IsChecked="{Binding IsPlaying}">
+                                <Panel>
+                                    <Path IsVisible="{Binding !IsPlaying}"
+                                          Fill="Gray"
+                                          Width="12" Height="12"
+                                          Stretch="Uniform"
+                                          Data="{StaticResource PlayRegular}"/>
+                                    <Path IsVisible="{Binding IsPlaying}"
+                                          Fill="Orange"
+                                          Width="12" Height="12"
+                                          Stretch="Uniform"
+                                          Data="{StaticResource PauseRegular}"/>
+                                </Panel>
+                            </ToggleButton>
+
+                            <Button Grid.Column="4"
+                                    Width="28" Height="28"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding OpenSettingsCommand}">
+                                <Path Fill="Gray"
+                                      Width="12" Height="12"
+                                      Stretch="Uniform"
+                                      Data="{StaticResource SettingsRegular}"/>
+                            </Button>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </StackPanel>
 </Window>
