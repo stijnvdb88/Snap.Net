@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Snap.Net.Avalonia.Broadcast;
 using Snap.Net.Avalonia.Consts;
 using Snap.Net.Avalonia.Contracts.Services;
+using Snap.Net.Avalonia.Utils;
 using Snap.Net.Avalonia.ViewModels.Player;
 
 namespace Snap.Net.Avalonia.Services;
@@ -55,8 +57,7 @@ public class PlayerService : IPlayerService
     {
         if (IsPlaying(playerDevice))
         {
-            m_ActivePlayers[playerDevice].CancellationTokenSource.Cancel();
-            m_ActivePlayers.Remove(playerDevice);
+            _Stop(playerDevice);
         }
         else
         {
@@ -66,6 +67,7 @@ public class PlayerService : IPlayerService
                                $"tcp://{m_SettingsService.Get<string>(SettingsKeys.HOST)}:" +
                                $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ");
             CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
+            ChildProcessTracker.AddProcess(Process.GetProcessById(commandTask.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes
             m_ActivePlayers[playerDevice] = new ActivePlayer()
             {
                 CancellationTokenSource = cancellationTokenSource,
@@ -79,9 +81,18 @@ public class PlayerService : IPlayerService
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                _Stop(playerDevice);
             }
         }
-        
+    }
+
+    private void _Stop(PlayerDeviceViewModel playerDevice)
+    {
+        if (IsPlaying(playerDevice))
+        {
+            m_ActivePlayers[playerDevice].CancellationTokenSource.Cancel();
+            m_ActivePlayers.Remove(playerDevice);
+        }
     }
 
     public bool IsPlaying(PlayerDeviceViewModel playerDevice)

@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,6 +35,25 @@ public partial class PlayerDeviceViewModel : ObservableObject
         m_FriendlyName = friendlyName;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is PlayerDeviceViewModel playerDeviceViewModel)
+        {
+            return Equals(playerDeviceViewModel);
+        }
+        return false;
+    }
+
+    protected bool Equals(PlayerDeviceViewModel other)
+    {
+        return FriendlyName == other.FriendlyName && Id == other.Id && Index == other.Index;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(FriendlyName, Id, Index);
+    }
+
     public override string ToString()
     {
         return FriendlyName;
@@ -58,4 +78,5 @@ public partial class PlayerDeviceViewModel : ObservableObject
         OnPropertyChanged(nameof(NameFontWeight));
         OnPropertyChanged(nameof(NameForeground));
     }
+    
 }
