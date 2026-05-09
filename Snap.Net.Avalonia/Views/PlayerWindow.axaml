@@ -83,6 +83,7 @@
                                           Padding="0"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
+                                          Command="{Binding TogglePlay}"
                                           IsChecked="{Binding IsPlaying}">
                                 <Panel>
                                     <Path IsVisible="{Binding !IsPlaying}"

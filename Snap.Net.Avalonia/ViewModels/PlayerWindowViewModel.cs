@@ -27,7 +27,8 @@ public partial class PlayerWindowViewModel : ViewModelBase
         m_SettingsService = settingsService;
         m_PlayerService = playerService;
         
-        _ = _PopulatePlayerDevices();    }
+        _ = _PopulatePlayerDevices();
+    }
 
     private async Task _PopulatePlayerDevices()
     {
@@ -39,6 +40,7 @@ public partial class PlayerWindowViewModel : ViewModelBase
     [RelayCommand]
     public void Refresh()
     {
-        
+        _ = _PopulatePlayerDevices();
     }
+    
 }

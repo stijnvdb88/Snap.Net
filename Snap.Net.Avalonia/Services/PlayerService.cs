@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
+using Microsoft.Extensions.DependencyInjection;
 using Snap.Net.Avalonia.Broadcast;
+using Snap.Net.Avalonia.Consts;
 using Snap.Net.Avalonia.Contracts.Services;
 using Snap.Net.Avalonia.ViewModels.Player;
 
@@ -15,19 +18,83 @@ namespace Snap.Net.Avalonia.Services;
 
 public class PlayerService : IPlayerService
 {
-    private string m_SnapclientPath = "snapclient";
+    private class ActivePlayer
+    {
+        public CommandTask<CommandResult> PlayTask;
+        public CancellationTokenSource CancellationTokenSource;
+    }
+    
+    private string m_SnapclientPath =
+#if LINUX
+        "snapclient";
+#else
+        @"C:\STM\snapcast\snapclient.exe";
+#endif
+    
+    private readonly IServiceProvider m_ServiceProvider;
+    private readonly ISettingsService m_SettingsService;
+    private Dictionary<PlayerDeviceViewModel, ActivePlayer> m_ActivePlayers = new Dictionary<PlayerDeviceViewModel, ActivePlayer>();
+
+    public PlayerService(IServiceProvider serviceProvider, ISettingsService settingsService)
+    {
+        m_ServiceProvider = serviceProvider;
+        m_SettingsService = settingsService;
+    }
+
+    private PlayerDeviceViewModel[] m_Devices =  Array.Empty<PlayerDeviceViewModel>();
     
     public async Task<PlayerDeviceViewModel[]> GetDevicesAsync(bool includeDefault = false)
     {
         BufferedCommandResult result = await Cli.Wrap(m_SnapclientPath).WithArguments("--list")
             .ExecuteBufferedAsync(Encoding.UTF8, Encoding.UTF8);
-        return _GetFromSnapClientListOutput(result.StandardOutput, includeDefault);
+        m_Devices = _GetFromSnapClientListOutput(result.StandardOutput, includeDefault);
+        return m_Devices;
+    }
+
+    public async Task TogglePlay(PlayerDeviceViewModel playerDevice)
+    {
+        if (IsPlaying(playerDevice))
+        {
+            m_ActivePlayers[playerDevice].CancellationTokenSource.Cancel();
+            m_ActivePlayers.Remove(playerDevice);
+        }
+        else
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            Command command = Cli.Wrap(m_SnapclientPath)
+                .WithArguments($"--soundcard {playerDevice.Index} " +
+                               $"tcp://{m_SettingsService.Get<string>(SettingsKeys.HOST)}:" +
+                               $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ");
+            CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
+            m_ActivePlayers[playerDevice] = new ActivePlayer()
+            {
+                CancellationTokenSource = cancellationTokenSource,
+                PlayTask = commandTask,
+            };
+
+            try
+            {
+                await commandTask;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        
+    }
+
+    public bool IsPlaying(PlayerDeviceViewModel playerDevice)
+    {
+        return m_ActivePlayers.ContainsKey(playerDevice);
     }
     
-    private static PlayerDeviceViewModel[] _GetFromSnapClientListOutput(string output, bool includeDefault)
+    private PlayerDeviceViewModel[] _GetFromSnapClientListOutput(string output, bool includeDefault)
     {
         List<PlayerDeviceViewModel> devices = new List<PlayerDeviceViewModel>();
-        string[] blocks = output.Split("\n\n",  StringSplitOptions.RemoveEmptyEntries);
+        string[] blocks = output
+            .Replace("\r\n", "\n")
+            .Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
         foreach (string block in blocks)
         {
             string[] lines = block.Split("\n", StringSplitOptions.RemoveEmptyEntries);
@@ -39,7 +106,7 @@ public class PlayerService : IPlayerService
             {
                 if (_IsRelevantDevice(name))
                 {
-                    devices.Add(new PlayerDeviceViewModel(index, name, description));    
+                    devices.Add(ActivatorUtilities.CreateInstance<PlayerDeviceViewModel>(m_ServiceProvider, index, name,  description));    
                 }
             }
         }

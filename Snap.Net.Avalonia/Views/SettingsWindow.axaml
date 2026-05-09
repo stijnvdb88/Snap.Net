@@ -27,8 +27,13 @@
             </DockPanel>
             
             <DockPanel>
-                <TextBlock Text="Port" Width="110" FontWeight="Bold" />
-                <TextBox Text="{Binding Port}" />
+                <TextBlock Text="Player Port" Width="110" FontWeight="Bold" />
+                <TextBox Text="{Binding PlayerPort}" />
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Control Port" Width="110" FontWeight="Bold" />
+                <TextBox Text="{Binding ControlPort}" />
             </DockPanel>
             
             <DockPanel>

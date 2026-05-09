@@ -52,7 +52,7 @@ public class ApplicationHostService : IHostedService
         {
             await m_ControlClientService.InitializeAsync(
                 host, 
-                m_SettingsService.Get<int>(SettingsKeys.PORT, 1705));
+                m_SettingsService.Get<int>(SettingsKeys.CONTROL_PORT, 1705));
 
             if (m_SettingsService.Get<bool>(SettingsKeys.BROADCAST_AUTO_START))
             {

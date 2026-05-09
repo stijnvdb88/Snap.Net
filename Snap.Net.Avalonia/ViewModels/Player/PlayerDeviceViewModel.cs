@@ -1,11 +1,14 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Snap.Net.Avalonia.Contracts.Services;
 
 namespace Snap.Net.Avalonia.ViewModels.Player;
 
 public partial class PlayerDeviceViewModel : ObservableObject
 {
+    private IPlayerService m_PlayerService;
+    
     [ObservableProperty]
     private string m_FriendlyName;
 
@@ -18,16 +21,14 @@ public partial class PlayerDeviceViewModel : ObservableObject
     [ObservableProperty]
     private bool m_AutoPlay;
     
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(NameFontWeight))]
-    [NotifyPropertyChangedFor(nameof(NameForeground))]
-    private bool m_IsPlaying;
+    public bool IsPlaying => m_PlayerService.IsPlaying(this);
 
     public FontWeight NameFontWeight => IsPlaying ? FontWeight.SemiBold : FontWeight.Normal;
     public IBrush NameForeground => IsPlaying ? Brushes.Orange : Brushes.White;
 
-    public PlayerDeviceViewModel(int index, string id, string friendlyName)
+    public PlayerDeviceViewModel(IPlayerService playerService, int index, string id, string friendlyName)
     {
+        m_PlayerService  = playerService;
         m_Index = index;
         m_Id = id;
         m_FriendlyName = friendlyName;
@@ -42,5 +43,19 @@ public partial class PlayerDeviceViewModel : ObservableObject
     public void OpenSettings()
     {
         
+    }
+
+    [RelayCommand]
+    public void TogglePlay()
+    {
+        m_PlayerService.TogglePlay(this);
+        NotifyPlayingStateChanged();
+    }
+    
+    public void NotifyPlayingStateChanged()
+    {
+        OnPropertyChanged(nameof(IsPlaying));
+        OnPropertyChanged(nameof(NameFontWeight));
+        OnPropertyChanged(nameof(NameForeground));
     }
 }

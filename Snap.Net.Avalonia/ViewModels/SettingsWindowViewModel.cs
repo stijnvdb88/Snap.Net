@@ -21,7 +21,10 @@ public partial class SettingsWindowViewModel : ViewModelBase
     private string? m_Host;
     
     [ObservableProperty]
-    private int? m_Port;
+    private int? m_PlayerPort;
+    
+    [ObservableProperty]
+    private int? m_ControlPort;
     
     [ObservableProperty]
     private bool m_ShowDisconnectedClients;
@@ -38,7 +41,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
     public SettingsWindowViewModel()
     {
         Host = "192.168.1.111";
-        Port = 1705;
+        PlayerPort = 1704;
+        ControlPort = 1705;
         ApplicationVersion = "0.34.0.1";
     }
 #endif    
@@ -48,7 +52,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
         m_SettingsService = settingsService;
         m_ControlClientService = controlClientService;
         Host = m_SettingsService.Get<string>(SettingsKeys.HOST);
-        Port = m_SettingsService.Get<int>(SettingsKeys.PORT, 1705);
+        PlayerPort = m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT, 1704);
+        ControlPort = m_SettingsService.Get<int>(SettingsKeys.CONTROL_PORT, 1705);
         ShowDisconnectedClients = m_SettingsService.Get<bool>(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, false);
         PanelPosition = m_SettingsService.Get<EPanelPosition>(SettingsKeys.PANEL_POSITION);
         AssemblyInformationalVersionAttribute? infoVersion = (AssemblyInformationalVersionAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault()!;
@@ -59,12 +64,13 @@ public partial class SettingsWindowViewModel : ViewModelBase
     public void Save(ICloseable closeable)
     {
         m_SettingsService.Set(SettingsKeys.HOST, Host);
-        m_SettingsService.Set(SettingsKeys.PORT, Port);
+        m_SettingsService.Set(SettingsKeys.PLAYER_PORT, PlayerPort);
+        m_SettingsService.Set(SettingsKeys.CONTROL_PORT, ControlPort);
         m_SettingsService.Set(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, ShowDisconnectedClients);
         m_SettingsService.Set(SettingsKeys.PANEL_POSITION, PanelPosition);
-        if (string.IsNullOrEmpty(Host) == false && Port != null)
+        if (string.IsNullOrEmpty(Host) == false && ControlPort != null)
         {
-            m_ControlClientService.InitializeAsync(Host, (int)Port).ConfigureAwait(false);    
+            m_ControlClientService.InitializeAsync(Host, (int)ControlPort).ConfigureAwait(false);    
         }
         closeable.Close();
     }

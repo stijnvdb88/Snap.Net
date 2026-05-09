@@ -50,7 +50,7 @@ public partial class FlyoutWindowViewModel : ViewModelBase
         _UpdateGroups();
         m_ConnectionFailed = m_ControlClientService.GetServerData() == null;
         string? host = settingsService.Get<string>(SettingsKeys.HOST);
-        int port = settingsService.Get(SettingsKeys.PORT, 1705);
+        int port = settingsService.Get(SettingsKeys.CONTROL_PORT, 1705);
         m_ConnectionFailureMessage = $"Failed to connect to snapserver at '{host}:{port}'";
     }
 
