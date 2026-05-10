@@ -491,7 +491,7 @@ namespace SnapDotNet.ControlClient
         /// <param name="stream">new stream</param>
         private void _StreamUpdated(string id, Stream stream)
         {
-            for (int i = 0; i < ServerData.streams.Length; i++)
+            for (int i = 0; i < ServerData.streams?.Length; i++)
             {
                 if (ServerData.streams[i].id == id)
                 {

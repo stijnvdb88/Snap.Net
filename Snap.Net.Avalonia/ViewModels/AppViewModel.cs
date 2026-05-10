@@ -82,7 +82,8 @@ public partial class AppViewModel : ViewModelBase
             {
                 flyoutHeight = 320;
             }
-            EPanelPosition panelPosition = m_SettingsService.Get<EPanelPosition>(SettingsKeys.PANEL_POSITION, EPanelPosition.BottomRight);
+            EPanelPosition defaultPanelPosition = OperatingSystem.IsMacOS() ? EPanelPosition.TopRight : EPanelPosition.BottomRight;
+            EPanelPosition panelPosition = m_SettingsService.Get<EPanelPosition>(SettingsKeys.PANEL_POSITION, defaultPanelPosition);
             FlyoutWindowViewModel? viewModel = m_ServiceProvider.GetService<FlyoutWindowViewModel>();
             m_FlyoutWindow = new FlyoutWindow(panelPosition, flyoutHeight);
             m_FlyoutWindow.DataContext = viewModel;
