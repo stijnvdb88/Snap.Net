@@ -36,6 +36,7 @@ public class PlayerService : IPlayerService
     private readonly IServiceProvider m_ServiceProvider;
     private readonly ISettingsService m_SettingsService;
     private Dictionary<PlayerDeviceViewModel, ActivePlayer> m_ActivePlayers = new Dictionary<PlayerDeviceViewModel, ActivePlayer>();
+    private const int MINIMUM_INSTANCE_ID = 72;
 
     public PlayerService(IServiceProvider serviceProvider, ISettingsService settingsService)
     {
@@ -53,6 +54,44 @@ public class PlayerService : IPlayerService
         return m_Devices;
     }
 
+    /// <summary>
+    /// grabs whatever instance id we have previously registered for this device.
+    /// if none exists yet, find highest registered instance id and +1.
+    /// arbitrary minimum instance id is used to try and avoid collisions
+    /// with user-defined instance ids 
+    /// </summary>
+    /// <param name="playerDevice"></param>
+    /// <returns></returns>
+    private int _GetInstanceId(PlayerDeviceViewModel playerDevice)
+    {
+        Dictionary<int, int>? instanceIds =
+            m_SettingsService.Get(SettingsKeys.DEVICE_INSTANCE_IDS, new Dictionary<int, int>());
+        if (instanceIds == null)
+        {
+            instanceIds = new Dictionary<int, int>();
+        }
+
+        if (instanceIds.ContainsKey(playerDevice.GetHashCode()) == false)
+        {
+            // didn't have this one yet, find an id for it + register
+            // DefaultIfEmpty(MINIMUM_INSTANCE_ID) is how we try and avoid collusions with user-defined instance ids 
+            int instanceId = instanceIds.Values.DefaultIfEmpty(MINIMUM_INSTANCE_ID).Max();
+ 
+            instanceIds.Add(playerDevice.GetHashCode(), instanceId+1);
+            m_SettingsService.Set(SettingsKeys.DEVICE_INSTANCE_IDS, instanceIds);
+        }
+        return instanceIds[playerDevice.GetHashCode()];
+    }
+    
+    public string GetSnapclientArgs(PlayerDeviceViewModel playerDevice)
+    {
+        int instanceId = _GetInstanceId(playerDevice);
+        return $"--soundcard {playerDevice.Index} " +
+               $"--instance {instanceId} " +
+               $"tcp://{m_SettingsService.Get<string>(SettingsKeys.HOST)}:" +
+               $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ";
+    }
+
     public async Task TogglePlay(PlayerDeviceViewModel playerDevice)
     {
         if (IsPlaying(playerDevice))
@@ -62,10 +101,10 @@ public class PlayerService : IPlayerService
         else
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            string args = GetSnapclientArgs(playerDevice);
+            Console.WriteLine($"snapclient.exe {args}");
             Command command = Cli.Wrap(m_SnapclientPath)
-                .WithArguments($"--soundcard {playerDevice.Index} " +
-                               $"tcp://{m_SettingsService.Get<string>(SettingsKeys.HOST)}:" +
-                               $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ");
+                .WithArguments(args);
             CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
             ChildProcessTracker.AddProcess(Process.GetProcessById(commandTask.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes
             m_ActivePlayers[playerDevice] = new ActivePlayer()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using Avalonia;
 using Snap.Net.Avalonia.Contracts.Services;
 
@@ -38,17 +39,46 @@ public class SettingsService : ISettingsService
         {
             return defaultValue;
         }
-        
-        if (result != null)
+
+        if (result == null)
         {
-            if (typeof(T).BaseType == typeof(System.Enum))
+            return defaultValue;
+        }
+        
+        if (typeof(T).BaseType == typeof(System.Enum))
+        {
+            int value = (int)Enum.Parse(typeof(T), result.ToString() ?? string.Empty);
+            return (T)Enum.ToObject(typeof(T), value);
+        }
+        
+        // in case object is unknown;
+        if (result is System.Text.Json.JsonElement jsonElement)
+        {
+            return jsonElement.Deserialize<T>();   
+        }
+        
+        // complex types that can't be handed with Convert.ChangeType, leverage json serialize + deserialize
+        if (result is not T && !typeof(T).IsPrimitive && typeof(T) != typeof(string))
+        {
+            try
             {
-                int value = (int)Enum.Parse(typeof(T), result.ToString() ?? string.Empty);
-                return (T)Enum.ToObject(typeof(T), value);
+                string json = System.Text.Json.JsonSerializer.Serialize(result);
+                return System.Text.Json.JsonSerializer.Deserialize<T>(json);
             }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        try
+        {
             return (T)Convert.ChangeType(result, typeof(T));
         }
-        return defaultValue;
+        catch
+        {
+            return defaultValue;
+        }
     }
 
     public void Set<T>(string key, T? value, bool save = true)

@@ -46,12 +46,12 @@ public partial class PlayerDeviceViewModel : ObservableObject
 
     protected bool Equals(PlayerDeviceViewModel other)
     {
-        return FriendlyName == other.FriendlyName && Id == other.Id && Index == other.Index;
+        return FriendlyName == other.FriendlyName && Id == other.Id;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(FriendlyName, Id, Index);
+        return HashCode.Combine(FriendlyName, Id);
     }
 
     public override string ToString()

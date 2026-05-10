@@ -10,4 +10,5 @@ public static class SettingsKeys
     public const string BROADCAST_PORT = nameof(BROADCAST_PORT);
     public const string BROADCAST_DEVICE_ID = nameof(BROADCAST_DEVICE_ID);
     public const string BROADCAST_AUTO_START = nameof(BROADCAST_AUTO_START);
+    public const string DEVICE_INSTANCE_IDS = nameof(DEVICE_INSTANCE_IDS);
 }
