@@ -19,6 +19,7 @@ namespace Snap.Net.Avalonia.ViewModels;
 public partial class AppViewModel : ViewModelBase
 {
     private IServiceProvider m_ServiceProvider;
+    private IPlayerService m_PlayerService;
     private IControlClientService m_ControlClientService;
     private ISettingsService m_SettingsService;
     private IBroadcastService m_BroadcastService;
@@ -46,11 +47,13 @@ public partial class AppViewModel : ViewModelBase
     
     public AppViewModel(
         IServiceProvider serviceProvider
+        , IPlayerService playerService
         , IControlClientService controlClientService
         , IBroadcastService broadcastService
         , ISettingsService settingsService)
     {
         m_ServiceProvider = serviceProvider;
+        m_PlayerService = playerService;
         m_ControlClientService = controlClientService;
         m_SettingsService = settingsService;
         m_BroadcastService = broadcastService;
@@ -147,6 +150,7 @@ public partial class AppViewModel : ViewModelBase
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            m_PlayerService.StopAll();
             desktop.Shutdown();
         }
     }

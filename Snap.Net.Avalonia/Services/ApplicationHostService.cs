@@ -108,10 +108,6 @@ public class ApplicationHostService : IHostedService
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            desktop.ShutdownRequested += (sender, args) =>
-            {
-                m_PlayerService.StopAll();
-            };
         }
         // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
         // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
