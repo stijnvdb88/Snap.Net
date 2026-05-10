@@ -72,7 +72,15 @@ public class PlayerService : IPlayerService
 
         SnapclientVersion = null;
     }
-    
+
+    public void StopAll()
+    {
+        foreach (ActivePlayer player in m_ActivePlayers.Values)
+        {
+            player.CancellationTokenSource.Cancel();
+        }
+    }
+
     public async Task<SnapserverEndpoint[]> DiscoverSnapserversAsync(CancellationToken cancellationToken)
     {
         IReadOnlyList<IZeroconfHost>? results = await ZeroconfResolver.ResolveAsync("_snapcast._tcp.local.", cancellationToken: cancellationToken);

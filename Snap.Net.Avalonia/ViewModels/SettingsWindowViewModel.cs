@@ -144,6 +144,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
         m_SettingsService.Set(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, ShowDisconnectedClients);
         m_SettingsService.Set(SettingsKeys.PANEL_POSITION, PanelPosition);
         
+        // todo: also read directly from text input field and save path set there
+        
         if (string.IsNullOrEmpty(Host) == false && ControlPort != null)
         {
             m_ControlClientService.InitializeAsync(Host, (int)ControlPort).ConfigureAwait(false);    

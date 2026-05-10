@@ -34,6 +34,8 @@ public static class ChildProcessTracker
         }
 #endif
     }
+
+    
 #if WINDOWS
     static ChildProcessTracker()
     {

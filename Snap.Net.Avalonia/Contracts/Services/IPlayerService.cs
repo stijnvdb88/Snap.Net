@@ -13,6 +13,8 @@ public interface IPlayerService
     Task Play(PlayerDeviceViewModel playerDevice);
     Task TogglePlay(PlayerDeviceViewModel playerDevice);
     bool IsPlaying(PlayerDeviceViewModel playerDevice);
+
+    void StopAll();
     Task<SnapserverEndpoint[]> DiscoverSnapserversAsync(CancellationToken cancellationToken);
 
     string GetSnapclientArgs(PlayerDeviceViewModel playerDevice);
