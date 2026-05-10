@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: snapclient-linux
-          path: SnapClient/snapcast/build/bin/snapclient
+          path: SnapClient/snapcast/bin/snapclient
 
   build-linux:
     runs-on: ubuntu-latest

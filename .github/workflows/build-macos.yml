@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: snapclient-macos
-          path: SnapClient/snapcast/build/bin/snapclient
+          path: SnapClient/snapcast/bin/snapclient
 
   build-macos:
     runs-on: macos-latest

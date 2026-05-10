@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: snapclient-windows
-          path: SnapClient/snapcast/bin/Release/snapclient.exe
+          path: SnapClient/snapcast/bin/Release/
 
 
   build-windows:
