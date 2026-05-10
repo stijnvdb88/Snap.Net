@@ -14,4 +14,8 @@ public interface IPlayerService
     Task TogglePlay(PlayerDeviceViewModel playerDevice);
     bool IsPlaying(PlayerDeviceViewModel playerDevice);
     Task<SnapserverEndpoint[]> DiscoverSnapserversAsync(CancellationToken cancellationToken);
+
+    string GetSnapclientArgs(PlayerDeviceViewModel playerDevice);
+
+    string SnapclientPath { get; }
 }

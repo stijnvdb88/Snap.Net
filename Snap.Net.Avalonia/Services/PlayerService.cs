@@ -29,7 +29,7 @@ public class PlayerService : IPlayerService
     
     private string m_SnapclientPath =
 #if LINUX
-        "snapclient";
+        "snapclient"; // todo: move to settings
 #else
         @"C:\STM\snapcast\snapclient.exe";
 #endif
@@ -40,6 +40,8 @@ public class PlayerService : IPlayerService
     private const int MINIMUM_INSTANCE_ID = 72;
 
     private PlayerDeviceViewModel[] m_Devices =  Array.Empty<PlayerDeviceViewModel>();
+    
+    public string SnapclientPath => m_SnapclientPath; // todo: needs to come from settings instead
     
     public PlayerService(IServiceProvider serviceProvider, ISettingsService settingsService)
     {
@@ -99,11 +101,38 @@ public class PlayerService : IPlayerService
     
     public string GetSnapclientArgs(PlayerDeviceViewModel playerDevice)
     {
-        int instanceId = _GetInstanceId(playerDevice);
+        string latency = "";
+        if (playerDevice.Latency != 0)
+        {
+            latency = $"--latency {playerDevice.Latency} ";
+        }
+
+        string hostId = "";
+        string instance = "";
+        if (string.IsNullOrEmpty(playerDevice.HostId))
+        {
+            // omit instance id if HostID is explicitly set (see https://github.com/stijnvdb88/Snap.Net/issues/19)
+            int instanceId = _GetInstanceId(playerDevice);
+            instance = $"--instance {instanceId} ";
+        }
+        else
+        {
+            hostId = $"--hostID {playerDevice.HostId} ";
+        }
+        
+        string extraArgs = "";
+        if (string.IsNullOrEmpty(playerDevice.ExtraArgs) == false)
+        {
+            extraArgs = $"{playerDevice.ExtraArgs} ";
+        }
+        
         return $"--soundcard {playerDevice.Index} " +
-               $"--instance {instanceId} " +
+               latency +
+               instance +
+               hostId +
+               extraArgs +
                $"tcp://{m_SettingsService.Get<string>(SettingsKeys.HOST)}:" +
-               $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ";
+               $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT, 1704)} ";
     }
 
     public async Task Play(PlayerDeviceViewModel playerDevice)
@@ -134,6 +163,11 @@ public class PlayerService : IPlayerService
         {
             Console.WriteLine(e.Message);
             _Stop(playerDevice);
+            if (playerDevice.AutoRestartOnError)
+            {
+                // auto restart if needed
+                _ = Play(playerDevice);
+            }
         }
     }
     

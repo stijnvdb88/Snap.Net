@@ -11,6 +11,7 @@
         Icon="/Assets/snapcast.ico"
         Title="Settings"
         CanResize="False"
+        Background="{DynamicResource BackgroundBrush}"
         SizeToContent="WidthAndHeight">
 
     <Design.DataContext>

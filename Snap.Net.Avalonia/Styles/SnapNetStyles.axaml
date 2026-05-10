@@ -24,6 +24,16 @@
         <Setter Property="IsVisible" Value="False"/>
     </Style>
     
+    <Style Selector="FlyoutPresenter.noPadding">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <Style Selector="Button:pointerover Path">
+        <Setter Property="Fill" Value="{DynamicResource SystemControlHighlightAccentBrush}"/>
+    </Style>
+    
     <Style Selector="HeaderedContentControl">
         <Setter Property="Template">
             <ControlTemplate>

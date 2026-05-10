@@ -9,8 +9,9 @@
         x:Class="Snap.Net.Avalonia.Views.BroadcastWindow"
         x:DataType="viewModels1:BroadcastWindowViewModel"
         Icon="/Assets/snapcast.ico"
-        Title="Settings"
+        Title="Broadcast"
         CanResize="False"
+        Background="{DynamicResource BackgroundBrush}"
         SizeToContent="WidthAndHeight">
 
     <Design.DataContext>

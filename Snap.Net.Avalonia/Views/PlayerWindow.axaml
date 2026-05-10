@@ -2,20 +2,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:Snap.Net.Avalonia.Views"
-        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels.ControlClient"
-        xmlns:viewModels1="clr-namespace:Snap.Net.Avalonia.ViewModels"
+        xmlns:behaviors="clr-namespace:Snap.Net.Avalonia.Behaviors"
+        xmlns:viewModels="clr-namespace:Snap.Net.Avalonia.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Snap.Net.Avalonia.Views.PlayerWindow"
-        x:DataType="viewModels1:PlayerWindowViewModel"
+        x:DataType="viewModels:PlayerWindowViewModel"
         Icon="/Assets/snapcast.ico"
-        Title="Settings"
+        Title="Players"
         CanResize="False"
+        Background="{DynamicResource BackgroundBrush}"
         SizeToContent="WidthAndHeight">
 
     <Design.DataContext>
-        <viewModels1:PlayerWindowViewModel />
+        <viewModels:PlayerWindowViewModel />
     </Design.DataContext>
+
+    
     <StackPanel Margin="10" MinWidth="420">
 
         <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
@@ -103,8 +105,64 @@
                                     Width="28" Height="28"
                                     Padding="0"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"
-                                    Command="{Binding OpenSettingsCommand}">
+                                    HorizontalAlignment="Center">
+                                <Button.Flyout>
+                                    <Flyout
+                                        Placement="LeftEdgeAlignedTop"
+                                        FlyoutPresenterClasses="noPadding">
+                                        <Border
+                                                CornerRadius="4"
+                                                BorderThickness="1"
+                                                BorderBrush="{DynamicResource SystemAccentColor}"
+                                                Padding="12,8,12,8">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource SystemAltHighColor}"/>
+                                            </Border.Background>
+                                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                                  Width="280" 
+                                                  RowSpacing="8" ColumnSpacing="12">
+
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Latency" VerticalAlignment="Center"/>
+                                                <TextBox   Grid.Row="0" Grid.Column="1" Text="{Binding Latency}"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Host ID" VerticalAlignment="Center"/>
+                                                <TextBox   Grid.Row="1" Grid.Column="1" Text="{Binding HostId}"/>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Extra args" VerticalAlignment="Center"/>
+                                                <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding ExtraArgs}"/>
+
+                                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Auto-restart" VerticalAlignment="Center"/>
+                                                <CheckBox  Grid.Row="3" Grid.Column="1" IsChecked="{Binding AutoRestartOnError}"/>
+
+                                                <Button    Grid.Row="4" Grid.Column="1"
+                                                           Content="Save"
+                                                           Command="{Binding SaveSettingsCommand}"
+                                                           HorizontalAlignment="Right">
+                                                    <Interaction.Behaviors>
+                                                        <EventTriggerBehavior EventName="Click">
+                                                            <behaviors:CloseFlyoutAction />
+                                                        </EventTriggerBehavior>
+                                                    </Interaction.Behaviors>
+                                                </Button>
+                                                
+                                                <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                                                           Background="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                                           Height="1" Margin="0,4,0,0"/>
+
+                                                <Border Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                                                        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                                                        CornerRadius="4" Padding="8,6">
+                                                    <SelectableTextBlock Text="{Binding PlayerCommandPreview}"
+                                                                         FontFamily="Monospace"
+                                                                         FontSize="11"
+                                                                         TextWrapping="Wrap"
+                                                                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                                </Border>
+
+                                            </Grid>
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
                                 <Path Fill="Gray"
                                       Width="12" Height="12"
                                       Stretch="Uniform"

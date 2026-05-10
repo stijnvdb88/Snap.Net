@@ -13,6 +13,8 @@ public class PlayerDeviceSettings
     public string HostId { get; set; }
     public int Latency { get; set; }
     public string ExtraArgs { get; set; }
+    
+    public bool AutoRestartOnError { get; set; }
 }
 
 public partial class PlayerDeviceViewModel : ObservableObject
@@ -32,6 +34,8 @@ public partial class PlayerDeviceViewModel : ObservableObject
     private PlayerDeviceSettings m_PlayerSettings = new PlayerDeviceSettings();
     
     public string SettingsKey => SettingsKeys.PLAYER_DEVICE_SETTINGS + "_" + Id + "_" + FriendlyName;
+
+    public string PlayerCommandPreview => m_PlayerService.SnapclientPath + " " + m_PlayerService.GetSnapclientArgs(this);
     
     public bool AutoPlay
     {
@@ -41,10 +45,22 @@ public partial class PlayerDeviceViewModel : ObservableObject
             if (m_PlayerSettings.AutoPlay == value) return;
             m_PlayerSettings.AutoPlay = value;
             OnPropertyChanged();
-            _SaveSettings();
+            SaveSettings();
         }
     }
  
+    public bool AutoRestartOnError
+    {
+        get => m_PlayerSettings.AutoRestartOnError;
+        set
+        {
+            if (m_PlayerSettings.AutoRestartOnError == value) return;
+            m_PlayerSettings.AutoRestartOnError = value;
+            OnPropertyChanged();
+            SaveSettings();
+        }
+    }
+    
     public int Latency
     {
         get => m_PlayerSettings.Latency;
@@ -53,7 +69,7 @@ public partial class PlayerDeviceViewModel : ObservableObject
             if (m_PlayerSettings.Latency == value) return;
             m_PlayerSettings.Latency = value;
             OnPropertyChanged();
-            _SaveSettings();
+            SaveSettings();
         }
     }
     
@@ -65,7 +81,7 @@ public partial class PlayerDeviceViewModel : ObservableObject
             if (m_PlayerSettings.HostId == value) return;
             m_PlayerSettings.HostId = value;
             OnPropertyChanged();
-            _SaveSettings();
+            SaveSettings();
         }
     }
     
@@ -77,7 +93,7 @@ public partial class PlayerDeviceViewModel : ObservableObject
             if (m_PlayerSettings.ExtraArgs == value) return;
             m_PlayerSettings.ExtraArgs = value;
             OnPropertyChanged();
-            _SaveSettings();
+            SaveSettings();
         }
     }
     
@@ -115,9 +131,11 @@ public partial class PlayerDeviceViewModel : ObservableObject
         return HashCode.Combine(FriendlyName, Id);
     }
 
-    private void _SaveSettings()
+    [RelayCommand]
+    public void SaveSettings()
     {
         m_SettingsService.Set(SettingsKey, m_PlayerSettings);
+        OnPropertyChanged(nameof(PlayerCommandPreview));
     }
 
     private void _LoadSettings()
