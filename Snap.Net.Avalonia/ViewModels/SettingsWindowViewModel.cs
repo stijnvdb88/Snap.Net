@@ -49,10 +49,11 @@ public partial class SettingsWindowViewModel : ViewModelBase
         get => m_UseBundledSnapclient;
         set
         {
-            if (value)
+            if (value && !m_UseBundledSnapclient)
             {
                 m_SettingsService.Set<string?>(SettingsKeys.SNAPCLIENT_PATH, null);
                 OnPropertyChanged(nameof(SnapclientPath));
+                _ = _UpdateSnapclientVersionNumber();
             }
             
             SetProperty(ref m_UseBundledSnapclient, value);   
@@ -124,8 +125,11 @@ public partial class SettingsWindowViewModel : ViewModelBase
             await m_PlayerService.ValidateSnapclientPath();
             OnPropertyChanged(nameof(SnapclientPath));
             OnPropertyChanged(nameof(SnapclientVersion));
-            
-            // also check if players are active and restart them?
+
+            if (m_PlayerService.SnapclientVersion != null)
+            {
+                // also check if players are active and restart them?    
+            }
         }
     }
     
