@@ -1,8 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
 using Microsoft.Extensions.DependencyInjection;
-using Snap.Net.Avalonia.Broadcast;
 using Snap.Net.Avalonia.Consts;
 using Snap.Net.Avalonia.Contracts.Services;
 using Snap.Net.Avalonia.Utils;
@@ -27,26 +26,51 @@ public class PlayerService : IPlayerService
         public CancellationTokenSource CancellationTokenSource;
     }
     
-    private string m_SnapclientPath =
-#if LINUX
-        "snapclient"; // todo: move to settings
-#else
-        @"C:\STM\snapcast\snapclient.exe";
-#endif
-    
     private readonly IServiceProvider m_ServiceProvider;
     private readonly ISettingsService m_SettingsService;
     private Dictionary<PlayerDeviceViewModel, ActivePlayer> m_ActivePlayers = new Dictionary<PlayerDeviceViewModel, ActivePlayer>();
     private const int MINIMUM_INSTANCE_ID = 72;
 
     private PlayerDeviceViewModel[] m_Devices =  Array.Empty<PlayerDeviceViewModel>();
-    
-    public string SnapclientPath => m_SnapclientPath; // todo: needs to come from settings instead
+
+    public string SnapclientPath
+    {
+        get
+        {
+            string? settingsValue = m_SettingsService.Get<string>(SettingsKeys.SNAPCLIENT_PATH, null);
+            string binaryName = OperatingSystem.IsWindows() ? "snapclient.exe" : "snapclient";
+            if (string.IsNullOrEmpty(settingsValue))
+            {
+                return Path.Combine(AppContext.BaseDirectory, "snapclient", binaryName);
+            }
+            return settingsValue;
+        }
+    }
+
+    public string? SnapclientVersion { get; private set; }
     
     public PlayerService(IServiceProvider serviceProvider, ISettingsService settingsService)
     {
         m_ServiceProvider = serviceProvider;
         m_SettingsService = settingsService;
+    }
+
+    public async Task ValidateSnapclientPath()
+    {
+        if (File.Exists(SnapclientPath))
+        {
+            BufferedCommandResult result = await Cli.Wrap(SnapclientPath)
+                .WithArguments("--version")
+                .ExecuteBufferedAsync();
+            string version = result.StandardOutput.Split(Environment.NewLine)[0];
+            if (version.StartsWith("snapclient"))
+            {
+                SnapclientVersion = version.Split(' ')[1];
+                return;
+            }
+        }
+
+        SnapclientVersion = null;
     }
     
     public async Task<SnapserverEndpoint[]> DiscoverSnapserversAsync(CancellationToken cancellationToken)
@@ -64,7 +88,7 @@ public class PlayerService : IPlayerService
     
     public async Task<PlayerDeviceViewModel[]> GetDevicesAsync(bool includeDefault = false)
     {
-        BufferedCommandResult result = await Cli.Wrap(m_SnapclientPath).WithArguments("--list")
+        BufferedCommandResult result = await Cli.Wrap(SnapclientPath).WithArguments("--list")
             .ExecuteBufferedAsync(Encoding.UTF8, Encoding.UTF8);
         m_Devices = _GetFromSnapClientListOutput(result.StandardOutput, includeDefault);
         return m_Devices;
@@ -145,7 +169,7 @@ public class PlayerService : IPlayerService
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         string args = GetSnapclientArgs(playerDevice);
         Console.WriteLine($"snapclient.exe {args}");
-        Command command = Cli.Wrap(m_SnapclientPath)
+        Command command = Cli.Wrap(SnapclientPath)
             .WithArguments(args);
         CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
         ChildProcessTracker.AddProcess(Process.GetProcessById(commandTask.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes

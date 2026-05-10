@@ -111,6 +111,7 @@ public partial class App : Application
         services.AddSingleton<IControlClientService, ControlClientService>();
         services.AddSingleton<IBroadcastService, BroadcastService>();
         services.AddSingleton<IPlayerService, PlayerService>();
+        services.AddSingleton<IStorageService, StorageService>();
         
         services.AddSingleton<AppViewModel>();
 

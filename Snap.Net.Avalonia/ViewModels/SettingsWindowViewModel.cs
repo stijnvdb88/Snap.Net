@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Snap.Net.Avalonia.Consts;
@@ -16,6 +18,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
 {
     private ISettingsService m_SettingsService;
     private IControlClientService m_ControlClientService;
+    private IPlayerService m_PlayerService;
+    private IStorageService m_StorageService;
 
     [ObservableProperty]
     private string? m_Host;
@@ -34,7 +38,41 @@ public partial class SettingsWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string m_ApplicationVersion;
-
+    
+    [ObservableProperty] 
+    private IBrush m_SnapclientVersionForeground = Brushes.Gray;
+    
+    private bool m_UseBundledSnapclient;
+    
+    public bool UseBundledSnapclient
+    {
+        get => m_UseBundledSnapclient;
+        set
+        {
+            if (value)
+            {
+                m_SettingsService.Set<string?>(SettingsKeys.SNAPCLIENT_PATH, null);
+                OnPropertyChanged(nameof(SnapclientPath));
+            }
+            
+            SetProperty(ref m_UseBundledSnapclient, value);   
+        }
+    }
+    
+    public string? SnapclientPath => m_PlayerService.SnapclientPath;
+    public string? SnapclientVersion
+    {
+        get
+        {
+            string version = m_PlayerService.SnapclientVersion;
+            if (string.IsNullOrEmpty(version))
+            {
+                return "Invalid";
+            }
+            return version;
+        }
+    }
+    
     public EPanelPosition[] AvailablePanelPositions => Enum.GetValues<EPanelPosition>();
     
 #if DEBUG
@@ -47,9 +85,14 @@ public partial class SettingsWindowViewModel : ViewModelBase
     }
 #endif    
     
-    public SettingsWindowViewModel(ISettingsService settingsService, IControlClientService controlClientService)
+    public SettingsWindowViewModel(ISettingsService settingsService,
+        IStorageService storageService,
+        IControlClientService controlClientService,
+        IPlayerService playerService)
     {
+        m_PlayerService = playerService;
         m_SettingsService = settingsService;
+        m_StorageService = storageService;
         m_ControlClientService = controlClientService;
         Host = m_SettingsService.Get<string>(SettingsKeys.HOST);
         PlayerPort = m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT, 1704);
@@ -58,7 +101,35 @@ public partial class SettingsWindowViewModel : ViewModelBase
         PanelPosition = m_SettingsService.Get<EPanelPosition>(SettingsKeys.PANEL_POSITION);
         AssemblyInformationalVersionAttribute? infoVersion = (AssemblyInformationalVersionAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault()!;
         ApplicationVersion = infoVersion?.InformationalVersion.Split('+')[0] ?? "Unknown";
+        _ = _UpdateSnapclientVersionNumber();
     }
+
+    private async Task _UpdateSnapclientVersionNumber()
+    {
+        await m_PlayerService.ValidateSnapclientPath();
+        OnPropertyChanged(nameof(SnapclientVersion));
+        UseBundledSnapclient = m_PlayerService.SnapclientVersion != null &&
+                               string.IsNullOrEmpty(m_SettingsService.Get<string>(SettingsKeys.SNAPCLIENT_PATH));
+    }
+    
+    [RelayCommand]
+    private async Task BrowseSnapclient()
+    {
+        string[]? extensions = OperatingSystem.IsWindows() ? new[] { "exe" } : null;
+        string? path = await m_StorageService.OpenFilePickerAsync("Select snapclient executable", extensions);
+        if (path != null)
+        {
+            m_SettingsService.Set(SettingsKeys.SNAPCLIENT_PATH, path);
+            // check if valid, update version label
+            await m_PlayerService.ValidateSnapclientPath();
+            OnPropertyChanged(nameof(SnapclientPath));
+            OnPropertyChanged(nameof(SnapclientVersion));
+            
+            // also check if players are active and restart them?
+        }
+    }
+    
+    
 
     [RelayCommand]
     public void Save(ICloseable closeable)
@@ -68,6 +139,7 @@ public partial class SettingsWindowViewModel : ViewModelBase
         m_SettingsService.Set(SettingsKeys.CONTROL_PORT, ControlPort);
         m_SettingsService.Set(SettingsKeys.SHOW_DISCONNECTED_CLIENTS, ShowDisconnectedClients);
         m_SettingsService.Set(SettingsKeys.PANEL_POSITION, PanelPosition);
+        
         if (string.IsNullOrEmpty(Host) == false && ControlPort != null)
         {
             m_ControlClientService.InitializeAsync(Host, (int)ControlPort).ConfigureAwait(false);    

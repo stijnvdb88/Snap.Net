@@ -18,4 +18,7 @@ public interface IPlayerService
     string GetSnapclientArgs(PlayerDeviceViewModel playerDevice);
 
     string SnapclientPath { get; }
+    string? SnapclientVersion { get; }
+
+    Task ValidateSnapclientPath();
 }

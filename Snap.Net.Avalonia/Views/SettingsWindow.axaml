@@ -48,6 +48,33 @@
                 <CheckBox Content="Show disconnected clients?" IsChecked="{Binding ShowDisconnectedClients}" />
             </DockPanel>
             
+            <DockPanel Margin="0,8,0,0">
+                <TextBlock Text="Snapclient" Width="110" FontWeight="Bold" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <CheckBox Content="Use bundled snapclient"
+                              IsChecked="{Binding UseBundledSnapclient}"/>
+                    <DockPanel IsEnabled="{Binding !UseBundledSnapclient}">
+                        <Button DockPanel.Dock="Right"
+                                Content="Browse..."
+                                Margin="4,0,0,0"
+                                Command="{Binding BrowseSnapclientCommand}"/>
+                        <TextBox Text="{Binding SnapclientPath}"
+                                 IsReadOnly="{Binding UseBundledSnapclient}"
+                                 Watermark="Path to snapclient executable..."/>
+                    </DockPanel>
+                </StackPanel>
+            </DockPanel>
+            
+            <DockPanel>
+                <TextBlock Text="Version"
+                           Width="110"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding SnapclientVersion}"
+                           VerticalAlignment="Center"
+                           Foreground="{Binding SnapclientVersionForeground}"/>
+            </DockPanel>
+            
             <Button Content="Save"
                     HorizontalAlignment="Center" 
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
