@@ -8,8 +8,47 @@ on:
         type: boolean
 jobs:
 
+  build-snapclient:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            vcpkg/installed
+            vcpkg/downloads
+          key: vcpkg-${{ runner.os }}-x64-windows-release-v1
+
+      - name: Setup vcpkg
+        uses: johnwason/vcpkg-action@v7
+        with:
+          pkgs: libflac libvorbis soxr opus boost-asio boost-beast
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+
+      - name: Build snapclient
+        run: |
+          cd SnapClient/snapcast
+          mkdir build -Force
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-release
+          cmake --build . --config Release
+
+      - name: Upload snapclient binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapclient-windows
+          path: SnapClient/snapcast/bin/Release/snapclient.exe
+
+
   build-windows:
     runs-on: windows-latest
+    needs: build-snapclient
 
     steps:
       - name: Checkout (with submodules)
@@ -22,6 +61,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.103'
+
+      - name: Download snapclient
+        uses: actions/download-artifact@v4
+        with:
+          name: snapclient-windows
+          path: Snap.Net.Avalonia/snapclient/
 
       - name: Cache NuGet
         uses: actions/cache@v4

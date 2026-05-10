@@ -8,8 +8,33 @@ on:
         type: boolean
 jobs:
 
+  build-snapclient:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          brew install cmake boost flac libvorbis opus libsoxr
+
+      - name: Build snapclient
+        run: |
+          cd SnapClient/snapcast
+          cmake -B build -DBUILD_SERVER=OFF
+          cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+
+      - name: Upload snapclient binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapclient-macos
+          path: SnapClient/snapcast/build/bin/snapclient
+
   build-macos:
     runs-on: macos-latest
+    needs: build-snapclient
 
     steps:
       - name: Checkout (with submodules)
@@ -22,6 +47,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.103'
+
+      - name: Download snapclient
+        uses: actions/download-artifact@v4
+        with:
+          name: snapclient-macos
+          path: Snap.Net.Avalonia/snapclient/
+
+      - name: Make executable
+        run: chmod +x Snap.Net.Avalonia/snapclient/snapclient
 
       - name: Install create-dmg
         run: brew install create-dmg
@@ -68,8 +102,6 @@ jobs:
 
           mkdir dmg
           mv SnapDotNet.app dmg
-
-          brew install create-dmg
 
           create-dmg \
             --volname "SnapDotNet Installer" \
