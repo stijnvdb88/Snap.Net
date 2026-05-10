@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -40,6 +41,8 @@ public partial class AppViewModel : ViewModelBase
     private string m_OpenFlyoutEntryLabel = "Open";
     
     public event Action<bool>? OnTrayIconChanged;
+
+    private Dictionary<Type, Window> m_OpenWindows = new Dictionary<Type, Window>();
     
     public AppViewModel(
         IServiceProvider serviceProvider
@@ -97,28 +100,45 @@ public partial class AppViewModel : ViewModelBase
     [RelayCommand]
     private void ShowSettings()
     {
-        m_SettingsWindow = new SettingsWindow();
-        m_SettingsWindow.DataContext = m_ServiceProvider.GetService(typeof(SettingsWindowViewModel));
-        m_SettingsWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        m_SettingsWindow.Show();
+        _ShowWindow<SettingsWindow, SettingsWindowViewModel>();
     }
     
     [RelayCommand]
     private void ShowPlayer()
     {
-        m_PlayerWindow = new PlayerWindow();
-        m_PlayerWindow.DataContext = m_ServiceProvider.GetService(typeof(PlayerWindowViewModel));
-        m_PlayerWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        m_PlayerWindow.Show();
+        _ShowWindow<PlayerWindow, PlayerWindowViewModel>();
     }
-    
+
     [RelayCommand]
     private void ShowBroadcastWindow()
     {
-        m_BroadcastWindow = new BroadcastWindow();
-        m_BroadcastWindow.DataContext = m_ServiceProvider.GetService(typeof(BroadcastWindowViewModel));
-        m_BroadcastWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        m_BroadcastWindow.Show();
+        _ShowWindow<BroadcastWindow, BroadcastWindowViewModel>();
+    }
+    
+    private void _ShowWindow<TWindowType, TViewModelType>() where TWindowType : Window, new() where TViewModelType : ViewModelBase  
+    {
+        Window? existing = null;
+        if (m_OpenWindows.ContainsKey(typeof(TWindowType)))
+        {
+            existing = m_OpenWindows[typeof(TWindowType)];
+        }
+
+        if (existing != null)
+        {
+            if (existing.WindowState == WindowState.Minimized)
+            {
+                existing.WindowState = WindowState.Normal;
+            }
+            existing.Activate();
+            return;
+        }
+
+        TWindowType window = new TWindowType();
+        m_OpenWindows.Add(typeof(TWindowType), window);
+        window.Closed += (_, _) => m_OpenWindows.Remove(typeof(TWindowType));
+        window.DataContext = m_ServiceProvider.GetService(typeof(TViewModelType));
+        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        window.Show();
     }
     
     [RelayCommand]
