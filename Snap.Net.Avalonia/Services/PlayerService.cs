@@ -15,6 +15,7 @@ using Snap.Net.Avalonia.Consts;
 using Snap.Net.Avalonia.Contracts.Services;
 using Snap.Net.Avalonia.Utils;
 using Snap.Net.Avalonia.ViewModels.Player;
+using Zeroconf;
 
 namespace Snap.Net.Avalonia.Services;
 
@@ -38,13 +39,26 @@ public class PlayerService : IPlayerService
     private Dictionary<PlayerDeviceViewModel, ActivePlayer> m_ActivePlayers = new Dictionary<PlayerDeviceViewModel, ActivePlayer>();
     private const int MINIMUM_INSTANCE_ID = 72;
 
+    private PlayerDeviceViewModel[] m_Devices =  Array.Empty<PlayerDeviceViewModel>();
+    
     public PlayerService(IServiceProvider serviceProvider, ISettingsService settingsService)
     {
         m_ServiceProvider = serviceProvider;
         m_SettingsService = settingsService;
     }
-
-    private PlayerDeviceViewModel[] m_Devices =  Array.Empty<PlayerDeviceViewModel>();
+    
+    public async Task<SnapserverEndpoint[]> DiscoverSnapserversAsync(CancellationToken cancellationToken)
+    {
+        IReadOnlyList<IZeroconfHost>? results = await ZeroconfResolver.ResolveAsync("_snapcast._tcp.local.", cancellationToken: cancellationToken);
+        List<SnapserverEndpoint> list = new List<SnapserverEndpoint>();
+        foreach (IZeroconfHost host in results)
+        {
+            IService? service = host.Services.Values.FirstOrDefault();
+            int port = service?.Port ?? 1704;
+            list.Add(new SnapserverEndpoint(host.IPAddress, port));
+        }
+        return list.ToArray();
+    }
     
     public async Task<PlayerDeviceViewModel[]> GetDevicesAsync(bool includeDefault = false)
     {
@@ -64,23 +78,23 @@ public class PlayerService : IPlayerService
     /// <returns></returns>
     private int _GetInstanceId(PlayerDeviceViewModel playerDevice)
     {
-        Dictionary<int, int>? instanceIds =
-            m_SettingsService.Get(SettingsKeys.DEVICE_INSTANCE_IDS, new Dictionary<int, int>());
+        Dictionary<string, int>? instanceIds =
+            m_SettingsService.Get(SettingsKeys.DEVICE_INSTANCE_IDS, new Dictionary<string, int>());
         if (instanceIds == null)
         {
-            instanceIds = new Dictionary<int, int>();
+            instanceIds = new Dictionary<string, int>();
         }
 
-        if (instanceIds.ContainsKey(playerDevice.GetHashCode()) == false)
+        if (instanceIds.ContainsKey(playerDevice.SettingsKey) == false)
         {
             // didn't have this one yet, find an id for it + register
             // DefaultIfEmpty(MINIMUM_INSTANCE_ID) is how we try and avoid collusions with user-defined instance ids 
             int instanceId = instanceIds.Values.DefaultIfEmpty(MINIMUM_INSTANCE_ID).Max();
  
-            instanceIds.Add(playerDevice.GetHashCode(), instanceId+1);
+            instanceIds.Add(playerDevice.SettingsKey, instanceId+1);
             m_SettingsService.Set(SettingsKeys.DEVICE_INSTANCE_IDS, instanceIds);
         }
-        return instanceIds[playerDevice.GetHashCode()];
+        return instanceIds[playerDevice.SettingsKey];
     }
     
     public string GetSnapclientArgs(PlayerDeviceViewModel playerDevice)
@@ -92,6 +106,37 @@ public class PlayerService : IPlayerService
                $"{m_SettingsService.Get<int>(SettingsKeys.PLAYER_PORT)} ";
     }
 
+    public async Task Play(PlayerDeviceViewModel playerDevice)
+    {
+        if (IsPlaying(playerDevice))
+        {
+            return;
+        }
+        
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        string args = GetSnapclientArgs(playerDevice);
+        Console.WriteLine($"snapclient.exe {args}");
+        Command command = Cli.Wrap(m_SnapclientPath)
+            .WithArguments(args);
+        CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
+        ChildProcessTracker.AddProcess(Process.GetProcessById(commandTask.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes
+        m_ActivePlayers[playerDevice] = new ActivePlayer()
+        {
+            CancellationTokenSource = cancellationTokenSource,
+            PlayTask = commandTask,
+        };
+
+        try
+        {
+            await commandTask;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            _Stop(playerDevice);
+        }
+    }
+    
     public async Task TogglePlay(PlayerDeviceViewModel playerDevice)
     {
         if (IsPlaying(playerDevice))
@@ -100,28 +145,7 @@ public class PlayerService : IPlayerService
         }
         else
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            string args = GetSnapclientArgs(playerDevice);
-            Console.WriteLine($"snapclient.exe {args}");
-            Command command = Cli.Wrap(m_SnapclientPath)
-                .WithArguments(args);
-            CommandTask<CommandResult> commandTask = command.ExecuteAsync(cancellationTokenSource.Token);
-            ChildProcessTracker.AddProcess(Process.GetProcessById(commandTask.ProcessId)); // this utility helps us make sure the player process doesn't keep going if our process is killed / crashes
-            m_ActivePlayers[playerDevice] = new ActivePlayer()
-            {
-                CancellationTokenSource = cancellationTokenSource,
-                PlayTask = commandTask,
-            };
-
-            try
-            {
-                await commandTask;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _Stop(playerDevice);
-            }
+            await Play(playerDevice);
         }
     }
 
