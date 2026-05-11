@@ -96,6 +96,11 @@ public class PlayerService : IPlayerService
     
     public async Task<PlayerDeviceViewModel[]> GetDevicesAsync(bool includeDefault = false)
     {
+        await ValidateSnapclientPath();
+        if (string.IsNullOrEmpty(SnapclientVersion))
+        {
+            return [];
+        }
         BufferedCommandResult result = await Cli.Wrap(SnapclientPath).WithArguments("--list")
             .ExecuteBufferedAsync(Encoding.UTF8, Encoding.UTF8);
         m_Devices = _GetFromSnapClientListOutput(result.StandardOutput, includeDefault);
@@ -191,9 +196,15 @@ public class PlayerService : IPlayerService
         {
             await commandTask;
         }
+        catch (OperationCanceledException canceled)
+        {
+            // intentional stop - do nothing
+            Console.WriteLine($"Player intentional stop: {canceled.Message}");
+            _Stop(playerDevice);
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine($"Player unexpected exception: {e.Message}");
             _Stop(playerDevice);
             if (playerDevice.AutoRestartOnError)
             {
