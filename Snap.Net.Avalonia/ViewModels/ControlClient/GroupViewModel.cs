@@ -52,7 +52,7 @@ public partial class GroupViewModel : VolumeControlViewModel
             return;
         }
         Name = m_Group.Name;
-        Volume = m_Group.VolumePercent;
+        m_Volume = m_Group.VolumePercent;
         Stream? stream = serverData.streams.SingleOrDefault(s => s.id == m_Group.stream_id);
         if (stream != null)
         {
