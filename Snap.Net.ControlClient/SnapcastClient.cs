@@ -16,8 +16,6 @@
 using SnapDotNet.ControlClient.JsonRpcData;
 using StreamJsonRpc;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,8 +33,15 @@ namespace SnapDotNet.ControlClient
         private NetworkStream m_Stream;
         private JsonRpc m_JsonRpc;
 
+        // One gate owns connection replacement and outgoing RPCs. In particular, a
+        // slider must not race a reconnect or apply replies out of order.
+        private readonly SemaphoreSlim m_ConnectionGate = new SemaphoreSlim(1, 1);
+        private readonly CancellationTokenSource m_Lifetime = new CancellationTokenSource();
+        private readonly object m_CommandLock = new object();
+        private Task m_CommandTask = Task.CompletedTask;
         private Task m_ConnectionCheckTask;
-        private CancellationTokenSource m_ConnectionCheckCancellationTokenSource;
+        private Task m_ReconnectTask;
+        private int m_Timeout = 3000;
 
         public ServerData ServerData { get; private set; }
 
@@ -45,12 +50,8 @@ namespace SnapDotNet.ControlClient
         private string m_Ip;
         private int m_Port;
 
-        private bool m_RetryingConnection = false;
-
         public static bool AutoReconnect { get; set; }
 
-        private readonly Queue<Action> m_QueuedMessages = new Queue<Action>();
-        
         public bool ConnectionFailed { get; private set; }
 
         /// <summary>
@@ -61,208 +62,445 @@ namespace SnapDotNet.ControlClient
         /// <returns></returns>
         public async Task ConnectAsync(string ip, int port, int timeout = 3000)
         {
-            // connect
-            m_Ip = ip;
-            m_Port = port;
-            ConnectionFailed = false;
-            ServerData = null;
+            if (timeout <= 0)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            m_TcpClient = new TcpClient();
             try
             {
-                //if (m_TcpClient.ConnectAsync(ip, port).Wait(timeout) == false)
-                var connectAsync = m_TcpClient.ConnectAsync(ip, port);
-                //await (m_TcpClient.ConnectAsync(ip, port)).
-                if((await Task.WhenAny(connectAsync, Task.Delay(timeout)) != connectAsync) || string.IsNullOrEmpty(ip))
+                await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                try
                 {
-                    _HandleConnectionFailure();
-                    return;
+                    if (IsDisposed)
+                        return;
+                    m_Ip = ip;
+                    m_Port = port;
+                    m_Timeout = timeout;
+                    await _ConnectAsync().ConfigureAwait(false);
+                    _StartReconnectLoop();
                 }
+                finally
+                {
+                    m_ConnectionGate.Release();
+                }
+            }
+            catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { }
+        }
+
+        /// <summary>
+        /// Replaces the control connection after a host/network interruption. Concurrent
+        /// requests share one attempt. Does not restart playback or broadcast.
+        /// </summary>
+        public Task ReconnectAsync()
+        {
+            lock (m_CommandLock)
+            {
+                if (IsDisposed || string.IsNullOrEmpty(m_Ip))
+                    return Task.CompletedTask;
+                if (m_ReconnectTask == null || m_ReconnectTask.IsCompleted)
+                    m_ReconnectTask = Task.Run(_ReconnectAsync);
+                return m_ReconnectTask;
+            }
+        }
+
+        private async Task _ReconnectAsync()
+        {
+            try
+            {
+                Info("Control reconnect requested after host/network interruption.");
+                // Abort an in-flight request before waiting for the connection gate.
+                // A silent pre-resume socket must not delay recovery until its timeout.
+                var rpc = m_JsonRpc;
+                rpc?.Dispose();
+                await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                try
+                {
+                    if (!IsDisposed)
+                    {
+                        await _ConnectAsync().ConfigureAwait(false);
+                        _StartReconnectLoop();
+                    }
+                }
+                finally { m_ConnectionGate.Release(); }
+            }
+            catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { }
+            catch (Exception e) { Info("Control reconnect failed: {0}", e); }
+        }
+
+        private async Task _ConnectAsync()
+        {
+            _Disconnect();
+            var elapsed = System.Diagnostics.Stopwatch.StartNew();
+            Info("Connecting control to {0}:{1} (timeout {2} ms).", m_Ip, m_Port, m_Timeout);
+            var tcpClient = new TcpClient();
+            m_TcpClient = tcpClient;
+            try
+            {
+                using (m_Lifetime.Token.Register(tcpClient.Dispose))
+                {
+                    var connect = tcpClient.ConnectAsync(m_Ip, m_Port);
+                    if (await Task.WhenAny(connect, Task.Delay(m_Timeout, m_Lifetime.Token)).ConfigureAwait(false) != connect)
+                    {
+                        tcpClient.Dispose();
+                        // DNS may still be completing: observe it without extending
+                        // the caller's deadline after the socket has been closed.
+                        _ = _ObserveRequestAsync(connect);
+                        throw new TimeoutException("Snapcast control connection timed out.");
+                    }
+                    await connect.ConfigureAwait(false);
+                }
+                m_Lifetime.Token.ThrowIfCancellationRequested();
+                await _InitializeRpcAsync(tcpClient).ConfigureAwait(false);
+                Info("Control connection ready at {0}:{1} after {2} ms.", m_Ip, m_Port, elapsed.ElapsedMilliseconds);
             }
             catch (Exception e)
             {
-                // logging this to debug because we don't want to spam the log file (connection gets retried indefinitely if it had previously succeeded)
-                Debug("Connect exception: ", e.Message);
-                _HandleConnectionFailure();
-                return;
+                Info("Control connection to {0}:{1} failed after {2} ms: {3}: {4}",
+                    m_Ip, m_Port, elapsed.ElapsedMilliseconds, e.GetType().Name, e.Message);
+                _Disconnect();
             }
+        }
 
-            if (m_TcpClient.Connected == false)
-            {
-                _HandleConnectionFailure();
-                return;
-            }
+        private async Task _InitializeRpcAsync(TcpClient tcpClient)
+        {
+            // connect
+            ConnectionFailed = false;
+            ServerData = null;
 
             // attach StreamJsonRpc (NewLineDelimited)
-            m_Stream = m_TcpClient.GetStream();
+            m_Stream = tcpClient.GetStream();
 
             // UnbatchingNewLineDelimitedMessageHandler adapted from UnbatchingWebSocketMessageHandler 
             // https://github.com/microsoft/vs-streamjsonrpc/compare/master...AArnott:sampleUnbatchingMessageHandler
             m_JsonRpc = new StreamJsonRpc.JsonRpc(new UnbatchingNewLineDelimitedMessageHandler(m_Stream, m_Stream));
 
+            var rpc = m_JsonRpc;
+
             //m_JsonRpc.TraceSource.Switch.Level = SourceLevels.All; // uncomment if you need detailed json-rpc logs
 
             // register methods (must be done before listening starts)
-            m_JsonRpc.AddLocalRpcMethod("Server.OnUpdate", new Action<JsonRpcData.ServerData>((server) =>
+            m_JsonRpc.AddLocalRpcMethod("Server.OnUpdate", new Func<JsonRpcData.ServerData, Task>((server) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Server.OnUpdate - {0}", server);
                 _ServerUpdated(server);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Client.OnVolumeChanged", new Action<string, JsonRpcData.Volume>((id, volume) =>
-            {
-                Debug("Received Client.OnVolumeChanged - id {0}, volume {1}", id, volume);
-                _ClientVolumeChanged(id, volume);
-            }));
+            m_JsonRpc.AddLocalRpcMethod("Client.OnVolumeChanged", new Func<string, JsonRpcData.Volume, Task>(
+                (id, volume) => _HandleVolumeNotificationAsync(rpc, id, volume)));
 
-            m_JsonRpc.AddLocalRpcMethod("Client.OnNameChanged", new Action<string, string>((id, name) =>
+            m_JsonRpc.AddLocalRpcMethod("Client.OnNameChanged", new Func<string, string, Task>((id, name) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Client.OnNameChanged - id {0}, name {1}", id, name);
                 _ClientNameChanged(id, name);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Client.OnLatencyChanged", new Action<string, int>((id, latency) =>
+            m_JsonRpc.AddLocalRpcMethod("Client.OnLatencyChanged", new Func<string, int, Task>((id, latency) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Client.OnLatencyChanged - id {0}, latency {1}", id, latency);
                 _ClientLatencyChanged(id, latency);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Client.OnConnect", new Action<string, JsonRpcData.Client>((id, client) =>
+            m_JsonRpc.AddLocalRpcMethod("Client.OnConnect", new Func<string, JsonRpcData.Client, Task>((id, client) => _HandleNotificationAsync(rpc, () =>
             {
-                // when the server's been down, we keep trying to reconnect (as does every other client)
-                // when reconnection succeeds, we might see other clients' OnConnect calls come in
-                // before our own Server.GetStatus has completed. In that case, we queue these
-                // and execute them as soon as we've received the server data
-                Debug("Received Client.OnConnect - id {0}, client {1}", id, client);
-                if (ServerData != null)
-                {
-                    _ClientConnectedOrDisconnected(id, client);
-                }
-                else
-                {
-                    m_QueuedMessages.Enqueue(() => { _ClientConnectedOrDisconnected(id, client); });
-                }
-            }));
+                _ClientConnectedOrDisconnected(id, client);
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Client.OnDisconnect", new Action<string, JsonRpcData.Client>((id, client) =>
+            m_JsonRpc.AddLocalRpcMethod("Client.OnDisconnect", new Func<string, JsonRpcData.Client, Task>((id, client) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Client.OnDisconnect - id {0}, client {1}", id, client);
                 _ClientConnectedOrDisconnected(id, client);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Group.OnMute", new Action<string, bool>((id, mute) =>
-            {
-                Debug("Received Group.OnMute - id {0}, mute {1}", id, mute);
-                _GroupMuteChanged(id, mute);
-            }));
+            m_JsonRpc.AddLocalRpcMethod("Group.OnMute", new Func<string, bool, Task>(
+                (id, mute) => _HandleMuteNotificationAsync(rpc, id, mute)));
 
-            m_JsonRpc.AddLocalRpcMethod("Group.OnNameChanged", new Action<string, string>((id, name) =>
+            m_JsonRpc.AddLocalRpcMethod("Group.OnNameChanged", new Func<string, string, Task>((id, name) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Group.OnNameChanged - id {0}, name {1}", id, name);
                 _GroupNameChanged(id, name);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Group.OnStreamChanged", new Action<string, string>((id, stream_id) =>
+            m_JsonRpc.AddLocalRpcMethod("Group.OnStreamChanged", new Func<string, string, Task>((id, stream_id) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Group.OnStreamChanged - id {0}, stream_id {1}", id, stream_id);
                 _GroupStreamChanged(id, stream_id);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Stream.OnUpdate", new Action<string, Stream>((id, stream) =>
+            m_JsonRpc.AddLocalRpcMethod("Stream.OnUpdate", new Func<string, Stream, Task>((id, stream) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Stream.OnUpdate - id {0}, stream {1}", id, stream);
                 _StreamUpdated(id, stream);
-            }));
+            })));
 
-            m_JsonRpc.AddLocalRpcMethod("Stream.OnProperties", new Action<string, Properties>((id, properties) =>
+            m_JsonRpc.AddLocalRpcMethod("Stream.OnProperties", new Func<string, Properties, Task>((id, properties) => _HandleNotificationAsync(rpc, () =>
             {
                 Debug("Received Stream.OnProperties - id {0}, properties {1}", id, properties);
                 _StreamPropertiesUpdated(id, properties);
-            }));
+            })));
 
             m_JsonRpc.StartListening();
             // call Server.GetStatus to get all metadata
-            await GetServerStatusAsync();
-
-            // make sure we find out if connection drops
-            _StartReconnectLoop();
+            await _GetServerStatusAsync().ConfigureAwait(false);
         }
 
         public bool IsConnected()
         {
-            return m_TcpClient != null && m_TcpClient.Connected;
+            var rpc = m_JsonRpc;
+            return !IsDisposed && ServerData != null && rpc != null && !rpc.Completion.IsCompleted;
         }
 
-        private void _HandleConnectionFailure()
+        private async Task _HandleNotificationAsync(JsonRpc rpc, Action notification)
         {
-            ConnectionFailed = true;
-            if (m_RetryingConnection == false)
+            try
             {
-                _StartReconnectLoop();
+                // Notifications can arrive before GetStatus finishes, or remain queued
+                // after reconnect. Process them only against their own connection.
+                await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                try
+                {
+                    if (!IsDisposed && ReferenceEquals(rpc, m_JsonRpc))
+                        notification();
+                }
+                finally { m_ConnectionGate.Release(); }
             }
-            OnServerUpdated?.Invoke(); // force refresh of all listeners - I hope they're checking for null! :-)
+            catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { }
+        }
 
-            return;
+        private Task _HandleVolumeNotificationAsync(JsonRpc rpc, string id, Volume value)
+        {
+            var volume = _GetClient(id)?.config.volume;
+            if (volume == null)
+                return _HandleNotificationAsync(rpc, () => _ClientVolumeChanged(id, value));
+            long revision;
+            bool pending;
+            lock (volume.SyncRoot)
+            {
+                volume.ServerRevision++;
+                revision = volume.LocalRevision;
+                pending = volume.PendingChange != null;
+            }
+            return _HandleNotificationAsync(rpc, () =>
+            {
+                lock (volume.SyncRoot)
+                {
+                    // Echoes queued during a local burst cannot undo it after drain.
+                    // The final command explicitly reads authoritative server state.
+                    if (!pending && revision == volume.LocalRevision)
+                        _ClientVolumeChanged(id, value);
+                }
+            });
+        }
+
+        private Task _HandleMuteNotificationAsync(JsonRpc rpc, string id, bool value)
+        {
+            var group = _GetGroup(id);
+            if (group == null)
+                return _HandleNotificationAsync(rpc, () => _GroupMuteChanged(id, value));
+            long revision;
+            bool pending;
+            lock (group.MuteSyncRoot)
+            {
+                group.ServerMuteRevision++;
+                revision = group.LocalMuteRevision;
+                pending = group.PendingMuteChange != null;
+            }
+            return _HandleNotificationAsync(rpc, () =>
+            {
+                if (!pending)
+                {
+                    var current = _GetGroup(id);
+                    if (ReferenceEquals(current, group))
+                        current.SERVER_SetMute(value, revision);
+                    else
+                        current?.SERVER_SetMute(value);
+                }
+            });
+        }
+
+        // Caller holds m_ConnectionGate.
+        private void _Disconnect()
+        {
+            if (m_JsonRpc != null || ServerData != null)
+                Info("Closing control connection to {0}:{1}; invalidating local server state.", m_Ip, m_Port);
+            ConnectionFailed = true;
+            var rpc = m_JsonRpc;
+            m_JsonRpc = null;
+            rpc?.Dispose();
+            // Completion can fault even when no request was in flight.
+            if (rpc != null)
+                _ = _ObserveCompletionAsync(rpc);
+            m_Stream?.Dispose();
+            m_Stream = null;
+            m_TcpClient?.Dispose();
+            m_TcpClient = null;
+            var data = ServerData;
+            ServerData = null;
+            if (data != null && !IsDisposed)
+            {
+                data.SERVER_Invalidate();
+                OnServerUpdated?.Invoke();
+            }
         }
 
         public async Task GetServerStatusAsync()
         {
-            if (m_TcpClient.Connected && m_JsonRpc != null)
+            try
             {
+                await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
                 try
                 {
-                    Data result = await m_JsonRpc.InvokeAsync<JsonRpcData.Data>("Server.GetStatus");
-                    _ServerUpdated(result.server);
+                    if (m_JsonRpc != null)
+                        await _GetServerStatusAsync().ConfigureAwait(false);
                 }
-                catch(StreamJsonRpc.ConnectionLostException)
+                catch (Exception e)
                 {
-                    Debug("got connectionLostException, retrying connect...");
-                    await ConnectAsync(m_Ip, m_Port);
+                    Info("Server.GetStatus failed: {0}: {1}", e.GetType().Name, e.Message);
+                    _Disconnect();
+                }
+                finally
+                {
+                    m_ConnectionGate.Release();
                 }
             }
+            catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { }
+        }
+
+        private async Task _GetServerStatusAsync()
+        {
+            Info("Requesting full control server status.");
+            Data result = await _InvokeAsync<Data>("Server.GetStatus", null).ConfigureAwait(false);
+            m_Lifetime.Token.ThrowIfCancellationRequested();
+            _ServerUpdated(result.server);
+        }
+
+        private async Task<T> _InvokeAsync<T>(string method, object parameters)
+        {
+            var rpc = m_JsonRpc;
+            using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(m_Lifetime.Token))
+            {
+                var request = rpc.InvokeWithParameterObjectAsync<T>(method, parameters, m_Lifetime.Token);
+                if (await Task.WhenAny(request, Task.Delay(m_Timeout, deadline.Token)).ConfigureAwait(false) != request)
+                {
+                    // RPC cancellation alone can wait for cooperation from the peer.
+                    // Close the transport to enforce a local deadline even on silent TCP.
+                    rpc.Dispose();
+                    _ = _ObserveRequestAsync(request);
+                    m_Lifetime.Token.ThrowIfCancellationRequested();
+                    Info("Control RPC {0} timed out after {1} ms at {2}:{3}.", method, m_Timeout, m_Ip, m_Port);
+                    throw new TimeoutException("Snapcast control request timed out: " + method);
+                }
+                deadline.Cancel();
+                var result = await request.ConfigureAwait(false);
+                m_Lifetime.Token.ThrowIfCancellationRequested();
+                return result;
+            }
+        }
+
+        private static async Task _ObserveRequestAsync(Task request)
+        {
+            try { await request.ConfigureAwait(false); }
+            catch (Exception e) { Debug("Control request ended: {0}", e.Message); }
         }
 
         private void _StartReconnectLoop()
         {
-            if (AutoReconnect == true)
-            {
-                m_RetryingConnection = true;
-                m_ConnectionCheckCancellationTokenSource = new CancellationTokenSource();
-                m_ConnectionCheckTask = Task.Run(_CheckConnectionAsync, m_ConnectionCheckCancellationTokenSource.Token);
-            }
+            if (m_ConnectionCheckTask == null && !IsDisposed)
+                m_ConnectionCheckTask = Task.Run(_CheckConnectionAsync);
+        }
+
+        private static async Task _ObserveCompletionAsync(JsonRpc rpc)
+        {
+            try { await rpc.Completion.ConfigureAwait(false); }
+            catch (Exception e) { Info("Control listener stopped: {0}: {1}", e.GetType().Name, e.Message); }
         }
 
         private async Task _CheckConnectionAsync()
         {
-            while (m_TcpClient.Connected == true)
+            while (!m_Lifetime.IsCancellationRequested)
             {
-                await Task.Delay(100);
-            }
-
-            Info("connection lost!");
-            if (ServerData != null)
-            {
-                ServerData.SERVER_Invalidate(); // make sure everyone know the server is no longer with us
-                ServerData = null; // rip
-            }
-
-            while (m_TcpClient.Connected == false
-            ) // checking for this setting again in case user disables it while we're already in the retry loop
-            {
-                if (AutoReconnect == true)
+                try
                 {
-                    await ConnectAsync(m_Ip, m_Port); // keep knocking on the door
-                    await Task.Delay(100);
+                    var rpc = m_JsonRpc;
+                    if (rpc != null)
+                        await _ObserveCompletionAsync(rpc).ConfigureAwait(false);
+
+                    await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                    try
+                    {
+                        // An explicit ConnectAsync may already have replaced this connection.
+                        if (rpc != null && ReferenceEquals(rpc, m_JsonRpc))
+                        {
+                            Info("Control listener completed; recovering connection.");
+                            _Disconnect();
+                        }
+                    }
+                    finally { m_ConnectionGate.Release(); }
+
+                    // No polling or heartbeat traffic while a connection is healthy.
+                    if (IsConnected())
+                        continue;
+                    await Task.Delay(1000, m_Lifetime.Token).ConfigureAwait(false);
+                    await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                    try
+                    {
+                        if (AutoReconnect && !IsConnected() && !IsDisposed)
+                            await _ConnectAsync().ConfigureAwait(false);
+                    }
+                    finally { m_ConnectionGate.Release(); }
                 }
-                else
+                catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { return; }
+                catch (Exception e)
                 {
-                    m_RetryingConnection = false;
+                    // A listener/UI callback must not silently kill the only recovery worker.
+                    Info("Control recovery failed: {0}", e);
+                    try { await Task.Delay(1000, m_Lifetime.Token).ConfigureAwait(false); }
+                    catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { return; }
                 }
-
             }
+        }
 
-            Info("connection restored!");
-            await _CheckConnectionAsync().ConfigureAwait(false); // restart this check
+        private void _QueueCommand(Func<Task> command, Action completed = null)
+        {
+            lock (m_CommandLock)
+            {
+                // Capture the connection now; never replay an old UI action on
+                // a replacement connection (especially a non-idempotent stream command).
+                var previous = m_CommandTask;
+                var rpc = m_JsonRpc;
+                m_CommandTask = Task.Run(() => _RunCommandAsync(previous, rpc, command, completed));
+            }
+        }
+
+        private async Task _RunCommandAsync(Task previous, JsonRpc rpc, Func<Task> command, Action completed)
+        {
+            try
+            {
+                await previous.ConfigureAwait(false);
+                await m_ConnectionGate.WaitAsync(m_Lifetime.Token).ConfigureAwait(false);
+                try
+                {
+                    if (rpc == null || !ReferenceEquals(rpc, m_JsonRpc) || !IsConnected())
+                        return;
+                    try
+                    {
+                        await command().ConfigureAwait(false);
+                    }
+                    catch (RemoteRpcException e)
+                    {
+                        Info("Control command rejected; refreshing server state: {0}", e.Message);
+                        // A valid RPC error is not a dead connection; undo optimistic UI state.
+                        await _GetServerStatusAsync().ConfigureAwait(false);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Info("Control command failed: {0}: {1}", e.GetType().Name, e.Message);
+                    _Disconnect();
+                }
+                finally { m_ConnectionGate.Release(); }
+            }
+            catch (OperationCanceledException) when (m_Lifetime.IsCancellationRequested) { }
+            catch (Exception e) { Info("Control command failed: {0}", e); }
+            finally { completed?.Invoke(); }
         }
 
         /// <summary>
@@ -272,9 +510,10 @@ namespace SnapDotNet.ControlClient
         /// <returns></returns>
         private JsonRpcData.Client _GetClient(string id)
         {
-            if (ServerData != null)
+            var data = ServerData;
+            if (data != null)
             {
-                foreach (Group g in ServerData.groups)
+                foreach (Group g in data.groups)
                 {
                     foreach (JsonRpcData.Client c in g.clients)
                     {
@@ -297,9 +536,10 @@ namespace SnapDotNet.ControlClient
         private JsonRpcData.Client _GetClient(string id, out Group group)
         {
             group = null;
-            if (ServerData != null)
+            var data = ServerData;
+            if (data != null)
             {
-                foreach (Group g in ServerData.groups)
+                foreach (Group g in data.groups)
                 {
                     foreach (JsonRpcData.Client c in g.clients)
                     {
@@ -321,9 +561,10 @@ namespace SnapDotNet.ControlClient
         /// <returns></returns>
         private JsonRpcData.Group _GetGroup(string id)
         {
-            if (ServerData != null)
+            var data = ServerData;
+            if (data != null)
             {
-                foreach (Group g in ServerData.groups)
+                foreach (Group g in data.groups)
                 {
                     if (g.id == id)
                     {
@@ -337,9 +578,10 @@ namespace SnapDotNet.ControlClient
 
         public JsonRpcData.Stream GetStream(string id)
         {
-            if (ServerData != null)
+            var data = ServerData;
+            if (data != null)
             {
-                foreach (Stream stream in ServerData.streams)
+                foreach (Stream stream in data.streams)
                 {
                     if (stream.id == id)
                     {
@@ -357,48 +599,57 @@ namespace SnapDotNet.ControlClient
         /// <param name="data"></param>
         private void _ServerUpdated(ServerData data)
         {
-            if (ServerData != null)
+            var previous = ServerData;
+            if (previous != null)
             {
                 // if we already had ServerData, make sure all UI elements know it's about to be chucked out
-                ServerData.SERVER_Invalidate();
+                previous.SERVER_Invalidate();
             }
 
-            ServerData = data;
-
-            // if any incoming messages got queued while we were waiting for ServerData, handle them now (see Client.OnConnect local rpc method)
-            while (m_QueuedMessages.Count > 0)
+            lock (m_CommandLock)
             {
-                m_QueuedMessages.Dequeue()();
+                if (IsDisposed)
+                    return;
+                ServerData = data;
             }
 
             // hook up events so we can update the server whenever data gets modified
-            foreach (Group group in ServerData.groups)
+            foreach (Group group in data.groups)
             {
                 foreach (JsonRpcData.Client client in group.clients)
                 {
-                    client.config.volume.CLIENT_OnModified += () => { _OnLocalVolumeDataModified(client); };
-                    client.CLIENT_OnNameModified += () => { _OnLocalClientNameModified(client); };
-                    client.config.CLIENT_OnLatencyModified += () => { _OnLocalClientLatencyModified(client); };
-                    client.CLIENT_OnRemoved += () => { _OnLocalClientRemoved(client); };
+                    client.config.volume.CLIENT_OnModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalVolumeDataModified(client); };
+                    client.CLIENT_OnNameModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalClientNameModified(client); };
+                    client.config.CLIENT_OnLatencyModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalClientLatencyModified(client); };
+                    client.CLIENT_OnRemoved += () => { if (ReferenceEquals(data, ServerData)) _OnLocalClientRemoved(client); };
                 }
 
                 group.SubscribeToClientEvents();
 
-                group.CLIENT_OnMuteModified += () => { _OnLocalGroupMuteModified(group); };
-                group.CLIENT_OnNameModified += () => { _OnLocalGroupNameModified(group); };
-                group.CLIENT_OnStreamModified += () => { _OnLocalGroupStreamModified(group); };
+                group.CLIENT_OnMuteModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalGroupMuteModified(group); };
+                group.CLIENT_OnNameModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalGroupNameModified(group); };
+                group.CLIENT_OnStreamModified += () => { if (ReferenceEquals(data, ServerData)) _OnLocalGroupStreamModified(group); };
 
                 group.CLIENT_OnClientListModified += (clientIds) =>
                 {
-                    _OnLocalGroupClientListModified(group, clientIds);
+                    if (ReferenceEquals(data, ServerData))
+                        _OnLocalGroupClientListModified(group, clientIds);
                 };
             }
 
-            foreach (Stream stream in ServerData.streams)
+            foreach (Stream stream in data.streams)
             {
-                stream.CLIENT_OnControlCommand += command => { _OnStreamControlCommandSent(stream, command); };
+                stream.CLIENT_OnControlCommand += command => { if (ReferenceEquals(data, ServerData)) _OnStreamControlCommandSent(stream, command); };
             }
 
+            Info("Control state synchronized: {0} groups, {1} streams.", data.groups.Length, data.streams.Length);
+            foreach (Group group in data.groups)
+            {
+                Info("Control status group {0}: muted={1}.", group.id, group.muted);
+                foreach (JsonRpcData.Client client in group.clients)
+                    Info("Control status client {0}: percent={1}, muted={2}, connected={3}.",
+                        client.id, client.config.volume.percent, client.config.volume.muted, client.connected);
+            }
             OnServerUpdated?.Invoke();
         }
 
@@ -409,22 +660,10 @@ namespace SnapDotNet.ControlClient
         /// <param name="volume">new volume object</param>\
         private void _ClientVolumeChanged(string id, Volume volume)
         {
-            JsonRpcData.Group group = null;
-            JsonRpcData.Client client = _GetClient(id, out group);
+            JsonRpcData.Client client = _GetClient(id);
             if (client != null)
             {
                 client.config.SERVER_SetVolume(volume);
-                // groups are listening to the clients' volume object for change events,
-                // in order to update the group volume slider. when receiving a volume
-                // update from the client, the group needs to re-subscribe to this event
-                group.SubscribeToClientEvent(client); 
-
-                // also resubscribe local event for volume changes, so the server gets
-                // updated when the user modifies the volume
-                client.config.volume.CLIENT_OnModified += () =>
-                {
-                    _OnLocalVolumeDataModified(client);
-                };
             }
         }
 
@@ -491,11 +730,14 @@ namespace SnapDotNet.ControlClient
         /// <param name="stream">new stream</param>
         private void _StreamUpdated(string id, Stream stream)
         {
-            for (int i = 0; i < ServerData.streams.Length; i++)
+            var data = ServerData;
+            if (data == null)
+                return;
+            for (int i = 0; i < data.streams.Length; i++)
             {
-                if (ServerData.streams[i].id == id)
+                if (data.streams[i].id == id)
                 {
-                    ServerData.streams[i].SERVER_Update(stream);
+                    data.streams[i].SERVER_Update(stream);
                 }
             }
         }
@@ -507,11 +749,14 @@ namespace SnapDotNet.ControlClient
         /// <param name="properties"></param>
         private void _StreamPropertiesUpdated(string id, Properties properties)
         {
-            for (int i = 0; i < ServerData.streams.Length; i++)
+            var data = ServerData;
+            if (data == null)
+                return;
+            for (int i = 0; i < data.streams.Length; i++)
             {
-                if (ServerData.streams[i].id == id)
+                if (data.streams[i].id == id)
                 {
-                    ServerData.streams[i].SERVER_PropertiesUpdate(properties);
+                    data.streams[i].SERVER_PropertiesUpdate(properties);
                 }
             }
         }
@@ -537,6 +782,8 @@ namespace SnapDotNet.ControlClient
         private void _ClientConnectedOrDisconnected(string id, JsonRpcData.Client client)
         {
             JsonRpcData.Client c = _GetClient(id);
+            if (c == null)
+                return;
             c.SERVER_SetConnected(client.connected);
             c.SERVER_SetLastSeen(client.lastSeen);
         }
@@ -547,7 +794,16 @@ namespace SnapDotNet.ControlClient
         /// <param name="group"></param>
         private void _OnLocalGroupMuteModified(JsonRpcData.Group group)
         {
-            Task t = Task.Run(async () => { await _SetGroupMutedAsync(group.id, group.muted).ConfigureAwait(false); });
+            var change = new object();
+            string id = group.id;
+            bool muted = group.muted;
+            group.PendingMuteChange = change; // caller holds MuteSyncRoot
+            _QueueCommand(() => _SetGroupMutedAsync(id, muted, group, change), () =>
+            {
+                lock (group.MuteSyncRoot)
+                    if (ReferenceEquals(group.PendingMuteChange, change))
+                        group.PendingMuteChange = null;
+            });
         }
 
         /// <summary>
@@ -556,7 +812,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="group"></param>
         private void _OnLocalGroupNameModified(JsonRpcData.Group group)
         {
-            Task t = Task.Run(async () => { await _SetGroupNameAsync(group.id, group.name).ConfigureAwait(false); });
+            string id = group.id;
+            string name = group.name;
+            _QueueCommand(() => _SetGroupNameAsync(id, name));
         }
 
         /// <summary>
@@ -565,10 +823,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="group"></param>
         private void _OnLocalGroupStreamModified(Group group)
         {
-            Task t = Task.Run(async () =>
-            {
-                await _SetGroupStreamAsync(group.id, group.stream_id).ConfigureAwait(false);
-            });
+            string id = group.id;
+            string streamId = group.stream_id;
+            _QueueCommand(() => _SetGroupStreamAsync(id, streamId));
         }
 
         /// <summary>
@@ -578,7 +835,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="clientIds"></param>
         private void _OnLocalGroupClientListModified(Group group, string[] clientIds)
         {
-            Task t = Task.Run(async () => { await _SetGroupClientsAsync(group.id, clientIds).ConfigureAwait(false); });
+            string id = group.id;
+            var ids = (string[])clientIds.Clone();
+            _QueueCommand(() => _SetGroupClientsAsync(id, ids));
         }
 
         /// <summary>
@@ -587,9 +846,15 @@ namespace SnapDotNet.ControlClient
         /// <param name="client"></param>
         private void _OnLocalVolumeDataModified(JsonRpcData.Client client)
         {
-            Task t = Task.Run(async () =>
+            var source = client.config.volume; // caller holds source.SyncRoot
+            var volume = new Volume { percent = source.percent, muted = source.muted };
+            string id = client.id;
+            source.PendingChange = volume;
+            _QueueCommand(() => _SetClientVolumeAsync(id, volume, client), () =>
             {
-                await _SetClientVolumeAsync(client.id, client.config.volume).ConfigureAwait(false);
+                lock (source.SyncRoot)
+                    if (ReferenceEquals(source.PendingChange, volume))
+                        source.PendingChange = null;
             });
         }
 
@@ -599,10 +864,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="client"></param>
         private void _OnLocalClientNameModified(JsonRpcData.Client client)
         {
-            Task t = Task.Run(async () =>
-            {
-                await _SetClientNameAsync(client.id, client.config.name).ConfigureAwait(false);
-            });
+            string id = client.id;
+            string name = client.config.name;
+            _QueueCommand(() => _SetClientNameAsync(id, name));
         }
 
         /// <summary>
@@ -611,10 +875,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="client"></param>
         private void _OnLocalClientLatencyModified(JsonRpcData.Client client)
         {
-            Task t = Task.Run(async () =>
-            {
-                await _SetClientLatencyAsync(client.id, client.config.latency).ConfigureAwait(false);
-            });
+            string id = client.id;
+            int latency = client.config.latency;
+            _QueueCommand(() => _SetClientLatencyAsync(id, latency));
         }
 
         /// <summary>
@@ -623,7 +886,8 @@ namespace SnapDotNet.ControlClient
         /// <param name="client"></param>
         private void _OnLocalClientRemoved(JsonRpcData.Client client)
         {
-            Task t = Task.Run(async () => { await _RemoveClientAsync(client.id).ConfigureAwait(false); });
+            string id = client.id;
+            _QueueCommand(() => _RemoveClientAsync(id));
         }
 
         /// <summary>
@@ -633,7 +897,9 @@ namespace SnapDotNet.ControlClient
         /// <param name="command"></param>
         private void _OnStreamControlCommandSent(JsonRpcData.Stream stream, Stream.EControlCommand command)
         {
-            Task t = Task.Run(async () => { await _SendStreamControlCommandAsync(stream.id, command.ToString()).ConfigureAwait(false); });
+            string id = stream.id;
+            string value = command.ToString();
+            _QueueCommand(() => _SendStreamControlCommandAsync(id, value));
         }
 
         /// <summary>
@@ -641,13 +907,49 @@ namespace SnapDotNet.ControlClient
         /// </summary>
         /// <param name="id">client id</param>
         /// <param name="volume">new volume object</param>
-        private async Task _SetClientVolumeAsync(string id, Volume volume)
+        private async Task _SetClientVolumeAsync(string id, Volume volume, JsonRpcData.Client client)
         {
             Debug("Sending Client.SetVolume - id {0}, volume {1}", id, volume);
-            ClientVolumeCommandResult result =
-                await m_JsonRpc.InvokeWithParameterObjectAsync<ClientVolumeCommandResult>("Client.SetVolume",
+            await _InvokeAsync<ClientVolumeCommandResult>("Client.SetVolume",
                     new ClientVolumeCommand() {id = id, volume = volume}); // update the server
-            _ClientVolumeChanged(id, result.volume); // update our local data to reflect the new value
+            await _ReconcileClientVolumeAsync(id, volume, client).ConfigureAwait(false);
+        }
+
+        private async Task _ReconcileClientVolumeAsync(string id, Volume volume, JsonRpcData.Client client)
+        {
+            var source = client.config.volume;
+            long revision;
+            lock (source.SyncRoot)
+            {
+                if (!ReferenceEquals(source.PendingChange, volume))
+                    return;
+                revision = source.ServerRevision;
+            }
+            // A read after the last write includes external changes made during the
+            // burst. It updates this volume only, without rebuilding the WPF controls.
+            var status = await _InvokeAsync<ClientStatusResult>("Client.GetStatus", new { id }).ConfigureAwait(false);
+            lock (source.SyncRoot)
+            {
+                if (ReferenceEquals(source.PendingChange, volume))
+                {
+                    if (source.ServerRevision != revision)
+                    {
+                        // A notification arrived while the snapshot was in flight.
+                        // Re-read at the queue tail: never hold the gate in a retry loop
+                        // or treat an older snapshot as newer than that notification.
+                        var next = new Volume { percent = source.percent, muted = source.muted };
+                        source.PendingChange = next;
+                        _QueueCommand(() => _ReconcileClientVolumeAsync(id, next, client), () =>
+                        {
+                            lock (source.SyncRoot)
+                                if (ReferenceEquals(source.PendingChange, next)) source.PendingChange = null;
+                        });
+                        return;
+                    }
+                    source.PendingChange = null;
+                    _GetClient(id)?.config.SERVER_SetVolume(status.client.config.volume);
+                }
+            }
         }
 
         /// <summary>
@@ -658,10 +960,11 @@ namespace SnapDotNet.ControlClient
         private async Task _SetClientNameAsync(string id, string name)
         {
             Debug("Sending Client.SetName - id {0}, name {1}", id, name);
-            SetNameCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetNameCommandResult>(
+            SetNameCommandResult result = await _InvokeAsync<SetNameCommandResult>(
                 "Client.SetName",
                 new NameCommand() {id = id, name = name}); // update the server
-            _ClientNameChanged(id, result.name); // update our local data to reflect the new value
+            if (_GetClient(id)?.config.name == name)
+                _ClientNameChanged(id, result.name);
         }
 
         /// <summary>
@@ -672,10 +975,11 @@ namespace SnapDotNet.ControlClient
         private async Task _SetClientLatencyAsync(string id, int latency)
         {
             Debug("Sending Client.SetLatency - id {0}, latency {1}", id, latency);
-            ClientVolumeCommandResult result =
-                await m_JsonRpc.InvokeWithParameterObjectAsync<ClientVolumeCommandResult>("Client.SetLatency",
+            ClientLatencyCommandResult result =
+                await _InvokeAsync<ClientLatencyCommandResult>("Client.SetLatency",
                     new ClientLatencyCommand() {id = id, latency = latency}); // update the server
-            _ClientLatencyChanged(id, latency); // update our local data to reflect the new value
+            if (_GetClient(id)?.config.latency == latency)
+                _ClientLatencyChanged(id, result.latency);
         }
 
         /// <summary>
@@ -687,7 +991,7 @@ namespace SnapDotNet.ControlClient
         {
             Debug("Sending Server.DeleteClient - id {0}", id);
             ServerUpdateCommandResult result =
-                await m_JsonRpc.InvokeWithParameterObjectAsync<ServerUpdateCommandResult>("Server.DeleteClient",
+                await _InvokeAsync<ServerUpdateCommandResult>("Server.DeleteClient",
                     new RemoveClientCommand() {id = id}); // update the server
             _ServerUpdated(result.server);
         }
@@ -697,13 +1001,43 @@ namespace SnapDotNet.ControlClient
         /// </summary>
         /// <param name="id">group id</param>
         /// <param name="muted">new muted state</param>
-        private async Task _SetGroupMutedAsync(string id, bool mute)
+        private async Task _SetGroupMutedAsync(string id, bool mute, Group group, object change)
         {
             Debug("Sending Group.SetMute - id {0}, mute {1}", id, mute);
-            SetMutedCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetMutedCommandResult>(
+            await _InvokeAsync<SetMutedCommandResult>(
                 "Group.SetMute",
                 new GroupSetMutedCommand() {id = id, mute = mute}); // update the server
-            _GroupMuteChanged(id, result.mute);
+            await _ReconcileGroupMuteAsync(id, group, change).ConfigureAwait(false);
+        }
+
+        private async Task _ReconcileGroupMuteAsync(string id, Group group, object change)
+        {
+            long revision;
+            lock (group.MuteSyncRoot)
+            {
+                if (!ReferenceEquals(group.PendingMuteChange, change))
+                    return;
+                revision = group.ServerMuteRevision;
+            }
+            var status = await _InvokeAsync<GroupStatusResult>("Group.GetStatus", new { id }).ConfigureAwait(false);
+            lock (group.MuteSyncRoot)
+            {
+                if (!ReferenceEquals(group.PendingMuteChange, change))
+                    return;
+                if (group.ServerMuteRevision != revision)
+                {
+                    var next = new object();
+                    group.PendingMuteChange = next;
+                    _QueueCommand(() => _ReconcileGroupMuteAsync(id, group, next), () =>
+                    {
+                        lock (group.MuteSyncRoot)
+                            if (ReferenceEquals(group.PendingMuteChange, next)) group.PendingMuteChange = null;
+                    });
+                    return;
+                }
+                group.PendingMuteChange = null;
+            }
+            _GetGroup(id)?.SERVER_SetMute(status.group.muted);
         }
 
         /// <summary>
@@ -714,10 +1048,11 @@ namespace SnapDotNet.ControlClient
         private async Task _SetGroupNameAsync(string id, string name)
         {
             Debug("Sending Group.SetName - id {0}, name {1}", id, name);
-            SetNameCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetNameCommandResult>(
+            SetNameCommandResult result = await _InvokeAsync<SetNameCommandResult>(
                 "Group.SetName",
                 new NameCommand() {id = id, name = name}); // update the server
-            _GroupNameChanged(id, result.name); // update our local data to reflect the new value
+            if (_GetGroup(id)?.name == name)
+                _GroupNameChanged(id, result.name);
         }
 
         /// <summary>
@@ -728,10 +1063,11 @@ namespace SnapDotNet.ControlClient
         private async Task _SetGroupStreamAsync(string id, string stream_id)
         {
             Debug("Sending Group.SetStream - id {0}, stream_id {1}", id, stream_id);
-            SetStreamCommandResult result = await m_JsonRpc.InvokeWithParameterObjectAsync<SetStreamCommandResult>(
+            SetStreamCommandResult result = await _InvokeAsync<SetStreamCommandResult>(
                 "Group.SetStream",
                 new StreamCommand() {id = id, stream_id = stream_id}); // update the server
-            _GroupNameChanged(id, result.stream_id); // update our local data to reflect the new value
+            if (_GetGroup(id)?.stream_id == stream_id)
+                _GroupStreamChanged(id, result.stream_id);
         }
 
         /// <summary>
@@ -743,7 +1079,7 @@ namespace SnapDotNet.ControlClient
         {
             Debug("Sending Group.SetClients - id {0}, clients {1}", id, string.Join(",", clientIds));
             ServerUpdateCommandResult result =
-                await m_JsonRpc.InvokeWithParameterObjectAsync<ServerUpdateCommandResult>("Group.SetClients",
+                await _InvokeAsync<ServerUpdateCommandResult>("Group.SetClients",
                     new GroupSetClientsCommand() {id = id, clients = clientIds}); // update the server)
             _ServerUpdated(result.server); // update our local data
         }
@@ -752,20 +1088,33 @@ namespace SnapDotNet.ControlClient
         {
             Debug("Sending Stream.Control - stream {0}, command {1}", stream, command);
             SendStreamControlCommandResult result =
-                await m_JsonRpc.InvokeWithParameterObjectAsync<SendStreamControlCommandResult>("Stream.Control",
+                await _InvokeAsync<SendStreamControlCommandResult>("Stream.Control",
                     new SendStreamControlCommand() {id = stream, command = command});
+        }
+
+        private sealed class ClientStatusResult
+        {
+            public JsonRpcData.Client client { get; set; }
+        }
+
+        private sealed class GroupStatusResult
+        {
+            public Group group { get; set; }
+        }
+
+        private sealed class ClientLatencyCommandResult
+        {
+            public int latency { get; set; }
         }
 
         private static void Debug(string message, params object[] args)
         {
-            //System.Diagnostics.Debug.WriteLine(string.Format(message, args));
-            // Logger.Debug(message, args);
+            System.Diagnostics.Trace.WriteLine(string.Format(message, args), "Snapcast control debug");
         }
 
         private static void Info(string message, params object[] args)
         {
-            //System.Diagnostics.Debug.WriteLine(string.Format(message, args));
-            // Logger.Info(message, args);
+            System.Diagnostics.Trace.WriteLine(string.Format(message, args), "Snapcast control");
         }
 
         /// <summary>
@@ -773,19 +1122,19 @@ namespace SnapDotNet.ControlClient
         /// </summary>
         public void Dispose()
         {
-            m_ConnectionCheckCancellationTokenSource.Cancel();
-            if (m_ConnectionCheckTask != null)
+            lock (m_CommandLock)
             {
-                if (m_ConnectionCheckTask.Status == TaskStatus.RanToCompletion
-                    || m_ConnectionCheckTask.Status == TaskStatus.Faulted
-                    || m_ConnectionCheckTask.Status == TaskStatus.Canceled)
-                    m_ConnectionCheckTask.Dispose();
+                if (IsDisposed)
+                    return;
+                this.Dispose(true);
+                m_Lifetime.Cancel();
+                // Do not wait on the gate/UI thread: cancellation and closing the
+                // socket unblock an active connect/request. Its owner cleans up.
+                m_JsonRpc?.Dispose();
+                m_Stream?.Dispose();
+                m_TcpClient?.Dispose();
+                ServerData = null;
             }
-
-            m_JsonRpc.Dispose();
-            m_Stream.Dispose();
-            m_TcpClient.Dispose();
-            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 

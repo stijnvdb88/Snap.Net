@@ -50,6 +50,11 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// </summary>
         public event Action CLIENT_OnMuteModified;
 
+        internal readonly object MuteSyncRoot = new object();
+        internal object PendingMuteChange;
+        internal long LocalMuteRevision;
+        internal long ServerMuteRevision;
+
         /// <summary>
         /// OnClientListModified: SnapcastClient listens to this for replicating to server
         /// </summary>
@@ -157,7 +162,22 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// <param name="mute"></param>
         public void SERVER_SetMute(bool mute)
         {
-            m_Muted = mute;
+            _SetServerMute(mute, null);
+        }
+
+        internal void SERVER_SetMute(bool mute, long expectedRevision)
+        {
+            _SetServerMute(mute, expectedRevision);
+        }
+
+        private void _SetServerMute(bool mute, long? expectedRevision)
+        {
+            lock (MuteSyncRoot)
+            {
+                if (PendingMuteChange != null || (expectedRevision.HasValue && expectedRevision != LocalMuteRevision))
+                    return;
+                m_Muted = mute;
+            }
             SERVER_OnGroupUpdated?.Invoke();
         }
 
@@ -214,8 +234,12 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// </summary>
         public void CLIENT_ToggleMuted()
         {
-            m_Muted = m_Muted == false;
-            CLIENT_OnMuteModified?.Invoke();
+            lock (MuteSyncRoot)
+            {
+                m_Muted = m_Muted == false;
+                LocalMuteRevision++;
+                CLIENT_OnMuteModified?.Invoke();
+            }
         }
 
         /// <summary>

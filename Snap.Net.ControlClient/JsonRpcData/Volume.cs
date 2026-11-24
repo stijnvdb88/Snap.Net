@@ -23,22 +23,37 @@ namespace SnapDotNet.ControlClient.JsonRpcData
         /// </summary>
         public event Action CLIENT_OnModified;
 
+        // Local intent remains authoritative until the last queued write is reconciled.
+        // These internal fields are not serialized onto the wire.
+        internal readonly object SyncRoot = new object();
+        internal object PendingChange;
+        internal long LocalRevision;
+        internal long ServerRevision;
+
         public bool muted { get; set; }
 
         public int percent { get; set; }
 
         public void CLIENT_ToggleMuted()
         {
-            muted = muted == false;
-            CLIENT_OnModified?.Invoke();
+            lock (SyncRoot)
+            {
+                muted = muted == false;
+                LocalRevision++;
+                CLIENT_OnModified?.Invoke();
+            }
         }
 
         public void CLIENT_SetPercent(int percent)
         {
-            if (this.percent != percent)
+            lock (SyncRoot)
             {
-                this.percent = percent;
-                CLIENT_OnModified?.Invoke();
+                if (this.percent != percent)
+                {
+                    this.percent = percent;
+                    LocalRevision++;
+                    CLIENT_OnModified?.Invoke();
+                }
             }
         }
 

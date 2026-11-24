@@ -15,6 +15,7 @@
 using Gma.System.MouseKeyHook;
 using Hardcodet.Wpf.TaskbarNotification;
 using MahApps.Metro;
+using Microsoft.Win32;
 using NLog;
 using SnapDotNet.ControlClient;
 using SnapDotNet.Controls;
@@ -40,6 +41,20 @@ namespace SnapDotNet
 
         public static System.Version Version = null;
         private SnapcastClient m_SnapcastClient = null;
+        private readonly System.Diagnostics.TraceListener m_ControlTraceListener = new ControlTraceListener();
+
+        // Keep the shared control library independent of NLog and route only its
+        // lifecycle diagnostics (not per-slider debug traffic) into the existing log.
+        private sealed class ControlTraceListener : System.Diagnostics.TraceListener
+        {
+            public override void Write(string message) { }
+            public override void WriteLine(string message) { }
+            public override void WriteLine(string message, string category)
+            {
+                if (category == "Snapcast control")
+                    Logger.Info("Control: {0}", message);
+            }
+        }
 
         public Task m_ConnectTask = null;
 
@@ -59,6 +74,7 @@ namespace SnapDotNet
         {
             base.OnStartup(e);
             _ConfigureLogger();
+            System.Diagnostics.Trace.Listeners.Add(m_ControlTraceListener);
             AttachConsole(-1); // attach to console if we were launched via command line
             Console.WriteLine(); // send a newline
             SnapSettings.Init();
@@ -82,6 +98,7 @@ namespace SnapDotNet
             TaskbarIcon = (TaskbarIcon)FindResource("NotifyIcon");
             TaskbarIcon.NoLeftClickDelay = true;
             m_SnapcastClient = new SnapcastClient();
+            SystemEvents.PowerModeChanged += _OnPowerModeChanged;
 
             Instance = this;
             Player = new Player.Player();
@@ -120,6 +137,36 @@ namespace SnapDotNet
                 TaskbarIcon.IconSource =
                     BitmapFrame.Create(new Uri($"pack://application:,,,/Snap.Net;component/Assets/{icon}.ico"));
             }));
+        }
+
+        private void _OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != PowerModes.Resume || IsDisposed)
+                return;
+
+            Logger.Info("Windows resumed; requesting control connection recovery (auto-retry: {0}).", SnapcastClient.AutoReconnect);
+            if (SnapcastClient.AutoReconnect && !string.IsNullOrEmpty(SnapSettings.Server))
+                _ = _RecoverControlAfterResumeAsync();
+        }
+
+        private async Task _RecoverControlAfterResumeAsync()
+        {
+            try
+            {
+                // Use the control-only path: Connect() also starts auto-play/broadcast.
+                await m_SnapcastClient.ReconnectAsync().ConfigureAwait(false);
+                Logger.Info("Resume control recovery attempt finished (connected: {0}); automatic retry remains active.", m_SnapcastClient.IsConnected());
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Control recovery after Windows resume failed.");
+            }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            SystemEvents.PowerModeChanged -= _OnPowerModeChanged;
+            base.OnExit(e);
         }
 
         public void Activate()
@@ -278,8 +325,13 @@ namespace SnapDotNet
         /// </summary>
         public void Dispose()
         {
+            if (IsDisposed)
+                return;
+            SystemEvents.PowerModeChanged -= _OnPowerModeChanged;
             m_SnapcastClient.Dispose();
             this.Dispose(true);
+            System.Diagnostics.Trace.Listeners.Remove(m_ControlTraceListener);
+            m_ControlTraceListener.Dispose();
             GC.SuppressFinalize(this);
         }
 

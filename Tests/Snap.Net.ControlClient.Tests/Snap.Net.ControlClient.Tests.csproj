@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Snap.Net.ControlClient/Snap.Net.ControlClient.csproj" Condition="'$(ControlClientAssemblyPath)' == ''" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(ControlClientAssemblyPath)' != ''">
+    <Reference Include="Snap.Net.ControlClient">
+      <HintPath>$(ControlClientAssemblyPath)</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$([System.IO.Path]::GetDirectoryName('$(ControlClientAssemblyPath)'))\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
