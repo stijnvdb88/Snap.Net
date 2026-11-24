@@ -48,7 +48,20 @@ namespace SnapDotNet.ControlClient.JsonRpcData
 
         public void SERVER_SetVolume(Volume volume)
         {
-            m_Volume = volume;
+            // Keep local RPC/group subscriptions alive, including while notifying UI
+            // listeners. Replacing this object left a window with no CLIENT handlers.
+            if (m_Volume == null)
+                m_Volume = volume;
+            else
+            {
+                lock (m_Volume.SyncRoot)
+                {
+                    if (m_Volume.PendingChange != null)
+                        return;
+                    m_Volume.percent = volume.percent;
+                    m_Volume.muted = volume.muted;
+                }
+            }
             SERVER_OnVolumeUpdated?.Invoke();
         }
 
